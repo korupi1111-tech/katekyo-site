@@ -7,6 +7,7 @@ import "./footer.css";
 import "./header.css";
 import "./rank-intro.css";
 import "./rank-system.css";
+import "./trust-design.css";
 import "../legal-pages.css";
 
 type Page = "home" | "search" | "ranking" | "ranks" | "rank-details" | "owner-thoughts" | "teacher-auth" | "family-auth" | "terms" | "privacy" | "contact" | "student-guide" | "teacher-guide" | "pricing" | "campaign" | "profile-guide";
@@ -24,7 +25,7 @@ const teachers:Teacher[]=[
 {id:4,name:"鈴木 直人",university:"法政大学 経営学部4年",gender:"男性",mainSubject:"中学受験算数",mainCategory:"中学受験・文章題・図形",title:"文章題を図に変える中学受験算数",rank:"LR",highestRank:"GOD",price:3800,status:"受付中",formats:["オンライン","対面"],areas:["新宿区","中野区","杉並区"],qualifications:["中学受験経験","個別指導4年"],target:"問題文は読めるものの、何を図にしてどの式を立てるか決められない小学生。",supported:"条件と求めるものを本人に整理してもらい、線分図や面積図へ変換してから式を作ります。",unsupported:"解法パターンの丸暗記、答えを先に見せる指導、最難関問題だけを扱う授業。",policy:"式を立てる前に、問題の状況を本人の手で見える形にします。",teacherComment:"文章題が苦手な生徒は、計算力よりも状況の整理で止まっています。図を教師が描くのではなく、生徒自身が情報を配置できるようにすることを大切にしています。",seasonLessons:211,totalLessons:493,matchRate:97,score:"四谷大塚合不合判定模試 算数偏差値68",otherSubjects:[{name:"中学受験理科",method:"現象を図にして、用語と仕組みを結び付けます。"},{name:"小学生国語",method:"設問の根拠となる一文を本文から探す手順を反復します。"}],extraSubjects:["学習計画","塾教材整理"]}
 ];
 
-const rankColors:Record<string,{main:string;pale:string;dark:string}>={R:{main:"#ad7341",pale:"#f9ead8",dark:"#74461f"},SSR:{main:"#5f63e9",pale:"#eaebff",dark:"#393ca8"},LR:{main:"#ad7cf2",pale:"#f3ebff",dark:"#6f3fa9"},GOD:{main:"#d8a400",pale:"#fff5bc",dark:"#895700"}};
+const rankColors:Record<string,{main:string;pale:string;dark:string}>={R:{main:"#74818d",pale:"#f0f3f5",dark:"#354553"},SSR:{main:"#3c5f78",pale:"#eaf1f5",dark:"#17384e"},LR:{main:"#705979",pale:"#f3eef4",dark:"#3e2d46"},GOD:{main:"#9b782e",pale:"#fbf4e1",dark:"#5b4516"}};
 
 function Header({page,setPage}:{page:Page;setPage:(p:Page)=>void}){const[menu,setMenu]=useState<"information"|"login"|null>(null);const choose=(target:Page)=>{setPage(target);setMenu(null)};return <header className="topbar"><button className="brand" onClick={()=>choose("home")}><b>korupiyo</b><span>得意で選ぶ家庭教師サイト</span></button><nav>{[["home","トップ"],["search","先生を探す"],["ranking","ランキング"],["ranks","ランク制度"]].map(([id,label])=><button key={id} className={page===id?"on":""} onClick={()=>choose(id as Page)}>{label}</button>)}<div className="headerMenu"><button aria-expanded={menu==="information"} onClick={()=>setMenu(menu==="information"?null:"information")}>サイト情報</button>{menu==="information"&&<div className="headerMenuPanel"><button onClick={()=>choose("student-guide")}>生徒・保護者の方へ</button><button onClick={()=>choose("teacher-guide")}>講師の方へ</button></div>}</div><button className={page==="pricing"?"on":""} onClick={()=>choose("pricing")}>利用料金</button><div className="headerMenu"><button aria-expanded={menu==="login"} onClick={()=>setMenu(menu==="login"?null:"login")}>ログイン</button>{menu==="login"&&<div className="headerMenuPanel"><button onClick={()=>choose("family-auth")}>生徒・保護者</button><button onClick={()=>choose("teacher-auth")}>講師</button></div>}</div></nav></header>}
 
