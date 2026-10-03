@@ -1,0 +1,3 @@
+export type Rank="R"|"SR"|"SSR"|"UR"|"LR"|"GOD";
+export type Secondary={subject:string;target:string;method:string};
+export type Teacher={id:number,name:string,mark:string,rank:Rank,highest:Rank,status:"受付中"|"残り1枠"|"受付停止中",school:string,gender:string,qualifications:string[],specialty:string,subject:string,target:string,methods:string[],issues:string[],teaching:string,unsupported:string,secondary:Secondary[],extras:string[],price:number,formats:("オンライン"|"対面")[],areas:string[],lessons:number,students:number,match:number|null,reviews:number,points:number,policy:string,note:string};

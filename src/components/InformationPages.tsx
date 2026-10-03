@@ -1,0 +1,53 @@
+import "../information-pages.css";
+
+export type InformationPage = "student-guide" | "teacher-guide" | "pricing" | "campaign" | "rank-details" | "profile-guide";
+
+type Navigate = (page: InformationPage, sectionId?: string) => void;
+
+function PageFrame({ eyebrow, title, intro, children }: { eyebrow: string; title: string; intro: string; children: React.ReactNode }) {
+  return <main className="informationPage withTopbar"><header className="informationHero"><span>{eyebrow}</span><h1>{title}</h1><p>{intro}</p></header><div className="informationContent">{children}</div></main>;
+}
+
+function Section({ id, title, children }: { id?: string; title: string; children: React.ReactNode }) {
+  return <section id={id} className="informationSection"><h2>{title}</h2>{children}</section>;
+}
+
+function FeeFreeList() {
+  return <ul className="checkList"><li>紹介料 0円</li><li>成約手数料 0円</li><li>授業ごとの徴収 0円</li><li>売上連動手数料 0円</li></ul>;
+}
+
+function Jump({ onNavigate, page, sectionId, children }: { onNavigate: Navigate; page: InformationPage; sectionId?: string; children: React.ReactNode }) {
+  return <button className="textJump" onClick={() => onNavigate(page, sectionId)}>▶ {children}</button>;
+}
+
+export function PricingPromo({ onNavigate }: { onNavigate: Navigate }) {
+  return <section className="section pricingPromo"><button className="campaignTag" onClick={() => onNavigate("campaign")}>🚀 創設期メンバー募集中<br /><strong>条件達成で最大2年間運営費無料</strong></button><div><span>SERVICE FEE</span><h2>授業料は、講師と家庭のものです。</h2><p className="pricingLead">先生・生徒が1人でも4,000円。<br />先生・生徒が10人でも4,000円。</p><p>私たちは今後も授業料から手数料をいただきません。必要なのはサイト運営費のみです。</p><FeeFreeList /><button className="primaryInfoButton" onClick={() => onNavigate("pricing")}>詳しい料金体系を見る →</button></div></section>;
+}
+
+export function InformationHub({ onNavigate }: { onNavigate: Navigate }) {
+  return <section className="informationHub"><div className="informationHubTitle"><span>SITE INFORMATION</span><h2>ご利用前に知っておきたいこと</h2><p>料金、安心への取り組み、ランク制度、プロフィール作成の考え方は、対象別のガイドでご確認いただけます。</p></div><div className="audienceGrid"><article><span>FOR STUDENTS & FAMILIES</span><h3>生徒・保護者の方へ</h3><p>料金、家庭教師の探し方、安全への取り組み、ランク制度、よくある質問をご案内します。</p><button className="primaryInfoButton" onClick={() => onNavigate("student-guide")}>生徒・保護者向け情報を見る →</button></article><article><span>FOR TEACHERS</span><h3>講師の方へ</h3><p>料金体系、ランク制度、本人確認、プロフィール作成、活動時のルールをご案内します。</p><button className="primaryInfoButton" onClick={() => onNavigate("teacher-guide")}>講師向け情報を見る →</button></article></div></section>;
+}
+
+export function PricingPage({ onNavigate }: { onNavigate: Navigate }) {
+  return <PageFrame eyebrow="PRICING" title="利用料金" intro="閲覧は無料です。問い合わせ、契約、メッセージなどの機能を利用する場合に、年額のアカウント登録が必要です。"><button className="campaignBanner" onClick={() => onNavigate("campaign")}>創設期講師・生徒 大募集中 今だけ、条件達成で最大2年間運営費無料 →</button><Section title="生徒アカウント"><p className="priceNumber">年額 4,000円（税込）</p><p>講師への問い合わせ、お気に入り登録、授業履歴管理、大学・学科情報の利用ができます。</p></Section><Section title="ファミリーアカウント"><p className="priceNumber">年額 3,000円（税込）＋ お子様1人につき 1,000円（税込）</p><p>保護者向けの管理アカウントです。お子様ごとの予約・契約状況を管理できます。お子様が授業を受ける場合は、お子様ごとの生徒登録が必要です。本人確認を完了したお子様の追加料金は無料です。</p><p>例：お子様1人は年額4,000円、2人は5,000円、3人は6,000円です。3人のうち2人が本人確認済みの場合は年額4,000円です。</p></Section><Section title="講師アカウント"><p className="priceNumber">年額 4,000円（税込）</p><p>講師プロフィールの公開、生徒募集、授業実績の記録、ランク制度への参加、生徒・家庭からの問い合わせ受付ができます。生徒が1人でも10人でも料金は変わりません。</p></Section><Section title="授業料と手数料"><p>授業料は講師と家庭の間で直接決定され、そのまま講師と家庭のものです。私たちは今後も授業料から手数料をいただきません。</p><FeeFreeList /></Section><Section title="よくある質問"><p><b>月額ですか？</b><br />いいえ。すべて年額です。年額4,000円は月額換算で約333円、1日あたり約11円です。</p><p><b>契約が成立したら追加料金はかかりますか？</b><br />かかりません。紹介料、成約手数料、授業ごとの徴収はありません。</p></Section></PageFrame>;
+}
+
+export function CampaignPage() {
+  return <PageFrame eyebrow="FOUNDING CAMPAIGN" title="創設期キャンペーン" intro="サービス開始を支えてくださる講師・生徒・保護者の皆様へ、期間限定の無料キャンペーンを実施しています。"><Section title="最大2年間無料"><p>講師・生徒・保護者ともに初年度は無料です。条件を達成した場合、翌年度も無料となります。</p></Section><Section title="講師の方"><p><b>初年度無料</b><br />キャンペーン期間中に登録した講師は、講師アカウント利用料金（年額4,000円）が初年度無料です。</p><p><b>SSR達成で翌年度も無料</b><br />初年度中にSSRランクへ到達した講師は、翌年度の利用料金も無料です。</p></Section><Section title="生徒・保護者の方"><p><b>初年度無料</b><br />キャンペーン期間中に登録した生徒・保護者は、生徒アカウント利用料金（年額4,000円）が初年度無料です。</p><p><b>本人確認で翌年度も無料</b><br />本人確認を完了した生徒は、翌年度の利用料金も無料です。</p></Section><Section title="なぜ無料なのですか"><p>サービスをより良いものに育てるため、多くのご意見やご要望を募集しています。創設期の利用者の皆様への感謝として、期間限定の無料キャンペーンを実施しています。</p></Section><Section title="よくある質問"><p><b>本当に無料ですか？</b><br />はい。条件を満たした場合、対象期間中の利用料金は発生しません。</p><p><b>授業料から手数料は取られますか？</b><br />取りません。紹介料、成約手数料、授業ごとの徴収はありません。</p><p><b>キャンペーンはいつまでですか？</b><br />サービス開始後一定期間を予定しています。終了時期は事前にお知らせします。</p><p><b>SSRとは何ですか？</b><br />本人確認や実績確認を通過した講師に付与されるランクです。詳しくはランク制度ページをご確認ください。</p></Section></PageFrame>;
+}
+
+export function StudentGuidePage({ onNavigate }: { onNavigate: Navigate }) {
+  return <PageFrame eyebrow="FOR STUDENTS & FAMILIES" title="生徒・保護者向け詳細ガイド・規約" intro="料金、家庭教師の探し方、ランク制度、安全への取り組み、利用時のルールをご案内します。"><Section id="student-fees" title="利用料金について"><p><b>生徒アカウント：年額4,000円（税込）</b><br />講師への問い合わせ、契約管理、授業履歴の管理ができます。</p><p><b>ファミリーアカウント：年額3,000円（税込）＋お子様1人あたり1,000円（税込）</b><br />保護者向けの管理アカウントです。お子様ごとの予約・契約状況を管理できます。本人確認を完了したお子様は年額無料です。</p><p>授業料は講師と家庭の間で決定されます。当サイトでは授業料から手数料をいただきません。</p><FeeFreeList /><Jump onNavigate={onNavigate} page="pricing">利用料金の一覧を見る</Jump></Section><Section id="student-finding" title="家庭教師の探し方"><p>大学名だけでなく、得意分野、不得意分野、指導方式、宿題量、授業実績、ランク、確認済みバッジ、対応学年・受験方式から講師を探せます。</p><p>同じ科目の講師でも得意な試験や基礎・発展の比重は異なります。お子様の目標に合った得意分野と、演習中心・解説中心などの指導方式を確認してください。</p><p>ランクは参考情報の一つです。専門分野や指導方式との相性もあわせてご確認ください。</p></Section><Section id="student-ranks" title="ランク制度について"><p>ランク制度は、講師の授業実績、評価、継続実績、信頼性を可視化するための制度です。講師を必要以上に競わせるためではなく、実際にどのような活動を行ってきたかを伝えるために導入しています。</p><Jump onNavigate={onNavigate} page="rank-details">ランク詳細を見る</Jump></Section><Section id="student-safety" title="安全への取り組み"><p><b>本人確認・学歴・資格確認</b><br />講師は本人確認書類、学生証、卒業証明書、資格証明書などを提出できます。確認が完了した情報には確認済みバッジを付与します。</p><p><b>不正対策・通報</b><br />不正な授業登録や評価操作などを防ぐために、必要に応じて調査を行います。不審なプロフィールや不適切な行為は運営へ通報できます。</p></Section><Section id="student-fraud" title="不正行為に対して"><p>架空授業の登録、授業時間の水増し、複数アカウント、評価操作、虚偽の学歴・資格登録、本人以外による講師活動は禁止です。内容に応じて、ポイント取消し、ランク剥奪、ランキング参加停止、4シーズンのRランク固定、アカウント停止などの措置を行います。</p></Section><Section id="student-faq" title="よくある質問"><p><b>月額料金ですか？</b><br />いいえ。掲載されている料金はすべて年額です。</p><p><b>授業料から手数料は引かれますか？</b><br />引かれません。授業料は講師と家庭の間で直接決定されます。</p><p><b>ランクが高い講師の方が良い講師ですか？</b><br />必ずしもそうではありません。得意分野や指導方式との相性もご確認ください。</p><p><b>本人確認済みバッジとは何ですか？</b><br />提出された本人確認書類を運営が確認した講師へ付与するバッジです。確認済みバッジが付与されている学歴・資格情報は、運営による確認が完了しています。</p><p><b>講師とトラブルになった場合はどうなりますか？</b><br />まずは当事者間での解決をお願いします。規約違反や不正が疑われる場合は運営へご連絡ください。</p><p><b>なぜ年会費制ですか？</b><br />年会費はサイト運営、本人確認、不正対策、ランク制度の運営などに利用されています。</p></Section></PageFrame>;
+}
+
+export function TeacherGuidePage({ onNavigate }: { onNavigate: Navigate }) {
+  return <PageFrame eyebrow="FOR TEACHERS" title="講師向け詳細ガイド・規約" intro="料金体系、ランク、本人確認、プロフィール作成、活動時のルールをご案内します。"><Section id="teacher-fees" title="利用料金について"><p className="priceNumber">年額 4,000円（税込）</p><p>生徒が1人でも10人でも料金は変わりません。月額換算で約333円、1日あたり約11円です。Rランクはクレジットカードの登録は不要です。</p><p>講師プロフィール公開、検索掲載、問い合わせ受付、授業実績の記録、ランク制度への参加、評価の蓄積、大学・学部・学科情報との連携、本人・資格確認済みバッジの取得に利用できます。</p><p><b>授業料から手数料は徴収しません。</b></p><Jump onNavigate={onNavigate} page="pricing">利用料金の一覧を見る</Jump></Section><Section id="teacher-ranks" title="ランク制度について"><p>学歴や肩書だけではなく、実際にどれだけ生徒の力になったか、どれだけ継続して活動してきたかを評価できる仕組みを目指しています。授業実績、評価、継続実績、信頼性を可視化します。</p><Jump onNavigate={onNavigate} page="rank-details">ランク詳細と公開条件を見る</Jump></Section><Section id="teacher-promotion" title="ランク昇格条件について"><p><b>Rランク</b>は登録直後の講師ランクです。3回まで無料で利用でき、継続して活動する場合はSRランクへの昇格が必要です。</p><p><b>SRランク</b>には、Rランクでの3回の授業実践、支払い方法の登録、基本プロフィール情報の確認、AIによる簡易審査が必要です。</p><p><b>SSRランク</b>には、SRランクでの10回の授業、プロフィール一致率60%超、本人確認書類、必要に応じた在学・資格証明、プロフィール確認、AI詳細審査、運営の最終確認が必要です。</p></Section><Section id="teacher-verification" title="本人確認・資格確認について"><p>本人確認書類や資格情報を提出し、運営による確認が完了すると確認済みバッジを付与します。SSR昇格までは任意ですが、提出可能な書類はいつでも登録できます。</p></Section><Section id="teacher-profile" title="プロフィール作成ガイド"><p>学歴や実績だけでなく、何が得意か、どのような生徒に向いているか、どのような授業を行うかが分かるプロフィールを目指してください。不得意・非対応分野の記載も歓迎しています。</p><Jump onNavigate={onNavigate} page="profile-guide">プロフィール作成ガイドを見る</Jump></Section><Section id="teacher-values" title="このサイトが大切にしていること"><p>学歴だけではなく、授業実績、指導内容、信頼性、継続実績を重視します。「すごそうに見えるプロフィール」ではなく、「実際の授業が想像できるプロフィール」を目指します。</p></Section><Section id="teacher-fraud" title="不正行為について"><p>架空授業、授業時間・回数の水増し、複数アカウント、評価やランキングの操作、本人以外による活動、虚偽の経歴・資格登録は禁止です。必要に応じて調査を行い、ポイント取消し、ランク降格・剥奪、ランキング参加停止、4シーズンのR固定、アカウント停止などの措置を行います。</p></Section><Section id="teacher-faq" title="よくある質問"><p><b>ランク制度への参加は必須ですか？</b><br />いいえ。上位ランクを目指すことも、順位を気にせず活動することもできます。</p><p><b>不得意な科目があっても登録できますか？</b><br />可能です。何が得意かが分かる講師を目指しており、不得意・非対応分野の記載も歓迎しています。</p><p><b>なぜ年会費制ですか？</b><br />年会費はサイト運営、本人確認、不正対策、ランク制度の運営などに利用されます。</p></Section></PageFrame>;
+}
+
+export function RankDetailsPage() {
+  return <PageFrame eyebrow="RANK DETAILS" title="ランク詳細" intro="ランクは、確認済み授業時間と授業後アンケートの評価、プロフィール一致率をもとに講師ごとに算出します。"><Section title="授業時間・実績の扱い"><ul><li>サイトを通じて成立したすべての確認済み授業時間を対象にします。</li><li>生徒または保護者による実施確認が完了した授業のみを加算します。</li><li>授業回数ではなく実施時間を基準にし、90分は1.5時間、120分は2時間として扱います。</li><li>無料体験、キャンセル、未実施の授業はポイントに加算しません。</li><li>同一生徒から1日に加算されるランキングポイントは最大3時間分です。超過分も総授業時間には記録されます。</li><li>大学名、授業料、サイト利用料金はランク判定に影響しません。</li></ul></Section><Section title="共通ルール"><p>専門科目、第2科目、対応可能科目の確認済み授業時間・評価をランクへ反映します。現在ランクは年3回のシーズンごとに更新し、過去最高ランクはプロフィールに表示します。SSR獲得後は、不正や重大な規約違反がない限り原則としてSSR未満へ降格しません。</p><p>架空授業、時間の水増し、複数アカウントによる自己評価などが確認された場合、対象ポイント・現在ランク・不正によって得た過去ランクを取り消します。</p></Section><Section title="各ランクの条件"><p><b>R</b>：講師登録と必要な確認が完了した段階です。<br /><b>SR</b>：所定の授業実績を達成し、評価データを蓄積中の活動講師です。<br /><b>SSR</b>：所定の信頼基準と最低昇格ポイントを達成した、当サイトの標準認定ランクです。<br />上位ランクは、最低昇格ポイントに加え、シーズン順位とキャンセル状況をもとに判定します。</p></Section></PageFrame>;
+}
+
+export function ProfileGuidePage() {
+  return <PageFrame eyebrow="PROFILE GUIDE" title="講師向けプロフィール作成ガイド" intro="実際の授業が想像でき、生徒・保護者が相性を判断しやすいプロフィールの書き方です。"><Section title="プロフィールの基本"><p><b>キャッチコピー</b><br />どのような生徒に、何を教える講師なのかを一文で書きます。例：感覚派向け英検長文読解。</p><p><b>得意分野・不得意分野</b><br />「英語が得意」のような抽象表現ではなく、英検長文読解、英作文添削、積分のように具体的に書きます。対応できない内容も積極的に記載してください。</p><p><b>対象生徒</b><br />自分の指導方針に合う生徒の特徴を書きます。「誰でも歓迎」ではなく、英検2級〜1級、長文読解が苦手な方のように具体化します。</p></Section><Section title="指導内容"><p><b>指導方針</b><br />実際の授業内容を想像できるように書きます。暗記型、理論型、感覚型、その他から近い型を選びます。</p><p><b>他に教えられる科目</b><br />任意で2科目まで選び、それぞれの指導方針を一文で記載します。その他に対応できる科目も選択できます。</p></Section><Section title="講師詳細"><p><b>おすすめしない生徒・授業の厳しさ・非対応</b><br />指導方針に合わない生徒の特徴、授業速度、宿題量、メイン科目で対応できない内容を具体的に記載してください。</p><p><b>講師メッセージ</b><br />その科目を教える理由、自分が抱えた課題と克服した経験、それを誰への指導にどう生かせるかを書きます。抽象的な表現だけは避けてください。</p></Section></PageFrame>;
+}

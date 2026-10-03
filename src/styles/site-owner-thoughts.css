@@ -1,0 +1,221 @@
+/* korupiyo: site owner's thoughts page */
+.owner-thoughts-page {
+  min-height: 100vh;
+  background: #ffffff;
+  color: #10232b;
+}
+
+.owner-thoughts-hero {
+  position: relative;
+  min-height: calc(100vh - 76px);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.owner-thoughts-art {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  background-image: url("/site-owner-thoughts.png");
+  background-repeat: no-repeat;
+  background-size: 154%;
+  background-position: 82% 34%;
+  filter: saturate(1.03) contrast(1.02);
+  transform: scale(1.015);
+}
+
+.owner-thoughts-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0.98) 33%,
+      rgba(255, 255, 255, 0.83) 47%,
+      rgba(255, 255, 255, 0.16) 68%,
+      rgba(255, 255, 255, 0.04) 100%
+    );
+}
+
+.owner-thoughts-content {
+  width: min(1480px, calc(100% - 64px));
+  margin: 0 auto;
+  padding: clamp(88px, 10vh, 132px) 0 92px;
+}
+
+.owner-thoughts-kicker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 20px;
+  color: #0a9d88;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.owner-thoughts-kicker::before {
+  width: 40px;
+  height: 2px;
+  background: #0a9d88;
+  content: "";
+}
+
+.owner-thoughts-content h1 {
+  max-width: 760px;
+  margin: 0;
+  color: #102b37;
+  font-size: clamp(42px, 5vw, 74px);
+  font-weight: 950;
+  line-height: 1.18;
+  letter-spacing: -0.055em;
+}
+
+.owner-thoughts-content h1 span {
+  color: #0cae99;
+}
+
+.owner-thoughts-copy {
+  max-width: 690px;
+  margin-top: 34px;
+}
+
+.owner-thoughts-copy p {
+  margin: 0 0 22px;
+  color: #243941;
+  font-size: 17px;
+  font-weight: 650;
+  line-height: 1.95;
+}
+
+.owner-thoughts-copy .owner-thoughts-emphasis {
+  color: #078f7c;
+  font-weight: 900;
+}
+
+.owner-thoughts-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 13px;
+  margin-top: 36px;
+}
+
+.owner-thoughts-actions button {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 13px 25px;
+  border: 1px solid #0a9f89;
+  border-radius: 999px;
+  background: #0aa98f;
+  color: #ffffff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 14px 32px rgba(10, 169, 143, 0.22);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.owner-thoughts-actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 38px rgba(10, 169, 143, 0.29);
+}
+
+.owner-thoughts-actions .owner-thoughts-secondary {
+  background: rgba(255, 255, 255, 0.82);
+  color: #087b69;
+  box-shadow: none;
+  backdrop-filter: blur(8px);
+}
+
+@media (max-width: 900px) {
+  .owner-thoughts-hero {
+    min-height: auto;
+    padding-bottom: 360px;
+    background: #ffffff;
+  }
+
+  .owner-thoughts-art {
+    top: auto;
+    height: 440px;
+    background-size: 190%;
+    background-position: 76% 38%;
+    transform: none;
+  }
+
+  .owner-thoughts-overlay {
+    background:
+      linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #ffffff 58%,
+        rgba(255, 255, 255, 0.95) 68%,
+        rgba(255, 255, 255, 0.14) 100%
+      );
+  }
+
+  .owner-thoughts-content {
+    width: min(100% - 36px, 720px);
+    padding: 72px 0 30px;
+  }
+
+  .owner-thoughts-content h1 {
+    font-size: clamp(36px, 8vw, 54px);
+  }
+}
+
+@media (max-width: 560px) {
+  .owner-thoughts-hero {
+    padding-bottom: 285px;
+  }
+
+  .owner-thoughts-art {
+    height: 340px;
+    background-size: 225%;
+    background-position: 73% 39%;
+  }
+
+  .owner-thoughts-content {
+    width: calc(100% - 30px);
+    padding-top: 54px;
+  }
+
+  .owner-thoughts-kicker {
+    margin-bottom: 14px;
+    font-size: 10px;
+  }
+
+  .owner-thoughts-kicker::before {
+    width: 28px;
+  }
+
+  .owner-thoughts-content h1 {
+    font-size: 34px;
+    line-height: 1.24;
+  }
+
+  .owner-thoughts-copy {
+    margin-top: 23px;
+  }
+
+  .owner-thoughts-copy p {
+    margin-bottom: 16px;
+    font-size: 14px;
+    line-height: 1.78;
+  }
+
+  .owner-thoughts-actions {
+    margin-top: 24px;
+  }
+
+  .owner-thoughts-actions button {
+    min-height: 44px;
+    padding: 10px 17px;
+    font-size: 13px;
+  }
+}
