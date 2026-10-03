@@ -11,7 +11,9 @@ function Write-Log([string]$Message) {
 }
 
 function Invoke-Git([string[]]$Arguments) {
-  & git -c "safe.directory=$ProjectRoot" @Arguments 2>&1
+  & git -c "safe.directory=$ProjectRoot" @Arguments 2>&1 | ForEach-Object {
+    Write-Log $_.ToString()
+  }
   return $LASTEXITCODE
 }
 
