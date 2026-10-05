@@ -1,8 +1,6 @@
 import { useMemo, useState } from "react";
 import "../advanced-search.css";
 
-type Props = { onOpenTeacher: () => void };
-
 const englishTopics = ["長文読解", "英作文・ライティング", "英文法", "リスニング", "スピーキング", "英検対策", "共通テスト対策", "定期テスト対策", "過去問指導", "その他"];
 const mathTopics = ["計算", "文章題", "図形", "証明", "関数", "確率", "共通テスト対策", "定期テスト対策", "過去問指導", "その他"];
 const englishLevels = ["基礎から", "学校の授業補習", "定期テスト", "高校受験", "大学受験", "難関大学受験", "英検5級", "英検4級", "英検3級", "英検準2級", "英検2級", "英検準1級", "英検1級"];
@@ -12,10 +10,11 @@ function Chips({ values }: { values: string[] }) {
   return <div className="searchChips">{values.map(value => <label key={value}><input type="checkbox" />{value}</label>)}</div>;
 }
 
-export function AdvancedSearchPage({ onOpenTeacher }: Props) {
+export function AdvancedSearchPage({}: { onOpenTeacher?: () => void }) {
   const [subject, setSubject] = useState("高校英語");
   const [inPerson, setInPerson] = useState(false);
   const [more, setMore] = useState(false);
+  const [applied, setApplied] = useState(false);
   const topics = useMemo(() => subject === "高校英語" ? englishTopics : mathTopics, [subject]);
   const levels = useMemo(() => subject === "高校英語" ? englishLevels : mathLevels, [subject]);
 
@@ -34,7 +33,7 @@ export function AdvancedSearchPage({ onOpenTeacher }: Props) {
         <label><b>料金</b><div className="priceRange"><select><option>下限なし</option><option>無料</option><option>1,000円</option></select>から<select><option>上限なし</option><option>2,000円</option><option>5,000円</option></select></div></label>
         <div className="searchChecks feeChecks"><label><input type="checkbox" />無料相談あり</label><label><input type="checkbox" />初回無料あり</label></div>
       </div>
-      <button className="searchApply" onClick={onOpenTeacher}>この条件で検索する</button>
+      <button className="searchApply" onClick={() => setApplied(true)}>この条件で検索する</button>{applied && <p className="searchApplied">条件を適用しました。講師データとの絞り込み連携は、プロフィール登録データの整備後に追加します。</p>}
     </section>
     <button className="moreSearchToggle" aria-expanded={more} onClick={() => setMore(!more)}>さらに詳しく探す <span>{more ? "−" : "＋"}</span></button>
     {more && <section className="searchPanel detailedSearch"><h2>詳細条件</h2><div className="searchFieldGrid"><fieldset><legend>指導タイプ <small>最大2つ</small></legend><Chips values={["感覚型", "理論型", "暗記型", "演習型", "その他"]} /></fieldset><fieldset><legend>授業の進め方</legend><Chips values={["質問重視", "演習重視", "精読重視", "添削重視", "アウトプット重視", "インプット重視", "対話重視", "生徒に合わせて変更"]} /></fieldset><fieldset><legend>授業外サポート</legend><div className="searchChecks"><label><input type="checkbox" />質問対応あり</label><label><input type="checkbox" />添削対応あり</label><label><input type="checkbox" />学習管理あり</label></div></fieldset><fieldset><legend>確認・実績</legend><div className="searchChecks"><label><input type="checkbox" />本人確認済み</label><label><input type="checkbox" />学歴確認済み</label><label><input type="checkbox" />資格確認済み</label><label><input type="checkbox" />成績確認済み</label></div></fieldset><label><b>講師ランク</b><select><option>指定なし</option><option>R以上</option><option>SR以上</option><option>SSR以上</option><option>UR以上</option><option>LR以上</option><option>KING以上</option><option>OMEGA</option></select></label><label><b>確認済み授業数</b><select><option>指定なし</option><option>10回以上</option><option>30回以上</option><option>50回以上</option><option>100回以上</option><option>300回以上</option></select></label><label><b>プロフィール一致率</b><select><option>指定なし</option><option>評価蓄積中を含む</option><option>80％以上</option><option>90％以上</option><option>95％以上</option></select></label></div><button className="searchApply">詳細条件を適用する</button></section>}
