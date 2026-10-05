@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronRight, LogIn, X } from "lucide-react";
 import { LegalPage } from "./components/LegalPage";
 import { CampaignPage, CampaignPromo, InformationHub, PricingPage, PricingPromo, ProfileGuidePage, RankDetailsPage, StudentGuidePage, TeacherGuidePage } from "./components/InformationPages";
+import { AdvancedSearchPage } from "./components/AdvancedSearchPage";
+import { StudentDashboard, TeacherDashboard } from "./components/DashboardPages";
+import { CampaignDock } from "./components/CampaignDock";
 import "./index.css";
 import "./footer.css";
 import "./header.css";
@@ -13,12 +16,14 @@ import "./owner-public-profile.css";
 import "./owner-public-profile-refinement.css";
 import "./trust-design.css";
 import "./campaign-layout.css";
+import "./product-refinements.css";
 import "../legal-pages.css";
 
 void OwnerProfileDetails;
 void OwnerDetailOnly;
+void SearchPage;
 
-type Page = "home" | "search" | "ranking" | "ranks" | "rank-details" | "owner-thoughts" | "teacher-auth" | "family-auth" | "terms" | "privacy" | "contact" | "student-guide" | "teacher-guide" | "pricing" | "campaign" | "profile-guide";
+type Page = "home" | "search" | "ranking" | "ranks" | "rank-details" | "owner-thoughts" | "teacher-auth" | "family-auth" | "terms" | "privacy" | "contact" | "student-guide" | "teacher-guide" | "pricing" | "campaign" | "profile-guide" | "teacher-dashboard" | "student-dashboard";
 type Teacher = {
   id:number; name:string; university:string; gender:string; mainSubject:string; mainCategory:string; title:string;
   rank:string; highestRank:string; price:number; status:string; formats:string[]; areas:string[]; qualifications:string[];
@@ -65,4 +70,4 @@ function Auth({teacher}:{teacher:boolean}){return <main className="auth withTopb
 
 function Footer({setPage}:{setPage:(p:Page)=>void}){return <footer><div className="loginGrid"><button onClick={()=>setPage("family-auth")}><span><small>FOR STUDENTS & FAMILIES</small><b>生徒・保護者ログイン・登録</b></span><LogIn/></button><button onClick={()=>setPage("teacher-auth")}><span><small>FOR TEACHERS</small><b>講師ログイン・登録</b></span><LogIn/></button></div><div className="footerGrid"><div><h2>korupiyo</h2><p>得意で選ぶ家庭教師サイト</p></div><div><h3>両者共通</h3>{[["search","先生を探す"],["ranking","ランキング"],["pricing","利用料金"],["campaign","創設期キャンペーン"]].map(([id,l])=><button key={id} onClick={()=>setPage(id as Page)}>{l}</button>)}</div><div><h3>生徒・保護者</h3>{[["family-auth","ログイン・登録"],["student-guide","生徒・保護者向け情報"]].map(([id,l])=><button key={id} onClick={()=>setPage(id as Page)}>{l}</button>)}</div><div><h3>講師</h3>{[["teacher-auth","ログイン・登録"],["teacher-guide","講師向け情報"],["profile-guide","プロフィール作成ガイド"]].map(([id,l])=><button key={id} onClick={()=>setPage(id as Page)}>{l}</button>)}</div><div><h3>ポリシー</h3>{[["terms","利用規約"],["privacy","プライバシーポリシー"],["contact","お問い合わせ"]].map(([id,l])=><button key={id} onClick={()=>setPage(id as Page)}>{l}</button>)}</div></div><small>© 2026 korupiyo</small></footer>}
 
-export default function App(){const[page,setPage]=useState<Page>("home");const[selected,setSelected]=useState<Teacher|null>(null);const move=(p:Page,sectionId?:string)=>{setPage(p);window.scrollTo(0,0);if(sectionId)window.setTimeout(()=>document.getElementById(sectionId)?.scrollIntoView({block:"start"}),0)};let view:React.ReactNode;if(page==="home")view=<HomePage setPage={move} openTeacher={setSelected}/>;else if(page==="search")view=<SearchPage openTeacher={setSelected}/>;else if(page==="ranking")view=<RankingPage openTeacher={setSelected}/>;else if(page==="ranks")view=<RankPage/>;else if(page==="teacher-auth")view=<Auth teacher/>;else if(page==="family-auth")view=<Auth teacher={false}/>;else if(page==="terms"||page==="privacy")view=<LegalPage type={page}/>;else if(page==="student-guide")view=<StudentGuidePage onNavigate={move}/>;else if(page==="teacher-guide")view=<TeacherGuidePage onNavigate={move}/>;else if(page==="pricing")view=<PricingPage onNavigate={move}/>;else if(page==="campaign")view=<CampaignPage/>;else if(page==="rank-details")view=<RankDetailsPage/>;else if(page==="profile-guide")view=<ProfileGuidePage/>;else view=<GenericPage title={({contact:"お問い合わせ"} as Record<string,string>)[page]}/>;return <div><Header page={page} setPage={move}/>{view}<Footer setPage={move}/>{selected&&<Modal teacher={selected} close={()=>setSelected(null)}/>}</div>}
+export default function App(){const[page,setPage]=useState<Page>("home");const[selected,setSelected]=useState<Teacher|null>(null);const move=(p:Page,sectionId?:string)=>{setPage(p);window.scrollTo(0,0);if(sectionId)window.setTimeout(()=>document.getElementById(sectionId)?.scrollIntoView({block:"start"}),0)};let view:React.ReactNode;if(page==="home")view=<HomePage setPage={move} openTeacher={setSelected}/>;else if(page==="search")view=<AdvancedSearchPage onOpenTeacher={()=>setSelected(teachers[0])}/>;else if(page==="ranking")view=<RankingPage openTeacher={setSelected}/>;else if(page==="ranks")view=<RankPage/>;else if(page==="teacher-dashboard")view=<TeacherDashboard/>;else if(page==="student-dashboard")view=<StudentDashboard/>;else if(page==="teacher-auth")view=<Auth teacher/>;else if(page==="family-auth")view=<Auth teacher={false}/>;else if(page==="terms"||page==="privacy")view=<LegalPage type={page}/>;else if(page==="student-guide")view=<StudentGuidePage onNavigate={move}/>;else if(page==="teacher-guide")view=<TeacherGuidePage onNavigate={move}/>;else if(page==="pricing")view=<PricingPage onNavigate={move}/>;else if(page==="campaign")view=<CampaignPage/>;else if(page==="rank-details")view=<RankDetailsPage/>;else if(page==="profile-guide")view=<ProfileGuidePage/>;else view=<GenericPage title={({contact:"お問い合わせ"} as Record<string,string>)[page]}/>;const hideCampaign=page==="terms"||page==="privacy";return <div><Header page={page} setPage={move}/>{view}<Footer setPage={move}/>{!hideCampaign&&<CampaignDock onOpen={()=>move("campaign")}/>} {selected&&<Modal teacher={selected} close={()=>setSelected(null)}/>}</div>}
