@@ -32,13 +32,37 @@ export type TeacherProfileInput = {
   isPublished?: boolean;
 };
 
-type TeacherProfileRow = {
+export type TeacherProfileRow = {
   id: string;
   user_id: string;
   public_slug: string;
   display_name: string;
   catchphrase: string;
   is_published: boolean;
+  education: string | null;
+  teaching_experience: string | null;
+  qualifications: string[];
+  mock_exam_result: string | null;
+  gender: string | null;
+  lesson_format: string | null;
+  contact_method: string | null;
+  recruitment_status: string | null;
+  recruitment_detail: string | null;
+  price_yen: number | null;
+  main_subject: string | null;
+  strengths: string[];
+  limitations: string[];
+  target_students: string[];
+  teaching_policy: string | null;
+  teaching_types: string[];
+  other_subjects: string[];
+  extra_subjects: string[];
+  lesson_format_detail: string | null;
+  recommended_for: string[];
+  not_recommended_for: string[];
+  homework_policy: string | null;
+  unsupported_content: string | null;
+  teacher_message: string | null;
 };
 
 function requireClient() {
