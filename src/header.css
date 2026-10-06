@@ -1,6 +1,8 @@
 .topbar nav{align-items:center}
 .topbar nav>button,.headerMenu>button{white-space:nowrap}
 .headerMenu{position:relative}
+.developerMenu>button{border:1px solid #7a9e95!important;border-radius:5px!important;padding:6px 9px!important;color:#0b6658;font-size:12px}
+.developerMenu>button[aria-expanded="true"]{background:#edf9f6!important}
 .headerMenuPanel{position:absolute;right:0;top:calc(100% + 8px);z-index:70;display:grid;min-width:190px;padding:8px;border:1px solid #cfe4de;border-radius:14px;background:#fff;box-shadow:0 14px 34px rgba(20,72,59,.16)}
 .topbar nav .headerMenuPanel button{width:100%;padding:10px 12px;text-align:left;color:#12332d}
 .topbar nav .headerMenuPanel button:hover{background:#edf9f6;color:#087a67}
