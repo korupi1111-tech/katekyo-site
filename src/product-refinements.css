@@ -19,3 +19,4 @@
 .ownerCompactHeader{grid-template-columns:86px 112px minmax(320px,1.35fr) minmax(245px,.85fr);padding-right:180px}.ownerCompactHeader .ownerPriceStack{position:absolute;top:24px;right:30px;width:130px;box-sizing:border-box;grid-column:auto;gap:8px;overflow-wrap:anywhere}
 @media(max-width:980px){.ownerCompactHeader{grid-template-columns:78px 100px minmax(0,1fr);padding-right:170px}.ownerCompactHeader .ownerPriceStack{top:22px;right:24px;width:120px}.ownerCompactMeta{grid-column:1/-1}}
 @media(max-width:760px){.ownerCompactHeader{grid-template-columns:66px 76px minmax(0,1fr);padding-right:112px}.ownerCompactHeader .ownerPriceStack{top:18px;right:12px;width:88px}.ownerCompactMeta{grid-column:1/-1}}
+@media (min-width:761px) and (max-width:1160px){.ownerCompactHeader{grid-template-columns:78px 100px minmax(0,1fr);padding-right:170px}.ownerCompactHeader .ownerPriceStack{top:22px;right:24px;width:120px}.ownerCompactMeta{grid-column:1/-1;margin-top:2px}}
