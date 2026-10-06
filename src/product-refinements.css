@@ -26,3 +26,4 @@
 .ownerCompactMeta>p:nth-of-type(2){font-size:inherit}.ownerCompactMeta>p:nth-of-type(2)::after{display:none}
 @media (min-width:761px) and (max-width:1160px){.ownerCompactHeader{grid-template-columns:76px 86px minmax(0,1fr) minmax(175px,.78fr)}.ownerCompactHeader>img{width:76px;height:76px}.ownerCompactHeader .ownerPublicCurrentRank .rankBadge{width:62px;height:62px}}
 .ownerProfileColumns>section:first-child li:first-child::before,.ownerProfileColumns>section:nth-child(2) li:first-child::before{content:none}.ownerProfileColumns>section:first-child li:first-child::marker,.ownerProfileColumns>section:nth-child(2) li:first-child::marker{font-size:16px}
+.modal>.close{position:sticky;top:12px;display:block;margin:12px 12px -52px auto;z-index:20;box-shadow:0 2px 10px rgba(16,42,59,.18)}
