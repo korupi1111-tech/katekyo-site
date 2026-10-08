@@ -1,7 +1,10 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": Deno.env.get("INQUIRY_ALLOWED_ORIGIN") ?? "*",
+  // CORS is not an access-control boundary. This public form uses server-side
+  // validation, a honeypot, and rate limiting; allowing all origins avoids a
+  // mismatch between Vercel production and preview URLs blocking the browser.
+  "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, x-supabase-client, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Content-Type": "application/json; charset=utf-8",

@@ -12,7 +12,6 @@ Supabase Dashboardの **Edge Functions → Secrets** に、以下を追加しま
 | `INQUIRY_RECIPIENT_EMAIL` | 問い合わせを受け取るkorupiyo用メールアドレス |
 | `INQUIRY_FROM_EMAIL` | Brevoで認証済みの送信元メールアドレス |
 | `INQUIRY_FROM_NAME` | `korupiyo お問い合わせ` |
-| `INQUIRY_ALLOWED_ORIGIN` | Vercel本番URL。例：`https://example.vercel.app` |
 
 `BREVO_API_KEY`、宛先メール、SMTP keyをGitやフロントエンドへ置かないでください。
 
