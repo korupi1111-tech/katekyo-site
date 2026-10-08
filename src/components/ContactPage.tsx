@@ -1,5 +1,5 @@
 import { type FormEvent, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { supabase, supabaseConfigurationIssue } from "../lib/supabase";
 import "../contact-page.css";
 
 export function ContactPage() {
@@ -13,7 +13,7 @@ export function ContactPage() {
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!supabase) { setStatus("お問い合わせ機能の接続設定が見つかりません。"); return; }
+    if (!supabase) { setStatus(`お問い合わせ機能の接続設定が見つかりません（${supabaseConfigurationIssue}）。`); return; }
     setSending(true); setStatus("");
     try {
       const { data, error } = await supabase.functions.invoke("send-inquiry", { body: { name, email, subject, message, website } });

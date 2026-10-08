@@ -4,6 +4,10 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabasePublishableKey);
+export const supabaseConfigurationIssue = [
+  !supabaseUrl && "VITE_SUPABASE_URL",
+  !supabasePublishableKey && "VITE_SUPABASE_PUBLISHABLE_KEY",
+].filter(Boolean).join("、");
 
 export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl, supabasePublishableKey, {
