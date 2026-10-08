@@ -1,0 +1,4 @@
+# The inquiry form is intentionally public. Abuse controls live in the function
+# (input validation, honeypot, and per-email rate limiting).
+[functions.send-inquiry]
+verify_jwt = false
