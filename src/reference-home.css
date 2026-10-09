@@ -130,8 +130,13 @@
 .pricingReferenceHeading .pricingLead { margin: 0; color: #53645e; font-size: 12px !important; font-weight: 700; line-height: 1.65; }
 .pricingReferenceHeading .pricingLead::after { display: none !important; content: none !important; }
 .pricingReferenceCards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-.pricingReferenceCards article { position: relative; min-height: 122px; padding: 16px 14px 16px 53px; border: 1px solid #e2e3dc; border-radius: 9px; background: #fff; box-shadow: 0 5px 15px rgba(27, 50, 45, .04); }
-.pricingReferenceCards article::before { position: absolute; top: 17px; left: 15px; display: grid; place-items: center; width: 27px; height: 27px; border: 1px solid #dec27b; border-radius: 50%; background: #fffaf0; color: #a58233; content: "◇"; font-size: 16px; }
+.pricingReferenceCards article { position: relative; min-height: 122px; padding: 16px 14px 16px 56px; border: 1px solid #e2e3dc; border-radius: 9px; background: #fff; box-shadow: 0 5px 15px rgba(27, 50, 45, .04); }
+.pricingReferenceCards article::before { display: none; content: none; }
+.pricingReferenceCards .pricingAccountIcon { position: absolute; top: 17px; left: 15px; display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid #dec27b; border-radius: 50%; background: #fffaf0; color: #a58233; }
+.pricingReferenceCards .pricingAccountIcon svg { width: 17px; height: 17px; stroke-width: 2; }
+.pricingReferenceCards .pricingTeacherIcon svg:first-child { width: 14px; height: 14px; transform: translateY(3px); }
+.pricingReferenceCards .pricingTeacherIcon svg:last-child { position: absolute; top: 3px; width: 17px; height: 17px; }
+.pricingReferenceCards .pricingAccountLabel { color: #50635d; font-size: 11px; font-weight: 800; }
 .pricingReferenceCards span, .pricingReferenceCards b, .pricingReferenceCards small { display: block; }
 .pricingReferenceCards span { color: #50635d; font-size: 11px; font-weight: 800; }
 .pricingReferenceCards b { margin-top: 11px; color: var(--reference-ink); font-size: 14px; line-height: 1.5; }

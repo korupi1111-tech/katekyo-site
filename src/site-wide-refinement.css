@@ -177,9 +177,12 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
 /* Keep the three trust statements compact and editorial, like the supplied reference. */
 .homeReference .heroTrustLine { gap: 0; padding: 13px max(22px, calc((100vw - 790px) / 2)); background: rgba(255,255,255,.96); }
 .homeReference .heroTrustLine span { display: flex; align-items: center; justify-content: center; min-height: 37px; padding: 3px 22px; border: 0; border-right: 1px solid #d7e1dd; border-radius: 0; background: transparent; box-shadow: none; color: #29443d; font-size: 12px; letter-spacing: .02em; }
-.homeReference .heroTrustLine span::before { display: inline-grid; place-items: center; width: 21px; height: 21px; margin-right: 8px; border-radius: 50%; background: #075f52; color: #fff; content: "✓"; font-size: 12px; font-weight: 900; }
-.homeReference .heroTrustLine span:nth-child(2)::before { background: #1d5965; }
-.homeReference .heroTrustLine span:nth-child(3)::before { background: #a98436; }
+.homeReference .heroTrustLine span::before { display: none; content: none; }
+.homeReference .heroTrustLine span > b { font: inherit; font-weight: 800; }
+.trustIcon { width: 24px; height: 24px; margin-right: 8px; color: #b18a32; stroke-width: 2.4; }
+.trustCrown { position: relative; display: inline-grid; place-items: center; width: 27px; height: 27px; margin-right: 8px; color: #b18a32; font-style: normal; }
+.trustCrown svg { width: 27px; height: 27px; stroke-width: 2.4; }
+.trustCrown b { position: absolute; top: 8px; color: #8b691f; font-family: Georgia, serif; font-size: 10px; line-height: 1; }
 
 /* Site-owner profile: treat it as the featured teacher card, not a minor detail. */
 .featuredTeacherSection { padding: 76px max(24px, calc((100vw - 1120px) / 2)); background: linear-gradient(180deg, #f8faf9, #edf3f1); }
@@ -243,7 +246,10 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
   .contactPage > section { padding: 26px 19px; }
   .homeReference .heroTrustLine { gap: 0; padding: 9px 4px; }
   .homeReference .heroTrustLine span { min-height: 43px; padding: 4px 5px; font-size: 9px; line-height: 1.35; }
-  .homeReference .heroTrustLine span::before { flex: 0 0 auto; width: 16px; height: 16px; margin-right: 5px; font-size: 10px; }
+  .trustIcon { flex: 0 0 auto; width: 17px; height: 17px; margin-right: 5px; }
+  .trustCrown { flex: 0 0 auto; width: 19px; height: 19px; margin-right: 5px; }
+  .trustCrown svg { width: 19px; height: 19px; }
+  .trustCrown b { top: 6px; font-size: 7px; }
   .featuredTeacherSection { padding: 50px 14px; }
   .featuredTeacherSection .sectionHead { padding-inline: 2px; }
   .featuredTeacherSection .ownerCompactHeader { grid-template-columns: 61px 76px minmax(0, 1fr); gap: 10px; min-height: 0; padding: 53px 105px 18px 16px !important; }

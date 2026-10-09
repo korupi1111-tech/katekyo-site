@@ -1,4 +1,5 @@
 import "../information-pages.css";
+import { GraduationCap, UserRound, UsersRound } from "lucide-react";
 
 export type InformationPage = "student-guide" | "teacher-guide" | "pricing" | "campaign" | "rank-details" | "profile-guide";
 
@@ -21,7 +22,7 @@ function Jump({ onNavigate, page, sectionId, children }: { onNavigate: Navigate;
 }
 
 export function PricingPromo({ onNavigate }: { onNavigate: Navigate }) {
-  return <section className="pricingReferencePromo"><div className="pricingReferenceHeading"><span>料金プラン</span><h2>わかりやすく、<br />続けやすい料金設定</h2><p className="pricingLead">授業料は講師と家庭で直接決定。<br />サイトは年額のアカウント利用料のみです。</p></div><div className="pricingReferenceCards"><article><span>生徒アカウント</span><b>年額 4,000円（税込）</b><small>講師への問い合わせ、授業履歴管理</small></article><article><span>ファミリーアカウント</span><b>年額 3,000円（税込）<br />＋ お子様1人につき 1,000円（税込）</b><small>お子様ごとの予約・契約状況を管理</small></article><article><span>講師アカウント</span><b>年額 4,000円（税込）</b><small>プロフィール公開、実績記録、ランク制度</small></article></div><button className="pricingReferenceLink" onClick={() => onNavigate("pricing")}>料金プランを詳しく見る　→</button></section>;
+  return <section className="pricingReferencePromo"><div className="pricingReferenceHeading"><span>料金プラン</span><h2>わかりやすく、<br />続けやすい料金設定</h2><p className="pricingLead">授業料は講師と家庭で直接決定。<br />サイトは年額のアカウント利用料のみです。</p></div><div className="pricingReferenceCards"><article><span className="pricingAccountIcon" aria-hidden="true"><UserRound/></span><span className="pricingAccountLabel">生徒アカウント</span><b>年額 4,000円（税込）</b><small>講師への問い合わせ、授業履歴管理</small></article><article><span className="pricingAccountIcon" aria-hidden="true"><UsersRound/></span><span className="pricingAccountLabel">ファミリーアカウント</span><b>年額 3,000円（税込）<br />＋ お子様1人につき 1,000円（税込）</b><small>お子様ごとの予約・契約状況を管理</small></article><article><span className="pricingAccountIcon pricingTeacherIcon" aria-hidden="true"><UserRound/><GraduationCap/></span><span className="pricingAccountLabel">講師アカウント</span><b>年額 4,000円（税込）</b><small>プロフィール公開、実績記録、ランク制度</small></article></div><button className="pricingReferenceLink" onClick={() => onNavigate("pricing")}>料金プランを詳しく見る　→</button></section>;
 }
 
 export function CampaignPromo({ onNavigate }: { onNavigate: Navigate }) {
