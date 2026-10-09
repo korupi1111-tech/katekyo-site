@@ -4,8 +4,8 @@ export type InformationPage = "student-guide" | "teacher-guide" | "pricing" | "c
 
 type Navigate = (page: InformationPage, sectionId?: string) => void;
 
-function PageFrame({ eyebrow, title, intro, heroAction, children }: { eyebrow: string; title: string; intro: string; heroAction?: React.ReactNode; children: React.ReactNode }) {
-  return <main className="informationPage withTopbar"><header className="informationHero"><span>{eyebrow}</span><h1>{title}</h1><p>{intro}</p>{heroAction}</header><div className="informationContent">{children}</div></main>;
+function PageFrame({ eyebrow, title, intro, heroAction, children, pageClass = "" }: { eyebrow: string; title: string; intro: string; heroAction?: React.ReactNode; children: React.ReactNode; pageClass?: string }) {
+  return <main className={`informationPage withTopbar ${pageClass}`}><header className="informationHero"><span>{eyebrow}</span><h1>{title}</h1><p>{intro}</p>{heroAction}</header><div className="informationContent">{children}</div></main>;
 }
 
 function Section({ id, title, children }: { id?: string; title: string; children: React.ReactNode }) {
@@ -33,7 +33,7 @@ export function InformationHub({ onNavigate }: { onNavigate: Navigate }) {
 }
 
 export function PricingPage({ onNavigate }: { onNavigate: Navigate }) {
-  return <PageFrame eyebrow="PRICING" title="利用料金" intro="閲覧は無料です。問い合わせ、契約、メッセージなどの機能を利用する場合に、年額のアカウント登録が必要です。" heroAction={<button className="campaignBubble" onClick={() => onNavigate("campaign")}><span>CAMPAIGN NOW</span><b>創設期キャンペーン実施中</b><small>最大2年間 運営費無料　→</small></button>}><Section title="生徒アカウント"><p className="priceNumber">年額 4,000円（税込）</p><p>講師への問い合わせ、お気に入り登録、授業履歴管理、大学・学科情報の利用ができます。</p></Section><Section title="ファミリーアカウント"><p className="priceNumber">年額 3,000円（税込）＋ お子様1人につき 1,000円（税込）</p><p>保護者向けの管理アカウントです。お子様ごとの予約・契約状況を管理できます。お子様が授業を受ける場合は、お子様ごとの生徒登録が必要です。本人確認を完了したお子様の追加料金は無料です。</p><p>例：お子様1人は年額4,000円、2人は5,000円、3人は6,000円です。3人のうち2人が本人確認済みの場合は年額4,000円です。</p></Section><Section title="講師アカウント"><p className="priceNumber">年額 4,000円（税込）</p><p>講師プロフィールの公開、生徒募集、授業実績の記録、ランク制度への参加、生徒・家庭からの問い合わせ受付ができます。生徒が1人でも10人でも料金は変わりません。</p></Section><Section title="授業料と手数料"><p>授業料は講師と家庭の間で直接決定され、そのまま講師と家庭のものです。私たちは今後も授業料から手数料をいただきません。</p><FeeFreeList /></Section><Section title="よくある質問"><p><b>月額ですか？</b><br />いいえ。すべて年額です。年額4,000円は月額換算で約333円、1日あたり約11円です。</p><p><b>契約が成立したら追加料金はかかりますか？</b><br />かかりません。紹介料、成約手数料、授業ごとの徴収はありません。</p></Section></PageFrame>;
+  return <PageFrame pageClass="pricingPage" eyebrow="PRICING" title="利用料金" intro="閲覧は無料です。問い合わせ、契約、メッセージなどの機能を利用する場合に、年額のアカウント登録が必要です。" heroAction={<button className="campaignBubble" onClick={() => onNavigate("campaign")}><span>CAMPAIGN NOW</span><b>創設期キャンペーン実施中</b><small>最大2年間 運営費無料　→</small></button>}><Section title="生徒アカウント"><p className="priceNumber">年額 4,000円（税込）</p><p>講師への問い合わせ、お気に入り登録、授業履歴管理、大学・学科情報の利用ができます。</p></Section><Section title="ファミリーアカウント"><p className="priceNumber">年額 3,000円（税込）＋ お子様1人につき 1,000円（税込）</p><p>保護者向けの管理アカウントです。お子様ごとの予約・契約状況を管理できます。お子様が授業を受ける場合は、お子様ごとの生徒登録が必要です。本人確認を完了したお子様の追加料金は無料です。</p><p>例：お子様1人は年額4,000円、2人は5,000円、3人は6,000円です。3人のうち2人が本人確認済みの場合は年額4,000円です。</p></Section><Section title="講師アカウント"><p className="priceNumber">年額 4,000円（税込）</p><p>講師プロフィールの公開、生徒募集、授業実績の記録、ランク制度への参加、生徒・家庭からの問い合わせ受付ができます。生徒が1人でも10人でも料金は変わりません。</p></Section><Section title="授業料と手数料"><p>授業料は講師と家庭の間で直接決定され、そのまま講師と家庭のものです。私たちは今後も授業料から手数料をいただきません。</p><FeeFreeList /></Section><Section title="よくある質問"><p><b>月額ですか？</b><br />いいえ。すべて年額です。年額4,000円は月額換算で約333円、1日あたり約11円です。</p><p><b>契約が成立したら追加料金はかかりますか？</b><br />かかりません。紹介料、成約手数料、授業ごとの徴収はありません。</p></Section></PageFrame>;
 }
 
 export function CampaignPage() {
