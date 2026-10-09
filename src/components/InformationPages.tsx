@@ -21,11 +21,11 @@ function Jump({ onNavigate, page, sectionId, children }: { onNavigate: Navigate;
 }
 
 export function PricingPromo({ onNavigate }: { onNavigate: Navigate }) {
-  return <section className="section pricingPromo"><div><span>SERVICE FEE</span><h2>授業料は、講師と家庭のものです。</h2><p className="pricingLead">先生・生徒が1人でも4,000円。<br />先生・生徒が10人でも4,000円。</p><p>私たちは今後も授業料から手数料をいただきません。必要なのはサイト運営費のみです。</p><FeeFreeList /><button className="primaryInfoButton" onClick={() => onNavigate("pricing")}>詳しい料金体系を見る →</button></div></section>;
+  return <section className="pricingReferencePromo"><div className="pricingReferenceHeading"><span>PRICING PLAN</span><h2>授業料は、講師と家庭のものです。</h2><p className="pricingLead">先生・生徒が1人でも4,000円。<br />先生・生徒が10人でも4,000円。</p></div><div className="pricingReferenceCards"><article><span>生徒アカウント</span><b>年額 4,000円（税込）</b><small>講師への問い合わせ、授業履歴管理</small></article><article><span>ファミリーアカウント</span><b>年額 3,000円（税込）<br />＋ お子様1人につき 1,000円（税込）</b><small>お子様ごとの予約・契約状況を管理</small></article><article><span>講師アカウント</span><b>年額 4,000円（税込）</b><small>プロフィール公開、実績記録、ランク制度</small></article></div><button className="pricingReferenceLink" onClick={() => onNavigate("pricing")}>利用料金を詳しく見る　→</button></section>;
 }
 
 export function CampaignPromo({ onNavigate }: { onNavigate: Navigate }) {
-  return <section className="campaignTopPromo"><div><span>FOUNDING CAMPAIGN / LIMITED OFFER</span><h2>創設期メンバーを募集しています。</h2><p>講師・生徒・保護者の皆様は初年度無料。対象条件を達成した場合、翌年度も無料でご利用いただけます。</p><button onClick={() => onNavigate("campaign")}>キャンペーンの対象条件を見る →</button></div><aside><small>最大</small><b>2</b><strong>年間<br />運営費無料</strong><p>YEAR 01：対象者全員無料<br />YEAR 02：条件達成で無料</p></aside></section>;
+  return <section className="campaignReferenceBar"><div className="campaignReferenceRibbon"><span>創設期</span><b>キャンペーン</b></div><div className="campaignReferenceLead"><span>FOUNDING CAMPAIGN / LIMITED OFFER</span><h2>創設期メンバーを募集しています。</h2><p>講師・生徒・保護者の皆様は初年度無料。対象条件を達成した場合、翌年度も無料でご利用いただけます。</p></div><div className="campaignReferenceBenefit"><small>最大</small><b>2</b><strong>年間<br />運営費無料</strong></div><button onClick={() => onNavigate("campaign")}>キャンペーンの対象条件を見る　→</button></section>;
 }
 
 export function InformationHub({ onNavigate }: { onNavigate: Navigate }) {
