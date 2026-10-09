@@ -174,10 +174,10 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
 .audienceGrid article:nth-child(2) .primaryInfoButton { border: 1px solid #e0c373; background: #e0c373; color: #17313d; box-shadow: 0 9px 18px rgba(0,0,0,.13); }
 .audienceGrid .primaryInfoButton { border-radius: 6px !important; }
 
-/* Give the three trust statements a stronger visual hierarchy. */
-.homeReference .heroTrustLine { gap: 11px; padding: 13px max(22px, calc((100vw - 840px) / 2)); background: linear-gradient(90deg, rgba(249,251,249,.98), rgba(240,247,244,.98)); }
-.homeReference .heroTrustLine span { display: flex; align-items: center; justify-content: center; min-height: 47px; padding: 8px 15px; border: 1px solid #cadbd4; border-radius: 7px; background: #fff; box-shadow: 0 5px 12px rgba(18,58,48,.06); color: #173d35; font-size: 14px; letter-spacing: .02em; }
-.homeReference .heroTrustLine span::before { display: inline-grid; place-items: center; width: 20px; height: 20px; margin-right: 9px; border-radius: 50%; background: #075f52; color: #fff; content: "✓"; font-size: 12px; font-weight: 900; }
+/* Keep the three trust statements compact and editorial, like the supplied reference. */
+.homeReference .heroTrustLine { gap: 0; padding: 13px max(22px, calc((100vw - 790px) / 2)); background: rgba(255,255,255,.96); }
+.homeReference .heroTrustLine span { display: flex; align-items: center; justify-content: center; min-height: 37px; padding: 3px 22px; border: 0; border-right: 1px solid #d7e1dd; border-radius: 0; background: transparent; box-shadow: none; color: #29443d; font-size: 12px; letter-spacing: .02em; }
+.homeReference .heroTrustLine span::before { display: inline-grid; place-items: center; width: 21px; height: 21px; margin-right: 8px; border-radius: 50%; background: #075f52; color: #fff; content: "✓"; font-size: 12px; font-weight: 900; }
 .homeReference .heroTrustLine span:nth-child(2)::before { background: #1d5965; }
 .homeReference .heroTrustLine span:nth-child(3)::before { background: #a98436; }
 
@@ -207,7 +207,7 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
   .auth h1 { font-size: 31px; }
   .contactPage { padding: 30px 14px 48px; }
   .contactPage > section { padding: 26px 19px; }
-  .homeReference .heroTrustLine { gap: 5px; padding: 9px 6px; }
-  .homeReference .heroTrustLine span { min-height: 48px; padding: 6px 5px; font-size: 10px; line-height: 1.35; }
+  .homeReference .heroTrustLine { gap: 0; padding: 9px 4px; }
+  .homeReference .heroTrustLine span { min-height: 43px; padding: 4px 5px; font-size: 9px; line-height: 1.35; }
   .homeReference .heroTrustLine span::before { flex: 0 0 auto; width: 16px; height: 16px; margin-right: 5px; font-size: 10px; }
 }
