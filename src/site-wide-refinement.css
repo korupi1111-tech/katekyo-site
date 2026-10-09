@@ -270,3 +270,60 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
   .featuredTeacherSection .ownerPublicAreas { padding-right: 15px; padding-left: 15px; }
   .featuredTeacherSection .ownerPublicDetail { padding-right: 15px; padding-left: 15px; }
 }
+
+/* Opened site-owner profile: present the record as a calm, evidence-led dossier. */
+.ownerProfileDialog { width: min(980px, calc(100% - 32px)); border: 1px solid #1a4350; border-radius: 9px; background: #f4f7f6; box-shadow: 0 30px 82px rgba(10, 34, 43, .35); }
+.ownerProfileModal { padding: 0 0 28px; background: #f4f7f6; }
+.ownerProfileHero { position: relative; grid-template-columns: 108px 96px minmax(0, 1fr); gap: 20px; padding: 30px 76px 28px 31px; border-bottom: 3px solid #d7b35b; border-radius: 8px 8px 0 0; background: linear-gradient(120deg, #102f40, #174959 72%, #215864); color: #fff; }
+.ownerProfileHero > img { width: 108px; height: 108px; border: 2px solid rgba(255,255,255,.78); border-radius: 7px; box-shadow: 0 9px 20px rgba(0,0,0,.24); }
+.ownerProfileHero > .ownerProfileRank { color: #e8ce88; }
+.ownerProfileHero .ownerProfileRank .rankBadge { width: 80px; height: 80px; }
+.ownerProfileHero .ownerProfileRank span { margin-top: 6px; color: #e5eff0; font-size: 10px; }
+.ownerProfileHero small { color: #e8ce88; font-size: 11px; letter-spacing: .16em; }
+.ownerProfileHero h2 { margin: 6px 0 8px; color: #fff; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(25px, 3.2vw, 35px); letter-spacing: .01em; }
+.ownerProfileHero p { color: #e0ebeb; font-size: 14px; }
+.ownerProfileCurrentStatus { margin-top: 8px !important; color: #fff3ce !important; font-size: 12px !important; }
+.ownerProfileResultsCompact { margin: 22px 30px 0 !important; padding: 17px 22px !important; border: 1px solid #d2dfda; border-left: 4px solid #b08a32; border-radius: 6px !important; background: #fff !important; }
+.ownerProfileResultsCompact h3 { margin-bottom: 11px !important; color: #194b57 !important; font-family: Georgia, "Yu Mincho", serif; font-size: 15px !important; letter-spacing: .12em; }
+.ownerProfileResultsCompact > div { gap: 0; }
+.ownerProfileResultsCompact p { min-height: 51px; padding: 2px 18px !important; border-color: #dbe5e1; }
+.ownerProfileResultsCompact p:first-child { padding-left: 0 !important; }
+.ownerProfileResultsCompact b { color: #0b6257 !important; font-family: Georgia, serif; font-size: 28px !important; }
+.ownerProfileResultsCompact span { color: #405a57; font-size: 12px; font-weight: 800; }
+.ownerProfileLong { margin: 18px 30px 0; padding: 26px 28px; border: 1px solid #d2dfda; border-radius: 6px; background: #fff; box-shadow: 0 8px 18px rgba(18, 54, 51, .04); }
+.ownerProfileLong > h3 { margin: 0 0 12px; padding-bottom: 11px; border-bottom: 1px solid #dbe5e1; color: #194b57; font-family: Georgia, "Yu Mincho", serif; font-size: 19px; letter-spacing: .04em; }
+.ownerProfileLong p { color: #40534f; font-size: 14px; line-height: 1.9; }
+.ownerProfileColumns { gap: 12px; margin-top: 21px; }
+.ownerProfileColumns > section { padding: 18px 19px; border: 1px solid #d7e2dd; border-radius: 6px; background: #f7f9f8; }
+.ownerProfileColumns > section h3 { margin-bottom: 10px; color: #194b57; font-family: Georgia, "Yu Mincho", serif; font-size: 15px; }
+.ownerProfileColumns ul { color: #40534f; font-size: 14px; line-height: 1.9; }
+.ownerProfileStrictness, .ownerProfileUnsupported, .ownerProfileMessage { margin-top: 21px; padding: 18px 0 0 17px; border-top: 1px solid #dbe5e1; }
+.ownerProfileStrictness { border-left: 3px solid #b08a32; }
+.ownerProfileUnsupported { border-left: 3px solid #a85f61; }
+.ownerProfileMessage { border-left: 3px solid #1b6b65; }
+.ownerProfileStrictness h3, .ownerProfileUnsupported h3, .ownerProfileMessage h3 { color: #194b57; font-family: Georgia, "Yu Mincho", serif; }
+.ownerReviews { margin: 18px 30px 0; padding: 18px 22px; border: 1px solid #d2dfda; border-radius: 6px; background: #fff; }
+.ownerReviews h3 { color: #194b57; font-family: Georgia, "Yu Mincho", serif; }
+.ownerReviews p { color: #61736f; }
+.ownerInquiry { width: calc(100% - 60px); margin: 18px 30px 0; padding: 16px 20px; border: 1px solid #0f4f4c; border-radius: 6px; background: #0d5d55; box-shadow: 0 10px 21px rgba(8,65,60,.18); color: #fff; letter-spacing: .04em; }
+.ownerInquiry:hover { background: #094b45; }
+.ownerProfileDialog .close { border: 1px solid rgba(255,255,255,.55); background: #143d4c; color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
+
+@media (max-width: 760px) {
+  .ownerProfileDialog { width: min(100%, calc(100% - 16px)); border-radius: 7px; }
+  .ownerProfileHero { grid-template-columns: 74px minmax(0, 1fr); gap: 13px; padding: 24px 48px 21px 18px; }
+  .ownerProfileHero > img { width: 74px; height: 74px; border-radius: 6px; }
+  .ownerProfileHero > .ownerProfileRank { display: none; }
+  .ownerProfileHero h2 { font-size: 21px; line-height: 1.35; }
+  .ownerProfileHero p { font-size: 12px; }
+  .ownerProfileResultsCompact, .ownerProfileLong, .ownerReviews { margin-right: 14px !important; margin-left: 14px !important; }
+  .ownerProfileResultsCompact { margin-top: 15px !important; padding: 15px !important; }
+  .ownerProfileResultsCompact p { padding: 9px 0 !important; }
+  .ownerProfileResultsCompact p:first-child { padding-top: 0 !important; }
+  .ownerProfileLong { margin-top: 14px; padding: 20px 17px; }
+  .ownerProfileLong > h3 { font-size: 18px; }
+  .ownerProfileColumns { grid-template-columns: 1fr; }
+  .ownerProfileColumns > section { padding: 15px; }
+  .ownerProfileStrictness, .ownerProfileUnsupported, .ownerProfileMessage { padding-left: 13px; }
+  .ownerInquiry { width: calc(100% - 28px); margin: 14px 14px 0; border-radius: 6px; }
+}
