@@ -7,3 +7,6 @@ f4.jpg
 owner.jpg
 family.jpg
 tutor.jpg
+hero-photo-v2.png
+family-photo-v2.png
+tutor-photo-v2.png
