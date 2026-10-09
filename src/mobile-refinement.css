@@ -1,0 +1,107 @@
+/* Small-screen refinements. Loaded last so desktop layouts remain untouched. */
+@media (max-width: 760px) {
+  html { scroll-padding-top: 64px; }
+  body { min-width: 320px; overflow-x: hidden; }
+  .topbar { height: 64px; padding: 0 12px; gap: 8px; }
+  .brand { flex: 0 0 auto; }
+  .brand b { font-size: 23px; }
+  .brand span { display: none; }
+  .topbar nav { min-width: 0; flex: 1; gap: 0; overflow-x: auto; scrollbar-width: none; white-space: nowrap; }
+  .topbar nav::-webkit-scrollbar { display: none; }
+  .topbar nav > button, .topbar nav .headerMenu > button { min-height: 44px; padding: 9px 10px; font-size: 12px; }
+  .headerMenuPanel { position: fixed; top: 60px; right: 10px; left: auto; min-width: 185px; }
+  .withTopbar { padding-top: 64px; }
+
+  .section, .searchPage, .rankingPage, .infoBase, .auth, .contactPage { padding-inline: 16px; }
+  .section { padding-block: 48px; }
+  .sectionHead { margin-bottom: 24px; }
+  .sectionHead h2 { font-size: 29px; line-height: 1.35; }
+  .sectionHead p, .pageIntro p { font-size: 15px; line-height: 1.8; }
+  .pageIntro h1, .infoBase h1, .auth h1 { font-size: 34px; line-height: 1.25; }
+
+  .hero { min-height: min(690px, calc(100svh - 64px)); }
+  .heroCopy { padding: 66px 22px 42px; }
+  .hero h1 { font-size: clamp(36px, 10vw, 46px); line-height: 1.25; }
+  .hero p { max-width: 24rem; font-size: 15px; line-height: 1.9; }
+  .hero button { width: 100%; min-width: 0; min-height: 54px; padding: 15px 18px; }
+
+  .serviceGrid, .featureGrid, .supportGrid, .detailGrid, .otherGrid, .profileEditorGrid { grid-template-columns: 1fr; }
+  .serviceGrid { gap: 16px; }
+  .serviceGrid article { grid-template-columns: 1fr; border-radius: 18px; }
+  .serviceGrid img { min-height: 180px; height: 180px; }
+  .serviceGrid article div { padding: 20px; }
+  .serviceGrid h3 { font-size: 21px; }
+  .serviceGrid p { font-size: 15px; }
+
+  .ownerPublicCard, .ownerCard, .teacherCard { border-radius: 18px; }
+  .ownerPublicCard > header, .teacherCard > header { padding: 18px; gap: 14px; }
+  .ownerCompactHeader { display: flex !important; flex-wrap: wrap; align-items: flex-start !important; }
+  .ownerCompactHeader > img { width: 66px; height: 66px; }
+  .ownerPublicCurrentRank { order: -1; width: 48px; }
+  .ownerCompactIdentity { flex: 1 1 calc(100% - 130px); min-width: 0; }
+  .ownerCompactIdentity h2 { font-size: 20px; line-height: 1.45; }
+  .ownerCompactMeta, .ownerPriceStack { width: 100%; }
+  .ownerCompactMeta { margin-top: 6px; }
+  .ownerPublicResults, .ownerPublicAreas { padding-inline: 18px; }
+  .ownerPublicResults > div { grid-template-columns: repeat(3, 1fr); }
+  .ownerPublicResults p { padding-inline: 5px; }
+  .ownerPublicResults small { display: none; }
+
+  .filters { padding: 16px; border-radius: 16px; gap: 12px; }
+  .filters input, .filters select { min-height: 46px; }
+  .teacherCard > header { grid-template-columns: 1fr; }
+  .teacherCard h3 { font-size: 24px; }
+  .subjectLine { align-items: flex-start; flex-wrap: wrap; }
+  .price { text-align: left; }
+  .metaGrid { grid-template-columns: 1fr 1fr; padding: 18px; gap: 14px; }
+  .stats div { padding: 14px 7px; }
+  .stats strong { font-size: 20px; }
+  .supportGrid, .otherBox { padding: 18px; }
+
+  .rankingPage { padding-block: 96px 56px; }
+  .rankingHero { padding: 24px 20px; border-radius: 20px; }
+  .rankingHero h1 { font-size: 38px; }
+  .podium { gap: 12px; margin-top: 28px; }
+  .podium button { padding: 22px; border-radius: 18px; }
+
+  .overlay { align-items: end; padding: 0; }
+  .modal { width: 100%; max-height: min(91svh, 800px); border-width: 2px 0 0; border-radius: 22px 22px 0 0; }
+  .modal > header { padding: 26px 20px 20px; }
+  .modal h2 { font-size: 28px; }
+  .close { position: sticky; float: right; right: 14px; top: 12px; z-index: 3; min-width: 44px; min-height: 44px; }
+  .detailGrid { padding: 18px; gap: 12px; }
+  .comment { margin: 0 18px 18px; }
+
+  .auth, .contactPage { min-height: calc(100svh - 64px); padding-block: 96px 48px; }
+  .auth { max-width: none; }
+  .auth input, .contactPage input, .contactPage textarea, .profileEditorGrid input, .profileEditorGrid textarea { min-height: 48px; font-size: 16px; }
+  .auth button, .contactPage button { min-height: 50px; }
+  .phoneVerification { padding: 18px; }
+  .contactPage > section { padding: 25px 19px; border-radius: 16px; }
+  .contactPage h1 { font-size: 34px; }
+
+  .dashboardPage { padding: 82px 14px 44px; }
+  .dashboardHero { display: grid; grid-template-columns: 58px 1fr; gap: 14px; padding: 18px; }
+  .dashboardHero > img { width: 58px; height: 58px; border-radius: 14px; }
+  .dashboardHero h1 { font-size: 24px; }
+  .dashboardHero aside { grid-column: 1 / -1; margin-left: 0; padding: 12px 0 0; border-left: 0; border-top: 1px solid #c8e0d9; }
+  .accountNotice, .accountFeature, .accountActions, .teacherProfileEditor { padding: 18px; border-radius: 12px; }
+  .accountNotice dl, .accountFeature dl { display: grid; grid-template-columns: 1fr; }
+  .accountActions { flex-direction: column; }
+  .accountActions button { width: 100%; min-height: 46px; }
+  .profileEditorGrid .wide { grid-column: auto; }
+  .profileEditorPublish { align-items: stretch; flex-direction: column; }
+  .profileEditorPublish button { width: 100%; min-height: 48px; }
+
+  footer { padding: 42px 20px 30px; }
+  .loginGrid, .footerGrid { grid-template-columns: 1fr; gap: 20px; }
+  .loginGrid button { min-height: 80px; }
+}
+
+@media (max-width: 390px) {
+  .topbar nav > button, .topbar nav .headerMenu > button { padding-inline: 7px; font-size: 11px; }
+  .hero h1 { font-size: 35px; }
+  .ownerPublicResults > div { gap: 0; }
+  .ownerPublicResults b { font-size: 19px; }
+  .metaGrid { grid-template-columns: 1fr; }
+}
