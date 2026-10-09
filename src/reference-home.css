@@ -36,7 +36,7 @@
 }
 .homeReference .heroCopy {
   max-width: 1120px;
-  padding: 25px 0 90px;
+  padding: 25px 34px 90px;
 }
 .homeReference .heroCopy > small { display: block; margin-bottom: 7px; color: #49625b; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
 .homeReference .heroCopy h1 {
@@ -194,7 +194,7 @@
   .homeReference .hero { display: grid; min-height: 0; background: #fff; }
   .homeReference .hero > img { position: relative; inset: auto; grid-row: 1; height: 236px; object-position: 68% 25%; }
   .homeReference .heroShade { display: none; }
-  .homeReference .heroCopy { position: relative; grid-row: 2; max-width: none; padding: 26px 20px 22px !important; }
+  .homeReference .heroCopy { position: relative; grid-row: 2; max-width: none; padding: 26px 28px 22px !important; }
   .homeReference .heroCopy h1 { font-size: clamp(33px, 10vw, 41px); }
   .homeReference .heroCopy > small { font-size: 10px; }
   .homeReference .heroCopy p { font-size: 13px; }
