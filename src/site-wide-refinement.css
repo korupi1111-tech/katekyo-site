@@ -369,3 +369,24 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
   .ownerProfileQuickFacts article:last-child b { font-size: 20px; }
   .ownerProfileResultsNote { font-size: 11px; }
 }
+
+/* Pricing uses the same structured, editorial card layout as the approved mockup.
+   The existing annual pricing data stays unchanged. */
+.pricingPage .informationContent { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: stretch; }
+.pricingPage .informationSection { min-height: 238px; margin: 0; padding: 25px 23px; border-top: 3px solid #d7b35b; }
+.pricingPage .informationSection::before { display: none; }
+.pricingPage .informationSection h2 { padding-bottom: 11px; border-bottom: 1px solid #dbe5e1; color: #194b57; font-family: Georgia, "Yu Mincho", serif; font-size: 20px; }
+.pricingPage .informationSection .priceNumber { margin: 17px 0 13px; color: #9a7629 !important; font-family: Georgia, "Yu Mincho", serif; font-size: 22px !important; line-height: 1.35; }
+.pricingPage .informationSection p { font-size: 13px; line-height: 1.8; }
+.pricingPage .informationSection:nth-child(n + 4) { grid-column: 1 / -1; min-height: auto; }
+.pricingPage .informationSection:nth-child(4) { border-top-color: #174b54; background: linear-gradient(115deg, #fff, #f7faf8); }
+.pricingPage .informationSection:nth-child(5) { border-top-color: #b08a32; }
+.pricingPage .informationSection .checkList { gap: 6px; margin: 15px 0 0; }
+.pricingPage .informationSection .checkList li { font-size: 12px; }
+
+@media (max-width: 760px) {
+  .pricingPage .informationContent { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .pricingPage .informationSection, .pricingPage .informationSection:nth-child(n + 4) { grid-column: auto; min-height: auto; padding: 21px 18px; }
+  .pricingPage .informationSection h2 { font-size: 19px; }
+  .pricingPage .informationSection .priceNumber { font-size: 21px !important; }
+}
