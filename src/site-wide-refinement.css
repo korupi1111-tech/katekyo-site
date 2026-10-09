@@ -185,18 +185,19 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
 .featuredTeacherSection { padding: 76px max(24px, calc((100vw - 1120px) / 2)); background: linear-gradient(180deg, #f8faf9, #edf3f1); }
 .featuredTeacherSection .sectionHead { width: min(1120px, 100%); margin-right: auto; margin-left: auto; }
 .featuredTeacherSection .ownerPublicCard { border: 1px solid #143d4c !important; border-radius: 10px; background: #102f40; box-shadow: 0 22px 45px rgba(13,44,53,.16); }
-.featuredTeacherSection .ownerCompactHeader { display: grid !important; width: 100%; margin: 0; grid-template-columns: 74px 98px minmax(0, 1fr); gap: 17px; min-height: 204px; padding: 25px 180px 19px 27px !important; border-radius: 9px 9px 0 0; background: linear-gradient(120deg, #102f40, #184858 65%, #245e65) !important; color: #fff; }
-.featuredTeacherSection .ownerCompactHeader > img { grid-column: 2; grid-row: 1; width: 98px; height: 98px; border: 2px solid rgba(255,255,255,.77); border-radius: 8px; box-shadow: 0 8px 18px rgba(0,0,0,.20); }
+.featuredTeacherSection .ownerCompactHeader { display: grid !important; width: 100%; margin: 0; grid-template-columns: 96px 106px minmax(0, 1fr); gap: 17px; min-height: 204px; padding: 25px 180px 19px 27px !important; border-radius: 9px 9px 0 0; background: linear-gradient(120deg, #102f40, #184858 65%, #245e65) !important; color: #fff; }
+.featuredTeacherSection .ownerCompactHeader > img { grid-column: 2; grid-row: 1; width: 106px; height: 106px; border: 2px solid rgba(255,255,255,.77); border-radius: 8px; box-shadow: 0 8px 18px rgba(0,0,0,.20); }
 .featuredTeacherSection .ownerCompactHeader > .ownerPublicCurrentRank { grid-column: 1; grid-row: 1; color: #e6cc82; }
 .featuredTeacherSection .ownerCompactHeader .ownerPublicCurrentRank small { color: #e6cc82; }
-.featuredTeacherSection .ownerCompactHeader .ownerPublicCurrentRank .rankBadge { width: 65px; height: 65px; }
+.featuredTeacherSection .ownerCompactHeader .ownerPublicCurrentRank .rankBadge { width: 84px; height: 84px; }
 .featuredTeacherSection .ownerCompactIdentity { grid-column: 3; grid-row: 1; }
 .featuredTeacherSection .ownerCompactIdentity > small { color: #e6cc82 !important; font-size: 11px; font-weight: 900; letter-spacing: .15em; }
 .featuredTeacherSection .ownerCompactIdentity h2 { color: #fff; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(24px, 2.5vw, 33px); letter-spacing: .02em; }
 .featuredTeacherSection .ownerQualificationRow, .featuredTeacherSection .ownerScore { color: #e4eeee; }
 .featuredTeacherSection .ownerQualificationRow > span:first-child { border: 1px solid rgba(228,238,238,.28); background: rgba(255,255,255,.1); }
 .featuredTeacherSection .ownerQualificationRow b, .featuredTeacherSection .ownerScore b { color: #f0d48a; }
-.featuredTeacherSection .ownerHighestRank { color: #e4eeee; }
+.featuredTeacherSection .ownerHighestRank { color: #e4eeee; font-size: 14px; }
+.featuredTeacherSection .ownerHighestRank .rankBadge { width: 54px; height: 54px; }
 .featuredTeacherSection .ownerCompactMeta { grid-column: 1 / -1; grid-row: 2; align-self: stretch; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 7px 22px; padding: 13px 0 0; border-top: 1px solid rgba(228,238,238,.26); border-left: 0; color: #ecf3f3; }
 .featuredTeacherSection .ownerCompactMeta p, .featuredTeacherSection .ownerCompactMeta > div { color: inherit; }
 .featuredTeacherSection .ownerCompactMeta > div { grid-column: 1 / -1; }
@@ -245,12 +246,13 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
   .homeReference .heroTrustLine span::before { flex: 0 0 auto; width: 16px; height: 16px; margin-right: 5px; font-size: 10px; }
   .featuredTeacherSection { padding: 50px 14px; }
   .featuredTeacherSection .sectionHead { padding-inline: 2px; }
-  .featuredTeacherSection .ownerCompactHeader { grid-template-columns: 55px 70px minmax(0, 1fr); gap: 10px; min-height: 0; padding: 53px 105px 18px 16px !important; }
-  .featuredTeacherSection .ownerCompactHeader > img { grid-column: 2; width: 70px; height: 70px; }
+  .featuredTeacherSection .ownerCompactHeader { grid-template-columns: 61px 76px minmax(0, 1fr); gap: 10px; min-height: 0; padding: 53px 105px 18px 16px !important; }
+  .featuredTeacherSection .ownerCompactHeader > img { grid-column: 2; width: 76px; height: 76px; }
   .featuredTeacherSection .ownerCompactHeader > .ownerPublicCurrentRank { grid-column: 1; }
-  .featuredTeacherSection .ownerCompactHeader .ownerPublicCurrentRank .rankBadge { width: 50px; height: 50px; }
+  .featuredTeacherSection .ownerCompactHeader .ownerPublicCurrentRank .rankBadge { width: 58px; height: 58px; }
   .featuredTeacherSection .ownerCompactIdentity { grid-column: 3; }
   .featuredTeacherSection .ownerCompactIdentity h2 { font-size: 18px; line-height: 1.35; }
+  .featuredTeacherSection .ownerHighestRank .rankBadge { width: 40px; height: 40px; }
   .featuredTeacherSection .ownerCompactMeta { grid-column: 1 / -1; grid-row: 2; grid-template-columns: 1fr; padding-top: 12px; border-top: 1px solid rgba(228,238,238,.25); border-left: 0; font-size: 11px; }
   .featuredTeacherSection .ownerCompactHeader .ownerPriceStack { top: 18px; right: 43px; width: 58px; }
   .featuredTeacherSection .ownerPriceStack strong { font-size: 22px; }
