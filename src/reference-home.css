@@ -20,7 +20,6 @@
 .brand span { display: none; }
 .topbar nav { gap: 0; }
 .topbar nav > button, .headerMenu > button { padding: 12px 10px; color: #263d3b; font-size: 12px; }
-.topbar nav > button:first-child { display: none; }
 .topbar .headerMenu:last-child > button { border-radius: 7px; background: var(--reference-green); color: #fff; padding-inline: 15px; }
 
 .homeReference .hero {
