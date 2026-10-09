@@ -45,12 +45,15 @@
   letter-spacing: .02em;
 }
 .homeReference .heroCopy h1 em { color: var(--reference-green); }
+.homeReference .heroCopy h1 span { color: var(--reference-ink); }
 .homeReference .heroCopy p { margin: 12px 0 15px; max-width: 425px; color: #435a55; font-size: 13px; line-height: 1.75; }
 .homeReference .heroCopy button {
   min-width: 246px;
   padding: 15px 24px;
   border-radius: 7px !important;
-  background: var(--reference-green);
+  background: linear-gradient(100deg, #d9ba69, #efd38a);
+  color: #19333b;
+  box-shadow: 0 12px 22px rgba(139, 101, 29, .20);
   font-size: 15px;
 }
 .homeReference .heroTrustLine {

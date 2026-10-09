@@ -78,16 +78,18 @@
 .informationSection .textJump { color: var(--site-green); }
 .informationSection .textJump:hover { color: #013f36; text-decoration: underline; text-underline-offset: 4px; }
 .checkList li { border: 1px solid #d7c996; border-radius: 5px; background: #fffaf0; color: #68511e; }
-.pricingPage .informationHero { min-height: 315px; padding-right: min(510px, calc(50vw - 55px)); }
+.pricingPage .informationHero { min-height: 285px; padding-right: min(590px, calc(50vw - 20px)); }
 .pricingPage .informationHero > p { max-width: 610px; }
 .pricingPage .campaignBubble {
   top: 38px;
   right: max(24px, calc((100% - 1120px) / 2));
-  width: 408px;
-  min-height: 210px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  width: 525px;
+  min-height: 156px;
   align-content: center;
-  gap: 12px;
-  padding: 27px 30px;
+  column-gap: 25px;
+  row-gap: 7px;
+  padding: 23px 29px;
   border: 1px solid #dcbf6c;
   border-radius: 9px;
   background: linear-gradient(135deg, #163a4c, #0e2d3d);
@@ -95,9 +97,9 @@
 }
 .pricingPage .campaignBubble::before { position: absolute; top: -58px; right: -46px; width: 170px; height: 170px; border: 1px solid rgba(229,201,117,.38); border-radius: 50%; content: ""; }
 .pricingPage .campaignBubble > * { position: relative; z-index: 1; }
-.pricingPage .campaignBubble span { font-size: 11px !important; }
-.pricingPage .campaignBubble b { color: #fff; font-family: Georgia, "Yu Mincho", serif; font-size: 25px; letter-spacing: .04em; }
-.pricingPage .campaignBubble small { color: #f0d487; font-size: 15px; font-weight: 800; }
+.pricingPage .campaignBubble span { grid-column: 1; font-size: 11px !important; }
+.pricingPage .campaignBubble b { grid-column: 1; color: #fff; font-family: Georgia, "Yu Mincho", serif; font-size: 25px; letter-spacing: .04em; }
+.pricingPage .campaignBubble small { grid-column: 2; grid-row: 1 / span 2; align-self: center; color: #f0d487; font-size: 15px; font-weight: 800; text-align: right; }
 .serviceGrid article img { object-position: 68% center; }
 .campaignPage .campaignHero { padding-top: 79px; }
 .campaignPage .informationSection::before { background: var(--site-gold); }
@@ -192,7 +194,8 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
   .informationHero h1 { font-size: 36px; }
   .informationHero p { font-size: 14px; }
   .pricingPage .informationHero { min-height: 390px; padding-right: 18px; padding-bottom: 226px; }
-  .pricingPage .campaignBubble { right: 18px; bottom: 22px; width: calc(100% - 36px); min-height: 155px; padding: 20px; }
+  .pricingPage .campaignBubble { grid-template-columns: 1fr; right: 18px; bottom: 22px; width: calc(100% - 36px); min-height: 155px; padding: 20px; }
+  .pricingPage .campaignBubble span, .pricingPage .campaignBubble b, .pricingPage .campaignBubble small { grid-column: auto; grid-row: auto; text-align: left; }
   .pricingPage .campaignBubble b { font-size: 20px; }
   .pricingPage .campaignBubble small { font-size: 13px; }
   .informationContent { width: calc(100% - 28px); margin-top: 20px; }
