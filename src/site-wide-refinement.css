@@ -128,38 +128,31 @@
 
 /* Supplied rank chart: keep it a supporting diagram, not the page's main visual. */
 .rankSystemPage .rankPyramid {
-  width: min(100%, 460px);
-  margin: 32px auto 38px;
-  padding: 8px;
-  border: 1px solid #d5e0e1;
-  border-radius: 10px;
-  background: linear-gradient(145deg, #fbfcfc, #f0f4f4);
-  box-shadow: 0 12px 28px rgba(17, 42, 53, 0.08);
+  width: min(100%, 280px);
+  margin: 24px auto 30px;
+  padding: 0;
 }
 
 .rankSystemPage .rankPyramid img {
   display: block;
   width: 100%;
-  content: url("/rank-pyramid-tier.jpg");
+  content: url("/rank-pyramid-tier-transparent.png");
   border: 0;
-  border-radius: 5px;
-  mix-blend-mode: multiply;
-  filter: saturate(0.78) contrast(0.96);
+  border-radius: 0;
 }
 
 .rankSystemPage .rankPyramid figcaption {
-  max-width: 390px;
-  margin: 10px auto 2px;
+  max-width: 280px;
+  margin: 6px auto 0;
   color: #5d6b70;
-  font-size: 12px;
-  line-height: 1.65;
+  font-size: 11px;
+  line-height: 1.55;
 }
 
 @media (max-width: 700px) {
   .rankSystemPage .rankPyramid {
-    width: min(100%, 350px);
-    margin: 25px auto 30px;
-    padding: 6px;
+    width: min(76vw, 260px);
+    margin: 20px auto 25px;
   }
 }
 .rankItem { border-radius: 8px; }
