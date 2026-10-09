@@ -125,6 +125,43 @@
 .seasonPeriods b { border-radius: 5px; background: #eef5f2; color: var(--site-green); }
 .rankInfoBlock li { border-left: 3px solid var(--site-gold); border-radius: 5px; background: #f5f8f7; }
 .rankPyramid img { border-radius: 9px; }
+
+/* Supplied rank chart: keep it a supporting diagram, not the page's main visual. */
+.rankSystemPage .rankPyramid {
+  width: min(100%, 460px);
+  margin: 32px auto 38px;
+  padding: 8px;
+  border: 1px solid #d5e0e1;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #fbfcfc, #f0f4f4);
+  box-shadow: 0 12px 28px rgba(17, 42, 53, 0.08);
+}
+
+.rankSystemPage .rankPyramid img {
+  display: block;
+  width: 100%;
+  content: url("/rank-pyramid-tier.jpg");
+  border: 0;
+  border-radius: 5px;
+  mix-blend-mode: multiply;
+  filter: saturate(0.78) contrast(0.96);
+}
+
+.rankSystemPage .rankPyramid figcaption {
+  max-width: 390px;
+  margin: 10px auto 2px;
+  color: #5d6b70;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+@media (max-width: 700px) {
+  .rankSystemPage .rankPyramid {
+    width: min(100%, 350px);
+    margin: 25px auto 30px;
+    padding: 6px;
+  }
+}
 .rankItem { border-radius: 8px; }
 
 /* Forms, dashboards, and footer */
