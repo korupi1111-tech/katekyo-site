@@ -458,3 +458,17 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
   .rankingRecord b { font-size: 17px; }
   .rankingOpen { grid-column: 2 / -1; margin-top: 3px; font-size: 11px; }
 }
+
+/* Home message and site-owner profile guidance. */
+.homeReference .heroCopy h1 { font-size: 0; line-height: 1.18; }
+.homeReference .heroCopy h1::after { display: block; color: var(--reference-ink); content: "学歴より得意を評価する\A家庭教師マッチング"; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(36px, 4vw, 54px); font-weight: 700; letter-spacing: .015em; line-height: 1.18; white-space: pre-line; }
+.ownerProfileColumns > section:nth-child(2) li { margin-bottom: 13px; }
+.ownerProfileColumns > section:nth-child(2) li::after { display: block; margin-top: 4px; color: #6c7d78; font-size: 12px; line-height: 1.65; }
+.ownerProfileColumns > section:nth-child(2) li:nth-child(1)::after { content: "（感覚英語は人によっては茨の道でもあります。）"; }
+.ownerProfileColumns > section:nth-child(2) li:nth-child(2)::after { content: "（文法指導はあまり得意では有りません）"; }
+.ownerProfileColumns > section:nth-child(2) li:nth-child(3)::after { content: "（解法は分かりません。ほぼ全訳で押し切りました。）"; }
+
+@media (max-width: 760px) {
+  .homeReference .heroCopy h1::after { font-size: clamp(30px, 8.6vw, 39px); }
+  .ownerProfileColumns > section:nth-child(2) li::after { font-size: 11px; }
+}
