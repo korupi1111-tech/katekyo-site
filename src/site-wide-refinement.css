@@ -329,12 +329,12 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
 }
 
 /* Owner identity and compact record details. */
-.ownerIdentityLine { display: flex !important; align-items: center; gap: 13px; color: #e8ce88 !important; font-size: 12px !important; font-weight: 800; letter-spacing: .06em !important; line-height: 1.3; }
+.ownerIdentityLine { display: flex !important; align-items: center; gap: 19px; color: #e8ce88 !important; font-size: 12px !important; font-weight: 800; letter-spacing: .06em !important; line-height: 1.3; }
 .ownerIdentityLine svg { width: 17px; height: 17px; flex: 0 0 auto; color: #e8ce88; stroke-width: 2.3; }
 .ownerIdentityLine b { color: #e8ce88; white-space: nowrap; }
-.ownerIdentityLine i { width: 1px; height: 14px; flex: 0 0 auto; margin: 0 2px; background: rgba(232,206,136,.55); }
+.ownerIdentityLine i { width: 1px; height: 14px; flex: 0 0 auto; margin: 0 5px; background: rgba(232,206,136,.55); }
 .ownerIdentityLine strong { color: #fff; font-size: 13px; white-space: nowrap; }
-.ownerIdentityLine span { color: #e5eff0; font-size: 11px; white-space: nowrap; }
+.ownerIdentityLine span { margin-left: 4px; color: #e5eff0; font-size: 11px; white-space: nowrap; }
 .ownerVerifiedCheck { display: inline-block; margin-left: 7px; color: #e7c874; font-family: Arial, sans-serif; font-size: 15px; font-style: normal; font-weight: 900; line-height: 1; vertical-align: -1px; }
 .ownerVerifiedQualification { display: inline-flex; align-items: center; margin-right: 9px; white-space: nowrap; }
 .featuredTeacherSection .ownerCompactMeta { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px 42px; font-size: 14px; }
@@ -354,7 +354,7 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
 .ownerProfileResultsNote { margin: 12px 0 0 !important; padding: 10px 12px !important; border: 0 !important; border-left: 3px solid #b08a32 !important; background: #fffaf0; color: #5f665c; font-size: 12px; line-height: 1.6; }
 
 @media (max-width: 760px) {
-  .ownerIdentityLine { flex-wrap: wrap; gap: 6px 9px; font-size: 9px !important; }
+  .ownerIdentityLine { flex-wrap: wrap; gap: 8px 12px; font-size: 9px !important; }
   .ownerIdentityLine svg { width: 13px; height: 13px; }
   .ownerIdentityLine i { height: 11px; }
   .ownerIdentityLine strong { font-size: 10px; }
