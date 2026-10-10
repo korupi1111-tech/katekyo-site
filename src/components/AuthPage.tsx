@@ -33,8 +33,8 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
   }, [resendWait]);
 
   const explanatoryCopy = useMemo(() => teacher
-    ? "講師機能の利用には、メールアドレスと電話番号の両方の確認が必要です。"
-    : "生徒登録は無料です。まずメールアドレスの確認を完了してください。", [teacher]);
+    ? "新規登録時は、メールで届く6桁の認証コードを確認すると講師マイページへ進めます。"
+    : "生徒登録は無料です。新規登録時は、メールで届く6桁の認証コードを確認してください。", [teacher]);
 
   const getConfirmedAccount = async () => {
     for (let attempt = 0; attempt < accountRetryCount; attempt += 1) {
@@ -144,10 +144,9 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
       {mode === "register" && <><label>表示名<input required value={displayName} onChange={event => setDisplayName(event.target.value)} autoComplete="nickname" /></label>{teacher && <label>氏名または講師名<input required value={legalName} onChange={event => setLegalName(event.target.value)} autoComplete="name" /></label>}</>}
       <label>メールアドレス<input required type="email" value={email} onChange={event => setEmail(event.target.value)} autoComplete="email" /></label>
       <label>パスワード<input required type="password" minLength={8} value={password} onChange={event => setPassword(event.target.value)} autoComplete={mode === "login" ? "current-password" : "new-password"} /><small>8文字以上で設定してください。</small></label>
-      {mode === "register" && teacher && <><p className="phoneLater">電話番号認証は、メール認証後の講師マイページで案内します。SMS認証の送信機能は現在準備中です。</p><label className="authCheck"><input type="checkbox" checked={terms} onChange={event => setTerms(event.target.checked)} /> 利用規約に同意する</label><label className="authCheck"><input type="checkbox" checked={privacy} onChange={event => setPrivacy(event.target.checked)} /> プライバシーポリシーに同意する</label></>}
+      {mode === "register" && teacher && <><label className="authCheck"><input type="checkbox" checked={terms} onChange={event => setTerms(event.target.checked)} /> 利用規約に同意する</label><label className="authCheck"><input type="checkbox" checked={privacy} onChange={event => setPrivacy(event.target.checked)} /> プライバシーポリシーに同意する</label></>}
       <button disabled={busy} type="submit">{busy ? "処理中…" : mode === "login" ? "ログイン" : "無料で新規登録"}</button>
     </form>
-    {mode === "login" && <button className="outline" type="button" disabled={!email || busy} onClick={() => { setScreen("verify-email"); setMessage(""); }}>メール認証コードを入力する</button>}
     {message && <p className="authMessage" role="status">{message}</p>}
   </main>;
 }
