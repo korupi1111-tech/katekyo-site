@@ -12,7 +12,8 @@ const accountRetryCount = 4;
 const normalizeEmail = (value: string) => value.trim().toLowerCase();
 const verificationErrorMessage = (error: unknown) => {
   const code = typeof error === "object" && error !== null && "code" in error && typeof error.code === "string" ? error.code : "unknown";
-  return `認証コードが正しくないか、有効期限が切れています。最新のメールに届いたコードを確認してください。（確認コード: ${code}）`;
+  const detail = code === "unknown" ? "" : `（確認コード: ${code}）`;
+  return `認証コードが正しくないか、有効期限が切れています。最新のメールに届いたコードを確認してください。${detail}`;
 };
 export function AuthPage({ teacher, onAuthenticated }: Props) {
   const [mode, setMode] = useState<Mode>("register");
@@ -60,14 +61,7 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
         if (error) {
           if (/email.*confirm|confirm.*email|not confirmed/i.test(error.message)) {
             setScreen("verify-email");
-            try {
-              await resendConfirmation(normalizeEmail(email));
-              setCode("");
-              setResendWait(cooldownSeconds);
-              setMessage("メールアドレスの認証がまだ完了していません。最新の6桁の認証コードを再送しました。");
-            } catch {
-              setMessage("メールアドレスの認証がまだ完了していません。認証コードを入力するか、再送ボタンで最新のコードを取得してください。");
-            }
+            setMessage("メールアドレスの認証がまだ完了していません。既に届いているコードを入力するか、必要な場合だけ再送してください。");
             return;
           }
           throw error;
