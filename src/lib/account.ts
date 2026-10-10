@@ -59,19 +59,17 @@ export async function resendConfirmation(email: string): Promise<void> {
   const { error } = await supabase.auth.resend({
     type: "signup",
     email,
-    options: { emailRedirectTo: `${window.location.origin}/` },
   });
   if (error) throw error;
 }
 
-export async function beginTeacherPhoneVerification(phone: string): Promise<void> {
+/** Supabase が発行した登録メール用OTPを検証する。 */
+export async function verifySignupEmailCode(email: string, token: string): Promise<void> {
   if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。");
-  const { error } = await supabase.auth.updateUser({ phone });
-  if (error) throw error;
-}
-
-export async function verifyTeacherPhone(phone: string, token: string): Promise<void> {
-  if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。");
-  const { error } = await supabase.auth.verifyOtp({ phone, token, type: "phone_change" });
+  const { error } = await supabase.auth.verifyOtp({
+    email,
+    token,
+    type: "email",
+  });
   if (error) throw error;
 }
