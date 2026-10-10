@@ -12,6 +12,18 @@ function Chips({ values }: { values: string[] }) {
   return <div className="searchChips">{values.map(value => <label key={value}><input type="checkbox" />{value}</label>)}</div>;
 }
 
+function DirectoryTeacherCard({ teacher }: { teacher: DirectoryTeacher }) {
+  return <article className="directoryTeacherCard">
+    <header className="directoryTeacherHeader"><div className="directoryRank"><small>今季ランク</small><b>{teacher.current_rank}</b></div><span>{teacher.recruitment_status}</span></header>
+    <div className="directoryIdentity"><i aria-hidden="true">{teacher.display_name.slice(0, 1)}</i><div><small>{teacher.target_label ?? teacher.main_subject}</small><h3>{teacher.display_name}</h3><p>{teacher.catchphrase}</p></div></div>
+    <section className="directoryProfileProof"><p><b>資格：</b>{teacher.qualifications.map(value => <span key={value}>{value}{teacher.qualification_verified && <i aria-label="確認済み">✓</i>}</span>)}</p>{teacher.mock_exam_result && <p><b>模試成績：</b>{teacher.mock_exam_result}{teacher.mock_exam_verified && <i aria-label="確認済み">✓</i>}</p>}<span><b>過去最高ランク</b><strong>{teacher.highest_rank}</strong></span></section>
+    <aside className="directoryQuickFacts"><p><b>学歴：</b>{teacher.education ?? "確認中"}{teacher.education_verified && <i aria-label="確認済み">✓</i>}</p><p><b>担当可能方式：</b>{teacher.contact_method ?? "確認中"}</p><div><span><b>性別：</b>{teacher.gender ?? "非公開"}</span><span><b>指導歴：</b>{teacher.teaching_experience ?? "確認中"}</span><span><b>授業形式：</b>{teacher.lesson_types.join("・")}</span><span><b>状態：</b>{teacher.recruitment_status}</span></div></aside>
+    <div className="directoryPrice"><strong>{teacher.price_yen.toLocaleString()}円</strong><span>{teacher.free_consultation ? "メール相談無料開放中！" : "1時間あたり"}</span></div>
+    <section className="directoryEvidence"><h3>実績</h3><dl><div><dt>確認済み授業</dt><dd>{teacher.verified_lesson_count}回</dd></div><div><dt>プロフィール一致率</dt><dd>{teacher.profile_match_rate === null ? "蓄積中" : `${teacher.profile_match_rate}%`}</dd></div><div><dt>現在ランク</dt><dd>{teacher.current_rank}</dd></div></dl></section>
+    <section className="directoryAreas"><article><h4>① 専門分野</h4><p>{teacher.strengths.join("、")}</p><p><b>非対応：</b>{teacher.limitations.join("、")}</p></article><article><h4>② 対象生徒</h4><p>{teacher.target_label ?? teacher.main_subject}</p><div>{teacher.levels.slice(0, 3).map(level => <span key={level}>{level}</span>)}</div></article><article><h4>③ 指導方針</h4><p>{teacher.teaching_policy ?? teacher.summary}</p></article></section>
+  </article>;
+}
+
 function DirectoryResults({ subject, inPerson }: { subject: string; inPerson: boolean }) {
   const [teachers, setTeachers] = useState<DirectoryTeacher[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +42,7 @@ function DirectoryResults({ subject, inPerson }: { subject: string; inPerson: bo
 
   return <section className="directoryResults" aria-live="polite">
     <div className="directoryResultsHead"><div><span>DATABASE RESULTS</span><h2>講師検索結果</h2></div><b>{loading ? "読み込み中" : `${results.length}人`}</b></div>
-    {error ? <p className="directoryState">{error}</p> : loading ? <p className="directoryState">公開中の講師データを読み込んでいます。</p> : results.length === 0 ? <p className="directoryState">条件に合う講師が見つかりませんでした。条件を少し広げてお試しください。</p> : <div className="directoryTeacherGrid">{results.map(teacher => <article className="directoryTeacherCard" key={teacher.id}><header><span>{teacher.main_subject}</span><b>{teacher.recruitment_status}</b></header><div className="directoryIdentity"><i aria-hidden="true">{teacher.display_name.slice(0, 1)}</i><div><small>RANK {teacher.current_rank}</small><h3>{teacher.display_name}</h3><p>{teacher.catchphrase}</p></div></div><p className="directorySummary">{teacher.summary}</p><div className="directoryTags">{[...teacher.topics, ...teacher.levels].slice(0, 4).map(tag => <span key={tag}>{tag}</span>)}</div><dl><div><dt>確認済み授業</dt><dd>{teacher.verified_lesson_count}回</dd></div><div><dt>一致率</dt><dd>{teacher.profile_match_rate === null ? "蓄積中" : `${teacher.profile_match_rate}%`}</dd></div><div><dt>料金</dt><dd>{teacher.price_yen.toLocaleString()}円</dd></div></dl>{teacher.free_consultation && <p className="directoryFree">無料相談あり</p>}</article>)}</div>}
+    {error ? <p className="directoryState">{error}</p> : loading ? <p className="directoryState">公開中の講師データを読み込んでいます。</p> : results.length === 0 ? <p className="directoryState">条件に合う講師が見つかりませんでした。条件を少し広げてお試しください。</p> : <div className="directoryTeacherGrid">{results.map(teacher => <DirectoryTeacherCard key={teacher.id} teacher={teacher} />)}</div>}
   </section>;
 }
 

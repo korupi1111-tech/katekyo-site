@@ -22,6 +22,41 @@
 .directoryFree { margin: 0; padding: 0 26px 18px; background: #fff; color: #9a7629; }
 .directoryTeacherCard:has(.directoryFree) dl { padding-bottom: 9px; }
 
+.directoryTeacherHeader { display: flex; align-items: start; justify-content: space-between; margin: 0; padding: 18px 26px 0; background: #153f4b; color: #fff; }
+.directoryTeacherHeader > span { margin-top: 4px; border-radius: 5px; background: #f0d48a; padding: 5px 8px; color: #533f13; font-size: 11px; font-weight: 900; }
+.directoryRank small, .directoryRank b { display: block; }
+.directoryRank small { color: #e7cc83; font-size: 10px; font-weight: 900; letter-spacing: .09em; }
+.directoryRank b { margin-top: 2px; color: #f0d48a; font-family: Georgia, serif; font-size: 31px; line-height: 1; }
+.directoryProfileProof { position: relative; display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 0; padding: 0 26px 16px; border-bottom: 1px solid rgba(228,238,238,.26); background: #153f4b; color: #e4eeee; font-size: 12px; }
+.directoryProfileProof p { margin: 0; }
+.directoryProfileProof p:first-child { padding: 6px 9px; border: 1px solid rgba(228,238,238,.25); border-radius: 5px; background: rgba(255,255,255,.08); }
+.directoryProfileProof b { color: #f0d48a; }
+.directoryProfileProof i, .directoryQuickFacts i { margin-left: 4px; color: #f0d48a; font-style: normal; font-weight: 900; }
+.directoryProfileProof > span { display: inline-flex; align-items: center; gap: 7px; }
+.directoryProfileProof > span strong { display: inline-grid; place-items: center; min-width: 31px; min-height: 31px; border: 1px solid #d8bd70; border-radius: 50%; color: #f0d48a; font-family: Georgia, serif; }
+.directoryQuickFacts { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 24px; margin: 0; padding: 15px 26px; border-bottom: 1px solid #dbe5e1; background: #fff; color: #3f504b; font-size: 13px; }
+.directoryQuickFacts p { margin: 0; }
+.directoryQuickFacts > div { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, max-content); gap: 16px; color: #52635e; font-size: 12px; }
+.directoryQuickFacts b { color: #164957; }
+.directoryPrice { position: absolute; top: 50px; right: 28px; display: flex; flex-direction: column; align-items: center; gap: 5px; color: #f0d48a; text-align: center; }
+.directoryPrice strong { font-size: 27px; line-height: 1; }
+.directoryPrice span { max-width: 105px; color: #e8f0ef; font-size: 10px; font-weight: 800; line-height: 1.25; }
+.directoryTeacherCard { position: relative; }
+.directoryEvidence { margin: 0; padding: 16px 26px; border-bottom: 1px solid #dbe5e1; background: #fff; }
+.directoryEvidence h3 { margin: 0 0 8px; color: #164957; font-size: 13px; letter-spacing: .1em; }
+.directoryEvidence dl { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; padding: 0; }
+.directoryEvidence dl div { padding: 0 12px; border-right: 1px solid #dbe5e1; }
+.directoryEvidence dl div:first-child { padding-left: 0; }
+.directoryEvidence dl div:last-child { border-right: 0; }
+.directoryEvidence dt { color: #71837e; font-size: 11px; }
+.directoryEvidence dd { margin: 4px 0 0; color: #164957; font-size: 15px; font-weight: 900; }
+.directoryAreas { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; background: #fff; }
+.directoryAreas article { padding: 17px 20px 20px; border-right: 1px solid #e1ece8; }
+.directoryAreas article:last-child { border-right: 0; }
+.directoryAreas h4 { margin: 0 0 8px; color: #164957; font-size: 13px; }
+.directoryAreas p { margin: 6px 0; color: #475d57; font-size: 13px; line-height: 1.6; }
+.directoryAreas > article:nth-child(2) span { display: inline-block; margin: 4px 5px 0 0; border: 1px solid #d5b65f; border-radius: 5px; background: #fffbef; padding: 4px 6px; color: #755719; font-size: 10px; font-weight: 900; }
+
 @media (max-width: 760px) {
   .directoryTeacherCard > header { padding: 15px 16px 0; }
   .directoryIdentity { padding: 11px 16px 12px; }
@@ -32,4 +67,18 @@
   .directoryTeacherCard dl { padding: 14px 16px; }
   .directoryTeacherCard dl div { padding: 0 8px; }
   .directoryFree { padding: 0 16px 15px; }
+  .directoryTeacherHeader { padding: 15px 16px 0; }
+  .directoryProfileProof { padding: 0 16px 14px; font-size: 11px; }
+  .directoryQuickFacts { grid-template-columns: 1fr; gap: 6px; padding: 13px 16px; font-size: 12px; }
+  .directoryQuickFacts > div { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px 10px; font-size: 11px; }
+  .directoryPrice { top: 53px; right: 15px; }
+  .directoryPrice strong { font-size: 20px; }
+  .directoryPrice span { max-width: 78px; font-size: 8px; }
+  .directoryEvidence { padding: 14px 16px; }
+  .directoryEvidence dl div { padding: 0 8px; }
+  .directoryEvidence dt { font-size: 9px; }
+  .directoryEvidence dd { font-size: 12px; }
+  .directoryAreas { grid-template-columns: 1fr; }
+  .directoryAreas article { padding: 15px 16px; border-right: 0; border-bottom: 1px solid #e1ece8; }
+  .directoryAreas article:last-child { border-bottom: 0; }
 }

@@ -26,6 +26,17 @@ export type DirectoryTeacher = {
   verified_lesson_count: number;
   profile_match_rate: number | null;
   summary: string | null;
+  education: string | null;
+  gender: string | null;
+  teaching_experience: string | null;
+  qualifications: string[];
+  mock_exam_result: string | null;
+  highest_rank: string;
+  contact_method: string | null;
+  target_label: string | null;
+  strengths: string[];
+  limitations: string[];
+  teaching_policy: string | null;
 };
 
 export async function getPublishedDirectoryTeachers() {
