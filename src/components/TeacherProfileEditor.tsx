@@ -1,8 +1,10 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { getMyTeacherProfile, saveMyTeacherProfile, type TeacherProfileInput, type TeacherProfileRow } from "../lib/teacherProfiles";
 import { supabase } from "../lib/supabase";
+import { contactMethodOptions, lessonStyleOptions, lessonTypeOptions, levelOptions, qualificationLabelOptions, qualificationOptions, subjectOptions, teachingTypeOptions, topicOptions } from "../lib/teacherLabels";
 
-type EditorState = Omit<TeacherProfileInput, "priceYen"> & { priceYen: string };
+type ProfileListKey = "qualifications" | "strengths" | "limitations" | "targetStudents" | "teachingTypes" | "qualificationLabels" | "subjects" | "topics" | "levels" | "lessonTypes" | "contactMethods" | "lessonStyles" | "otherSubjects" | "extraSubjects" | "recommendedFor" | "notRecommendedFor";
+type EditorState = Omit<TeacherProfileInput, "priceYen" | ProfileListKey> & Required<Pick<TeacherProfileInput, ProfileListKey>> & { priceYen: string };
 
 const initialProfile: EditorState = {
   publicSlug: "kotaro",
@@ -24,6 +26,18 @@ const initialProfile: EditorState = {
   targetStudents: ["英検2級〜1級", "感覚で英文を読む方", "長文読解で伸び悩んでいる方"],
   teachingPolicy: "生徒のレベルより少し難度の高い長文を精読し、意味を正確に捉えた全訳を重視します。",
   teachingTypes: ["感覚型"],
+  qualificationLabels: ["英語資格", "英検", "TOEIC"],
+  subjects: ["高校英語"],
+  topics: ["長文読解"],
+  levels: ["英検2級", "英検準1級"],
+  lessonTypes: ["単発授業", "学習相談"],
+  contactMethods: ["メール"],
+  lessonStyles: ["精読重視"],
+  supportsInPerson: false,
+  prefecture: "",
+  city: "",
+  freeConsultation: true,
+  initialFree: false,
   otherSubjects: [],
   extraSubjects: [],
   lessonFormatDetail: "単発授業がメインとなり、基本はメールでの相談となります。",
@@ -37,6 +51,17 @@ const initialProfile: EditorState = {
 
 const splitList = (value: string) => value.split(/[、,\n]/).map(item => item.trim()).filter(Boolean);
 const joinList = (value: string[] | undefined) => (value ?? []).join("、");
+
+function toggleLabel(values: string[], value: string) {
+  return values.includes(value) ? values.filter(item => item !== value) : [...values, value];
+}
+
+function LabelPicker({ label, help, values, selected, onChange, limit }: { label: string; help: string; values: string[]; selected: string[]; onChange: (next: string[]) => void; limit?: number }) {
+  return <fieldset className="profileLabelPicker"><legend>{label}</legend><p>{help}</p><div>{values.map(value => <label key={value}><input checked={selected.includes(value)} onChange={() => {
+    if (!selected.includes(value) && limit && selected.length >= limit) return;
+    onChange(toggleLabel(selected, value));
+  }} type="checkbox" />{value}</label>)}</div></fieldset>;
+}
 
 function toEditorState(profile: TeacherProfileRow): EditorState {
   return {
@@ -59,6 +84,18 @@ function toEditorState(profile: TeacherProfileRow): EditorState {
     targetStudents: profile.target_students,
     teachingPolicy: profile.teaching_policy,
     teachingTypes: profile.teaching_types,
+    qualificationLabels: profile.qualification_labels,
+    subjects: profile.subjects,
+    topics: profile.topics,
+    levels: profile.levels,
+    lessonTypes: profile.lesson_types,
+    contactMethods: profile.contact_methods,
+    lessonStyles: profile.lesson_styles,
+    supportsInPerson: profile.supports_in_person,
+    prefecture: profile.prefecture ?? "",
+    city: profile.city ?? "",
+    freeConsultation: profile.free_consultation,
+    initialFree: profile.initial_free,
     otherSubjects: profile.other_subjects,
     extraSubjects: profile.extra_subjects,
     lessonFormatDetail: profile.lesson_format_detail,
@@ -105,13 +142,18 @@ export function TeacherProfileEditor() {
 
   const updateText = (key: keyof EditorState, value: string) => setProfile(current => ({ ...current, [key]: value }));
   const updateList = (key: keyof EditorState, value: string) => setProfile(current => ({ ...current, [key]: splitList(value) }));
+  const update = (values: Partial<EditorState>) => setProfile(current => ({ ...current, ...values }));
 
   const save = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (profile.isPublished && profile.subjects.length === 0) {
+      setStatus("公開するには、検索に使う「担当科目」を1つ以上選んでください。");
+      return;
+    }
     setSaving(true);
     try {
       await saveMyTeacherProfile({ ...profile, priceYen: profile.priceYen === "" ? null : Number(profile.priceYen) });
-      setStatus(profile.isPublished ? "公開プロフィールを保存しました。" : "下書きを保存しました。公開するには「公開する」を選択して保存してください。");
+      setStatus(profile.isPublished ? "公開プロフィールを保存し、講師検索用データベースに反映しました。" : "下書きを保存しました。公開するには「公開する」を選択して保存してください。");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "保存に失敗しました。");
     } finally {
@@ -119,5 +161,39 @@ export function TeacherProfileEditor() {
     }
   };
 
-  return <section className="teacherProfileEditor"><header><span>PROFILE EDITOR</span><h2>講師プロフィールを編集</h2><p>{status}</p></header><form onSubmit={save}><div className="profileEditorGrid"><label>表示名<input required value={profile.displayName} onChange={event => updateText("displayName", event.target.value)} /></label><label>公開URL用ID<input required pattern="[a-z0-9-]{3,80}" value={profile.publicSlug} onChange={event => updateText("publicSlug", event.target.value.toLowerCase())} /><small>半角英小文字・数字・ハイフンのみ</small></label><label className="wide">キャッチコピー<input required value={profile.catchphrase} onChange={event => updateText("catchphrase", event.target.value)} /></label><label>学歴<input value={profile.education ?? ""} onChange={event => updateText("education", event.target.value)} /></label><label>指導歴<input value={profile.teachingExperience ?? ""} onChange={event => updateText("teachingExperience", event.target.value)} /></label><label>資格<input value={joinList(profile.qualifications)} onChange={event => updateList("qualifications", event.target.value)} /></label><label>模試成績<input value={profile.mockExamResult ?? ""} onChange={event => updateText("mockExamResult", event.target.value)} /></label><label>性別<input value={profile.gender ?? ""} onChange={event => updateText("gender", event.target.value)} /></label><label>料金（円）<input type="number" min="0" value={profile.priceYen} onChange={event => updateText("priceYen", event.target.value)} /></label><label>授業形式<input value={profile.lessonFormat ?? ""} onChange={event => updateText("lessonFormat", event.target.value)} /></label><label>対応方法<input value={profile.contactMethod ?? ""} onChange={event => updateText("contactMethod", event.target.value)} /></label><label>募集状況<input value={profile.recruitmentStatus ?? ""} onChange={event => updateText("recruitmentStatus", event.target.value)} /></label><label className="wide">募集状況詳細<textarea value={profile.recruitmentDetail ?? ""} onChange={event => updateText("recruitmentDetail", event.target.value)} /></label><label>メイン科目<input value={profile.mainSubject ?? ""} onChange={event => updateText("mainSubject", event.target.value)} /></label><label>得意分野<input value={joinList(profile.strengths)} onChange={event => updateList("strengths", event.target.value)} /></label><label>不得意分野<input value={joinList(profile.limitations)} onChange={event => updateList("limitations", event.target.value)} /></label><label className="wide">対象生徒<textarea value={joinList(profile.targetStudents)} onChange={event => updateList("targetStudents", event.target.value)} /></label><label className="wide">指導方針<textarea value={profile.teachingPolicy ?? ""} onChange={event => updateText("teachingPolicy", event.target.value)} /></label></div><div className="profileEditorPublish"><label><input type="checkbox" checked={profile.isPublished} onChange={event => setProfile(current => ({ ...current, isPublished: event.target.checked }))} /> 公開する</label><button type="submit" disabled={loading || saving}>{saving ? "保存中…" : "プロフィールを保存"}</button></div></form></section>;
+  const selectedQualifications = profile.qualifications.filter(value => qualificationOptions.includes(value));
+  const customQualifications = profile.qualifications.filter(value => !qualificationOptions.includes(value));
+  const updateQualifications = (values: string[]) => setProfile(current => ({ ...current, qualifications: [...values, ...current.qualifications.filter(value => !qualificationOptions.includes(value))] }));
+
+  return <section className="teacherProfileEditor"><header><span>PROFILE EDITOR</span><h2>講師プロフィールを編集</h2><p>{status}</p></header><form onSubmit={save}><div className="profileEditorGrid">
+    <label>表示名<input required value={profile.displayName} onChange={event => updateText("displayName", event.target.value)} /></label>
+    <label>公開URL用ID<input required pattern="[a-z0-9-]{3,80}" value={profile.publicSlug} onChange={event => updateText("publicSlug", event.target.value.toLowerCase())} /><small>半角英小文字・数字・ハイフンのみ</small></label>
+    <label className="wide">キャッチコピー<input required value={profile.catchphrase} onChange={event => updateText("catchphrase", event.target.value)} /></label>
+    <label>学歴<input value={profile.education ?? ""} onChange={event => updateText("education", event.target.value)} /></label>
+    <label>指導歴<input value={profile.teachingExperience ?? ""} onChange={event => updateText("teachingExperience", event.target.value)} /></label>
+    <label>模試成績<input value={profile.mockExamResult ?? ""} onChange={event => updateText("mockExamResult", event.target.value)} /></label>
+    <label>性別<input value={profile.gender ?? ""} onChange={event => updateText("gender", event.target.value)} /></label>
+    <label>料金（円）<input type="number" min="0" value={profile.priceYen} onChange={event => updateText("priceYen", event.target.value)} /></label>
+    <label>募集状況<select value={profile.recruitmentStatus ?? ""} onChange={event => updateText("recruitmentStatus", event.target.value)}><option value="">選択してください</option><option>受付中</option><option>残り1枠</option><option>募集停止中</option></select></label>
+    <label className="wide">募集状況詳細<textarea value={profile.recruitmentDetail ?? ""} onChange={event => updateText("recruitmentDetail", event.target.value)} /></label>
+    <label>メイン科目<input list="teacher-main-subjects" value={profile.mainSubject ?? ""} onChange={event => updateText("mainSubject", event.target.value)} /><datalist id="teacher-main-subjects">{subjectOptions.map(value => <option value={value} key={value}/>)}</datalist></label>
+    <label>得意分野<input value={joinList(profile.strengths)} onChange={event => updateList("strengths", event.target.value)} /></label>
+    <label>不得意分野<input value={joinList(profile.limitations)} onChange={event => updateList("limitations", event.target.value)} /></label>
+    <label className="wide">対象生徒<textarea value={joinList(profile.targetStudents)} onChange={event => updateList("targetStudents", event.target.value)} /></label>
+    <label className="wide">指導方針<textarea value={profile.teachingPolicy ?? ""} onChange={event => updateText("teachingPolicy", event.target.value)} /><small>例：「長文をしっかり翻訳できるようになるまでやります」は文章で説明し、検索用ラベルは下で「長文読解」を選びます。</small></label>
+    <section className="profileLabelSection wide" aria-labelledby="search-labels-title"><header><span>SEARCH LABELS</span><h3 id="search-labels-title">検索に使うラベル</h3><p>選んだラベルは保存後、公開中の講師検索で絞り込みに使われます。英数国理社に当てはまらない内容は「その他」を選べます。</p></header>
+      <LabelPicker label="担当科目" help="複数選択できます。" values={subjectOptions} selected={profile.subjects} onChange={subjects => update({ subjects })} />
+      <LabelPicker label="得意な内容" help="例：長文を丁寧に訳せるようにする指導は「長文読解」を選びます。" values={topicOptions} selected={profile.topics} onChange={topics => update({ topics })} />
+      <LabelPicker label="対象レベル・試験" help="対応できる目標やレベルを選びます。" values={levelOptions} selected={profile.levels} onChange={levels => update({ levels })} />
+      <LabelPicker label="資格の検索ラベル" help="自己申告の検索用分類です。例：英検準1級なら「英語資格」「英検」、TOEICなら「英語資格」「TOEIC」を選びます。確認済み表示とは別です。" values={qualificationLabelOptions} selected={profile.qualificationLabels} onChange={qualificationLabels => update({ qualificationLabels })} />
+      <LabelPicker label="資格・認定の内容" help="保有する資格や認定を選びます。" values={qualificationOptions} selected={selectedQualifications} onChange={updateQualifications} />
+      <label className="profileFreeLabel">その他の資格・認定<input value={joinList(customQualifications)} onChange={event => setProfile(current => ({ ...current, qualifications: [...current.qualifications.filter(value => qualificationOptions.includes(value)), ...splitList(event.target.value)] }))} /><small>一覧にない資格名・点数・補足はこちらへ入力できます。</small></label>
+      <LabelPicker label="授業形式" help="提供する形式を選びます。" values={lessonTypeOptions} selected={profile.lessonTypes} onChange={lessonTypes => update({ lessonTypes })} />
+      <LabelPicker label="対応方法" help="オンライン・対面など、利用できる方法を選びます。" values={contactMethodOptions} selected={profile.contactMethods} onChange={contactMethods => update({ contactMethods, supportsInPerson: contactMethods.includes("対面") })} />
+      {profile.supportsInPerson && <div className="profileLocationFields"><label>都道府県<input value={profile.prefecture ?? ""} onChange={event => updateText("prefecture", event.target.value)} /></label><label>市区町村<input value={profile.city ?? ""} onChange={event => updateText("city", event.target.value)} /></label></div>}
+      <LabelPicker label="指導タイプ" help="主な型を最大2つ選びます。" values={teachingTypeOptions} selected={profile.teachingTypes} onChange={teachingTypes => update({ teachingTypes })} limit={2} />
+      <LabelPicker label="授業の進め方" help="複数選択できます。" values={lessonStyleOptions} selected={profile.lessonStyles} onChange={lessonStyles => update({ lessonStyles })} />
+      <div className="profileBooleanLabels"><label><input checked={profile.freeConsultation} onChange={event => update({ freeConsultation: event.target.checked })} type="checkbox" />無料相談あり</label><label><input checked={profile.initialFree} onChange={event => update({ initialFree: event.target.checked })} type="checkbox" />初回無料あり</label></div>
+    </section>
+  </div><div className="profileEditorPublish"><label><input type="checkbox" checked={profile.isPublished} onChange={event => setProfile(current => ({ ...current, isPublished: event.target.checked }))} /> 公開する</label><button type="submit" disabled={loading || saving}>{saving ? "保存中…" : "プロフィールを保存"}</button></div></form></section>;
 }

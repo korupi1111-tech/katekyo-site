@@ -21,6 +21,18 @@ export type TeacherProfileInput = {
   targetStudents?: string[];
   teachingPolicy?: string | null;
   teachingTypes?: string[];
+  qualificationLabels?: string[];
+  subjects?: string[];
+  topics?: string[];
+  levels?: string[];
+  lessonTypes?: string[];
+  contactMethods?: string[];
+  lessonStyles?: string[];
+  supportsInPerson?: boolean;
+  prefecture?: string | null;
+  city?: string | null;
+  freeConsultation?: boolean;
+  initialFree?: boolean;
   otherSubjects?: string[];
   extraSubjects?: string[];
   lessonFormatDetail?: string | null;
@@ -55,6 +67,18 @@ export type TeacherProfileRow = {
   target_students: string[];
   teaching_policy: string | null;
   teaching_types: string[];
+  qualification_labels: string[];
+  subjects: string[];
+  topics: string[];
+  levels: string[];
+  lesson_types: string[];
+  contact_methods: string[];
+  lesson_styles: string[];
+  supports_in_person: boolean;
+  prefecture: string | null;
+  city: string | null;
+  free_consultation: boolean;
+  initial_free: boolean;
   other_subjects: string[];
   extra_subjects: string[];
   lesson_format_detail: string | null;
@@ -127,6 +151,18 @@ export async function saveMyTeacherProfile(input: TeacherProfileInput) {
     target_students: input.targetStudents ?? [],
     teaching_policy: input.teachingPolicy ?? null,
     teaching_types: input.teachingTypes ?? [],
+    qualification_labels: input.qualificationLabels ?? [],
+    subjects: input.subjects ?? [],
+    topics: input.topics ?? [],
+    levels: input.levels ?? [],
+    lesson_types: input.lessonTypes ?? [],
+    contact_methods: input.contactMethods ?? [],
+    lesson_styles: input.lessonStyles ?? [],
+    supports_in_person: input.supportsInPerson ?? false,
+    prefecture: input.prefecture ?? null,
+    city: input.city ?? null,
+    free_consultation: input.freeConsultation ?? false,
+    initial_free: input.initialFree ?? false,
     other_subjects: input.otherSubjects ?? [],
     extra_subjects: input.extraSubjects ?? [],
     lesson_format_detail: input.lessonFormatDetail ?? null,

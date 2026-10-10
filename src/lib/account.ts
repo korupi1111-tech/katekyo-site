@@ -37,7 +37,7 @@ export function toAccountAccess(user: User, row: AccountRow): AccountAccess {
     studentPlan: row.student_plan,
     emailVerified,
     phoneVerified,
-    teacherFeaturesEnabled: row.role === "teacher" && row.account_status === "active" && emailVerified && phoneVerified,
+    teacherFeaturesEnabled: row.role === "teacher" && emailVerified && (row.account_status === "pending_phone" || row.account_status === "active"),
   };
 }
 

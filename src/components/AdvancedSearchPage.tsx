@@ -1,12 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { getPublishedDirectoryTeachers, type DirectoryTeacher } from "../lib/teacherDirectory";
 import { ProfileModalShell, PublicProfileCard, type ProfileTemplateData } from "./ProfileTemplates";
+import { contactMethodOptions, lessonStyleOptions, lessonTypeOptions, levelOptionsForSubject, qualificationLabelOptions, subjectMatches, subjectOptions, teachingTypeOptions, topicOptionsForSubject } from "../lib/teacherLabels";
 import "../advanced-search.css";
-
-const englishTopics = ["長文読解", "英作文・ライティング", "英文法", "リスニング", "スピーキング", "英検対策", "共通テスト対策", "定期テスト対策", "過去問指導", "その他"];
-const mathTopics = ["計算", "文章題", "図形", "証明", "関数", "確率", "共通テスト対策", "定期テスト対策", "過去問指導", "その他"];
-const englishLevels = ["基礎から", "学校の授業補習", "定期テスト", "高校受験", "大学受験", "難関大学受験", "英検5級", "英検4級", "英検3級", "英検準2級", "英検2級", "英検準1級", "英検1級"];
-const mathLevels = ["基礎から", "定期テスト", "高校受験", "共通テスト", "大学受験", "難関大学受験"];
 
 type SearchFilters = {
   subject: string;
@@ -23,6 +19,7 @@ type SearchFilters = {
   initialFree: boolean;
   teachingTypes: string[];
   lessonStyles: string[];
+  qualificationLabels: string[];
   supportOptions: string[];
   verificationOptions: string[];
   minimumRank: string;
@@ -33,11 +30,11 @@ type SearchFilters = {
 const rankOrder = ["R", "SR", "SSR", "UR", "LR", "KING", "OMEGA", "GOD"];
 const initialFilters = (): SearchFilters => ({
   subject: "高校英語", topics: [], levels: [], lessonTypes: [], contactMethods: [], prefecture: "", city: "", recruitmentStatuses: [], minPrice: "", maxPrice: "", freeConsultation: false, initialFree: false,
-  teachingTypes: [], lessonStyles: [], supportOptions: [], verificationOptions: [], minimumRank: "", minimumLessonCount: "", minimumMatchRate: "",
+  teachingTypes: [], lessonStyles: [], qualificationLabels: [], supportOptions: [], verificationOptions: [], minimumRank: "", minimumLessonCount: "", minimumMatchRate: "",
 });
 
 function cloneFilters(filters: SearchFilters): SearchFilters {
-  return { ...filters, topics: [...filters.topics], levels: [...filters.levels], lessonTypes: [...filters.lessonTypes], contactMethods: [...filters.contactMethods], recruitmentStatuses: [...filters.recruitmentStatuses], teachingTypes: [...filters.teachingTypes], lessonStyles: [...filters.lessonStyles], supportOptions: [...filters.supportOptions], verificationOptions: [...filters.verificationOptions] };
+  return { ...filters, topics: [...filters.topics], levels: [...filters.levels], lessonTypes: [...filters.lessonTypes], contactMethods: [...filters.contactMethods], recruitmentStatuses: [...filters.recruitmentStatuses], teachingTypes: [...filters.teachingTypes], lessonStyles: [...filters.lessonStyles], qualificationLabels: [...filters.qualificationLabels], supportOptions: [...filters.supportOptions], verificationOptions: [...filters.verificationOptions] };
 }
 
 function toggleValue(values: string[], value: string) {
@@ -56,7 +53,7 @@ function toDirectoryProfile(teacher: DirectoryTeacher): ProfileTemplateData {
   const strengths = teacher.strengths.join("、") || "確認中";
   const limitations = teacher.limitations.join("、") || "確認中";
   return {
-    avatarSrc: "/demo-teacher-avatar.svg", avatarAlt: `${teacher.display_name}のプロフィール画像`, identityLabel: "DEMO TEACHER", name: teacher.display_name, targetLabel,
+    avatarSrc: "/demo-teacher-avatar.svg", avatarAlt: `${teacher.display_name}のプロフィール画像`, identityLabel: teacher.is_demo ? "DEMO TEACHER" : "REGISTERED TEACHER", name: teacher.display_name, targetLabel,
     title: teacher.catchphrase, titleAccent: teacher.main_subject, currentRank: teacher.current_rank, highestRank: teacher.highest_rank,
     qualifications: teacher.qualifications, qualificationVerified: teacher.qualification_verified, mockExamResult: teacher.mock_exam_result ?? "実績収集中", mockExamVerified: teacher.mock_exam_verified,
     education: teacher.education ?? "確認中", educationVerified: teacher.education_verified, contactMethod: teacher.contact_method ?? "確認中", gender: teacher.gender ?? "非公開", teachingExperience: teacher.teaching_experience ?? "確認中", lessonFormat: teacher.lesson_types.join("・"), recruitmentStatus: teacher.recruitment_status,
@@ -97,7 +94,7 @@ function matchesFilters(teacher: DirectoryTeacher, filters: SearchFilters) {
   const requestedStatuses = filters.recruitmentStatuses.flatMap(status => status === "受付中" ? ["受付中"] : status === "条件付き" ? ["残り1枠"] : ["募集停止中"]);
   const availableContactMethods = [...(teacher.supports_in_person ? ["対面"] : []), ...teacher.contact_methods];
 
-  return teacher.subjects.includes(filters.subject)
+  return subjectMatches(filters.subject, teacher.subjects)
     && includesAny(teacher.topics, filters.topics)
     && includesAny(teacher.levels, filters.levels)
     && includesAny(teacher.lesson_types, filters.lessonTypes)
@@ -111,6 +108,7 @@ function matchesFilters(teacher: DirectoryTeacher, filters: SearchFilters) {
     && (!filters.initialFree || teacher.initial_free)
     && includesAny(teacher.teaching_types, filters.teachingTypes)
     && includesAny(teacher.lesson_styles, filters.lessonStyles)
+    && includesAny(teacher.qualification_labels, filters.qualificationLabels)
     && supportMatches
     && verificationMatches
     && rankAtLeast(teacher.current_rank, filters.minimumRank)
@@ -137,8 +135,8 @@ export function AdvancedSearchPage({}: { onOpenTeacher?: () => void }) {
   const [appliedFilters, setAppliedFilters] = useState<SearchFilters>(initialFilters);
   const [more, setMore] = useState(false);
   const [applied, setApplied] = useState(false);
-  const topics = useMemo(() => filters.subject.includes("英語") ? englishTopics : mathTopics, [filters.subject]);
-  const levels = useMemo(() => filters.subject.includes("英語") ? englishLevels : mathLevels, [filters.subject]);
+  const topics = useMemo(() => topicOptionsForSubject(filters.subject), [filters.subject]);
+  const levels = useMemo(() => levelOptionsForSubject(filters.subject), [filters.subject]);
   const prefectures = useMemo(() => [...new Set(teachers.map(teacher => teacher.prefecture).filter((value): value is string => Boolean(value)))].sort(), [teachers]);
   const cities = useMemo(() => [...new Set(teachers.filter(teacher => !filters.prefecture || teacher.prefecture === filters.prefecture).map(teacher => teacher.city).filter((value): value is string => Boolean(value)))].sort(), [teachers, filters.prefecture]);
   const update = (partial: Partial<SearchFilters>) => setFilters(current => ({ ...current, ...partial }));
@@ -159,11 +157,11 @@ export function AdvancedSearchPage({}: { onOpenTeacher?: () => void }) {
     <section className="searchPanel" aria-label="講師検索条件">
       <div className="searchPanelHeading"><h2>基本条件</h2><button className="searchReset" onClick={clearFilters} type="button">条件をクリア</button></div>
       <div className="searchFieldGrid">
-        <label><b>科目</b><select value={filters.subject} onChange={event => update({ subject: event.target.value, topics: [], levels: [] })}>{["高校英語", "高校数学", "中学英語", "中学数学", "現代文", "高校理科", "中学国語", "小学生英語", "地理"].map(subject => <option key={subject}>{subject}</option>)}</select></label>
+        <label><b>科目</b><select value={filters.subject} onChange={event => update({ subject: event.target.value, topics: [], levels: [] })}>{subjectOptions.map(subject => <option key={subject}>{subject}</option>)}</select></label>
         <fieldset className="searchWide"><legend>何を教えてほしいですか？</legend><Chips values={topics} selected={filters.topics} onChange={topics => update({ topics })} /></fieldset>
         <fieldset className="searchWide"><legend>目標・レベル</legend><Chips values={levels} selected={filters.levels} onChange={levels => update({ levels })} /></fieldset>
-        <fieldset><legend>授業形式</legend><Chips values={["単発授業", "長期指導", "学習相談", "進路相談", "質問対応", "添削", "面接練習"]} selected={filters.lessonTypes} onChange={lessonTypes => update({ lessonTypes })} /></fieldset>
-        <fieldset><legend>対応方法</legend><Chips values={["対面", "オンライン通話", "メッセージ", "メール", "添削のみ"]} selected={filters.contactMethods} onChange={contactMethods => update({ contactMethods })} /></fieldset>
+        <fieldset><legend>授業形式</legend><Chips values={lessonTypeOptions} selected={filters.lessonTypes} onChange={lessonTypes => update({ lessonTypes })} /></fieldset>
+        <fieldset><legend>対応方法</legend><Chips values={contactMethodOptions} selected={filters.contactMethods} onChange={contactMethods => update({ contactMethods })} /></fieldset>
         {filters.contactMethods.includes("対面") && <fieldset className="searchWide regionFields"><legend>対応地域</legend><select aria-label="都道府県" value={filters.prefecture} onChange={event => update({ prefecture: event.target.value, city: "" })}><option value="">都道府県を選択</option>{prefectures.map(prefecture => <option key={prefecture}>{prefecture}</option>)}</select><select aria-label="市区町村" value={filters.city} onChange={event => update({ city: event.target.value })} disabled={!filters.prefecture}><option value="">市区町村を選択</option>{cities.map(city => <option key={city}>{city}</option>)}</select></fieldset>}
         <fieldset className="searchWide"><legend>募集状況</legend><div className="searchChecks"><label><input checked={filters.recruitmentStatuses.includes("受付中")} onChange={() => update({ recruitmentStatuses: toggleValue(filters.recruitmentStatuses, "受付中") })} type="checkbox" />募集中の講師のみ</label><label><input checked={filters.recruitmentStatuses.includes("条件付き")} onChange={() => update({ recruitmentStatuses: toggleValue(filters.recruitmentStatuses, "条件付き") })} type="checkbox" />条件付きで受付中の講師を含む</label><label><input checked={filters.recruitmentStatuses.includes("募集停止中")} onChange={() => update({ recruitmentStatuses: toggleValue(filters.recruitmentStatuses, "募集停止中") })} type="checkbox" />募集停止中の講師も表示する</label></div></fieldset>
         <label><b>料金</b><div className="priceRange"><select aria-label="料金の下限" value={filters.minPrice} onChange={event => update({ minPrice: event.target.value })}><option value="">下限なし</option><option value="0">無料</option><option value="1000">1,000円</option><option value="2000">2,000円</option><option value="3000">3,000円</option></select>から<select aria-label="料金の上限" value={filters.maxPrice} onChange={event => update({ maxPrice: event.target.value })}><option value="">上限なし</option><option value="1000">1,000円</option><option value="2000">2,000円</option><option value="3000">3,000円</option><option value="5000">5,000円</option></select></div></label>
@@ -173,7 +171,7 @@ export function AdvancedSearchPage({}: { onOpenTeacher?: () => void }) {
     </section>
     <DirectoryResults teachers={teachers} loading={loading} error={error} filters={appliedFilters} />
     <button className="moreSearchToggle" aria-expanded={more} onClick={() => setMore(!more)}>さらに詳しく探す <span>{more ? "−" : "＋"}</span></button>
-    {more && <section className="searchPanel detailedSearch"><h2>詳細条件</h2><div className="searchFieldGrid"><fieldset><legend>指導タイプ <small>最大2つ</small></legend><Chips values={["感覚型", "理論型", "暗記型", "演習型", "その他"]} selected={filters.teachingTypes} onChange={teachingTypes => update({ teachingTypes })} limit={2} /></fieldset><fieldset><legend>授業の進め方</legend><Chips values={["質問重視", "演習重視", "精読重視", "添削重視", "アウトプット重視", "インプット重視", "対話重視", "生徒に合わせて変更"]} selected={filters.lessonStyles} onChange={lessonStyles => update({ lessonStyles })} /></fieldset><fieldset><legend>授業外サポート</legend><div className="searchChecks">{["質問対応あり", "添削対応あり", "学習管理あり"].map(option => <label key={option}><input checked={filters.supportOptions.includes(option)} onChange={() => update({ supportOptions: toggleValue(filters.supportOptions, option) })} type="checkbox" />{option}</label>)}</div></fieldset><fieldset><legend>確認・実績</legend><div className="searchChecks">{["本人確認済み", "学歴確認済み", "資格確認済み", "成績確認済み"].map(option => <label key={option}><input checked={filters.verificationOptions.includes(option)} onChange={() => update({ verificationOptions: toggleValue(filters.verificationOptions, option) })} type="checkbox" />{option}</label>)}</div></fieldset><label><b>講師ランク</b><select value={filters.minimumRank} onChange={event => update({ minimumRank: event.target.value })}><option value="">指定なし</option>{rankOrder.map(rank => <option key={rank} value={rank}>{rank}以上</option>)}</select></label><label><b>確認済み授業数</b><select value={filters.minimumLessonCount} onChange={event => update({ minimumLessonCount: event.target.value })}><option value="">指定なし</option><option value="10">10回以上</option><option value="30">30回以上</option><option value="50">50回以上</option><option value="100">100回以上</option><option value="300">300回以上</option></select></label><label><b>プロフィール一致率</b><select value={filters.minimumMatchRate} onChange={event => update({ minimumMatchRate: event.target.value })}><option value="">指定なし</option><option value="0">評価蓄積中を含む</option><option value="80">80％以上</option><option value="90">90％以上</option><option value="95">95％以上</option></select></label></div><button className="searchApply" onClick={applyFilters} type="button">詳細条件を適用する</button></section>}
+    {more && <section className="searchPanel detailedSearch"><h2>詳細条件</h2><div className="searchFieldGrid"><fieldset><legend>指導タイプ <small>最大2つ</small></legend><Chips values={teachingTypeOptions} selected={filters.teachingTypes} onChange={teachingTypes => update({ teachingTypes })} limit={2} /></fieldset><fieldset><legend>授業の進め方</legend><Chips values={lessonStyleOptions} selected={filters.lessonStyles} onChange={lessonStyles => update({ lessonStyles })} /></fieldset><fieldset className="searchWide"><legend>資格・認定 <small>講師の自己申告ラベル</small></legend><Chips values={qualificationLabelOptions} selected={filters.qualificationLabels} onChange={qualificationLabels => update({ qualificationLabels })} /></fieldset><fieldset><legend>授業外サポート</legend><div className="searchChecks">{["質問対応あり", "添削対応あり", "学習管理あり"].map(option => <label key={option}><input checked={filters.supportOptions.includes(option)} onChange={() => update({ supportOptions: toggleValue(filters.supportOptions, option) })} type="checkbox" />{option}</label>)}</div></fieldset><fieldset><legend>確認・実績</legend><div className="searchChecks">{["本人確認済み", "学歴確認済み", "資格確認済み", "成績確認済み"].map(option => <label key={option}><input checked={filters.verificationOptions.includes(option)} onChange={() => update({ verificationOptions: toggleValue(filters.verificationOptions, option) })} type="checkbox" />{option}</label>)}</div></fieldset><label><b>講師ランク</b><select value={filters.minimumRank} onChange={event => update({ minimumRank: event.target.value })}><option value="">指定なし</option>{rankOrder.map(rank => <option key={rank} value={rank}>{rank}以上</option>)}</select></label><label><b>確認済み授業数</b><select value={filters.minimumLessonCount} onChange={event => update({ minimumLessonCount: event.target.value })}><option value="">指定なし</option><option value="10">10回以上</option><option value="30">30回以上</option><option value="50">50回以上</option><option value="100">100回以上</option><option value="300">300回以上</option></select></label><label><b>プロフィール一致率</b><select value={filters.minimumMatchRate} onChange={event => update({ minimumMatchRate: event.target.value })}><option value="">指定なし</option><option value="0">評価蓄積中を含む</option><option value="80">80％以上</option><option value="90">90％以上</option><option value="95">95％以上</option></select></label></div><button className="searchApply" onClick={applyFilters} type="button">詳細条件を適用する</button></section>}
     <section className="concernSearch"><span>SEARCH BY CONCERN</span><h2>悩みから探す</h2><div>{[["英語", ["長文の点数が安定しない", "感覚で読んでいて、解答根拠を説明できない", "英作文を添削してほしい", "英文法を基礎から学び直したい", "英検対策をしてほしい", "TOEIC対策をしてほしい", "一問だけ質問したい"]], ["数学", ["計算ミスが多い", "公式は覚えているが使い方が分からない", "解説を読んでも理解できない", "証明問題が苦手", "共通テスト対策をしたい", "難関大学の記述対策をしたい", "一問だけ質問したい"]], ["学習全般", ["勉強方法を相談したい", "学習計画を立ててほしい", "進路について相談したい", "志望校を決めたい", "面接練習をしたい", "志望理由書を添削してほしい"]]].map(([title, values]) => <article key={title as string}><h3>{title}</h3><ul>{(values as string[]).map(value => <li key={value}><button>{value}</button></li>)}</ul></article>)}</div></section>
   </main>;
 }

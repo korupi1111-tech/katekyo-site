@@ -2,6 +2,7 @@ import { supabase } from "./supabase";
 
 export type DirectoryTeacher = {
   id: string;
+  is_demo: boolean;
   display_name: string;
   catchphrase: string;
   main_subject: string;
@@ -11,6 +12,7 @@ export type DirectoryTeacher = {
   lesson_types: string[];
   contact_methods: string[];
   teaching_types: string[];
+  qualification_labels: string[];
   lesson_styles: string[];
   supports_in_person: boolean;
   prefecture: string | null;
