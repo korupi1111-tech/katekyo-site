@@ -10,6 +10,10 @@ type Screen = "account" | "verify-email";
 const cooldownSeconds = 60;
 const accountRetryCount = 4;
 const normalizeEmail = (value: string) => value.trim().toLowerCase();
+const verificationErrorMessage = (error: unknown) => {
+  const code = typeof error === "object" && error !== null && "code" in error && typeof error.code === "string" ? error.code : "unknown";
+  return `認証コードが正しくないか、有効期限が切れています。最新のメールに届いたコードを確認してください。（確認コード: ${code}）`;
+};
 export function AuthPage({ teacher, onAuthenticated }: Props) {
   const [mode, setMode] = useState<Mode>("register");
   const [screen, setScreen] = useState<Screen>("account");
@@ -113,8 +117,8 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
     setBusy(true); setMessage("");
     try {
       await verifySignupEmailCode(normalizeEmail(email), code);
-    } catch {
-      setMessage("認証コードが正しくないか、有効期限が切れています。最新のメールに届いたコードを確認してください。");
+    } catch (error) {
+      setMessage(verificationErrorMessage(error));
       setBusy(false);
       return;
     }
