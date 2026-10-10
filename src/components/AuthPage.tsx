@@ -8,6 +8,8 @@ type Mode = "register" | "login";
 type Screen = "account" | "verify-email";
 
 const cooldownSeconds = 60;
+const accountRetryCount = 4;
+const normalizeEmail = (value: string) => value.trim().toLowerCase();
 export function AuthPage({ teacher, onAuthenticated }: Props) {
   const [mode, setMode] = useState<Mode>("register");
   const [screen, setScreen] = useState<Screen>("account");
@@ -34,6 +36,15 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
     ? "講師機能の利用には、メールアドレスと電話番号の両方の確認が必要です。"
     : "生徒登録は無料です。まずメールアドレスの確認を完了してください。", [teacher]);
 
+  const getConfirmedAccount = async () => {
+    for (let attempt = 0; attempt < accountRetryCount; attempt += 1) {
+      const account = await getCurrentAccount();
+      if (account) return account;
+      if (attempt < accountRetryCount - 1) await new Promise(resolve => window.setTimeout(resolve, 350));
+    }
+    return null;
+  };
+
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!supabase) { setMessage("Supabaseの接続設定が見つかりません。開発サーバーを再起動してからお試しください。"); return; }
@@ -41,7 +52,7 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
     setBusy(true); setMessage("");
     try {
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({ email: normalizeEmail(email), password });
         if (error) {
           if (/email.*confirm|confirm.*email|not confirmed/i.test(error.message)) {
             setScreen("verify-email");
@@ -56,7 +67,7 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
         return;
       }
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: normalizeEmail(email),
         password,
         options: {
           data: {
@@ -84,7 +95,7 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
   const resend = async () => {
     if (resendWait || !email) return;
     setBusy(true); setMessage("");
-    try { await resendConfirmation(email); setCode(""); setResendWait(cooldownSeconds); setMessage("認証コードを再送しました。最新のメールに届いたコードを入力してください。"); }
+    try { await resendConfirmation(normalizeEmail(email)); setCode(""); setResendWait(cooldownSeconds); setMessage("認証コードを再送しました。最新のメールに届いたコードを入力してください。"); }
     catch (error) { setMessage(error instanceof Error ? error.message : "再送に失敗しました。"); }
     finally { setBusy(false); }
   };
@@ -94,12 +105,18 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
     if (!/^\d{6}$/.test(code)) { setMessage("メールで届いた6桁の認証コードを入力してください。"); return; }
     setBusy(true); setMessage("");
     try {
-      await verifySignupEmailCode(email, code);
-      const account = await getCurrentAccount();
-      if (!account) throw new Error("アカウント情報を確認できませんでした。もう一度ログインしてください。");
-      onAuthenticated(account.role === "teacher" ? "teacher-dashboard" : "student-dashboard");
+      await verifySignupEmailCode(normalizeEmail(email), code);
     } catch {
       setMessage("認証コードが正しくないか、有効期限が切れています。最新のメールに届いたコードを確認してください。");
+      setBusy(false);
+      return;
+    }
+    try {
+      const account = await getConfirmedAccount();
+      if (!account) throw new Error("プロフィール情報が作成されていません。");
+      onAuthenticated(account.role === "teacher" ? "teacher-dashboard" : "student-dashboard");
+    } catch {
+      setMessage("メール認証は完了しましたが、マイページの準備に失敗しました。プロフィール用データベースの同期設定を確認してください。");
     } finally { setBusy(false); }
   };
 
