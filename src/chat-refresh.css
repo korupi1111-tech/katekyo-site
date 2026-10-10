@@ -1,0 +1,20 @@
+.chatSidebarActions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.chatSidebarHead .chatRefresh {
+  width: 34px;
+  height: 34px;
+  color: #173a35;
+  background: #fff;
+  border: 1px solid #d6e1dc;
+  box-shadow: none;
+}
+
+.chatSidebarHead .chatRefresh:hover {
+  color: #fff;
+  background: #0e6254;
+  border-color: #0e6254;
+}

@@ -1,9 +1,10 @@
-import { ChevronLeft, MessageCircle, Plus, Send } from "lucide-react";
+import { ChevronLeft, MessageCircle, Plus, RefreshCw, Send } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getCurrentAccount, type AccountAccess } from "../lib/account";
 import { getChatMessages, getMyChatConversations, getPublicTeacherContacts, sendChatMessage, startChatWithTeacher, subscribeToChatMessages, type ChatConversation, type ChatMessage, type PublicTeacherContact } from "../lib/siteChat";
 import "../chat-list.css";
 import "../chat-message.css";
+import "../chat-refresh.css";
 
 const avatarColors = ["#2d7c71", "#96783f", "#496f9d", "#80647f"];
 const formatMessageTime = (value: string | null) => {
@@ -93,6 +94,17 @@ export function ChatListPage({ onBack }: { onBack: () => void }) {
     } finally { setSending(false); }
   };
 
+  const refresh = async () => {
+    setStatus("");
+    try {
+      await loadConversations();
+      if (selectedId) await loadMessages(selectedId);
+      setStatus("最新のメッセージを読み込みました。");
+    } catch {
+      setStatus("最新のメッセージを読み込めませんでした。時間をおいて再度お試しください。");
+    }
+  };
+
   if (loading || account === undefined) return <main className="chatListPage withTopbar"><p className="chatState">チャットを読み込んでいます…</p></main>;
   if (!account) return <main className="chatListPage withTopbar"><section className="chatAccess"><h1>チャットを利用するにはログインしてください</h1><p>会話内容は講師・生徒の参加者だけに保存・表示されます。</p><button type="button" onClick={onBack}>戻る</button></section></main>;
 
@@ -105,7 +117,7 @@ export function ChatListPage({ onBack }: { onBack: () => void }) {
     </header>
     <section className="chatWorkspace" aria-label="チャット">
       <div className="chatSidebar">
-        <div className="chatSidebarHead"><h2>トーク</h2>{account.role === "student" && <button type="button" aria-label="新しい会話を始める" onClick={() => setComposerOpen(true)}><Plus /></button>}</div>
+        <div className="chatSidebarHead"><h2>トーク</h2><span className="chatSidebarActions"><button type="button" className="chatRefresh" aria-label="最新のメッセージを再読み込み" title="最新のメッセージを再読み込み" onClick={() => void refresh()}><RefreshCw size={16} /></button>{account.role === "student" && <button type="button" aria-label="新しい会話を始める" onClick={() => setComposerOpen(true)}><Plus /></button>}</span></div>
         <div className="chatRows">
           {conversations.map((conversation, index) => <button type="button" className={selected?.id === conversation.id ? "active" : ""} key={conversation.id} onClick={() => { setSelectedId(conversation.id); setComposerOpen(false); }}>
             <span className="chatAvatar" style={{ background: avatarColors[index % avatarColors.length] }}>{counterpart(conversation, account).slice(0, 1)}</span>
