@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getPublishedDirectoryTeachers, type DirectoryTeacher } from "../lib/teacherDirectory";
 import "../advanced-search.css";
+import "../directory-result-refinement.css";
 
 const englishTopics = ["長文読解", "英作文・ライティング", "英文法", "リスニング", "スピーキング", "英検対策", "共通テスト対策", "定期テスト対策", "過去問指導", "その他"];
 const mathTopics = ["計算", "文章題", "図形", "証明", "関数", "確率", "共通テスト対策", "定期テスト対策", "過去問指導", "その他"];

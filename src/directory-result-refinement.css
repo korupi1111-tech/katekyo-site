@@ -1,0 +1,35 @@
+/* Search cards follow the same hierarchy as the featured site-owner profile. */
+.directoryTeacherGrid { grid-template-columns: 1fr; gap: 20px; }
+.directoryTeacherCard { overflow: hidden; border: 1px solid #143d4c; border-radius: 10px; padding: 0; box-shadow: 0 14px 30px rgba(13, 44, 53, .10); }
+.directoryTeacherCard > header,
+.directoryTeacherCard > .directoryIdentity,
+.directoryTeacherCard > .directorySummary,
+.directoryTeacherCard > .directoryTags { margin: 0; background: #153f4b; color: #fff; }
+.directoryTeacherCard > header { padding: 18px 26px 0; }
+.directoryTeacherCard > header span { background: rgba(255,255,255,.12); color: #e9f3f1; }
+.directoryTeacherCard > header b { background: #f0d48a; color: #533f13; }
+.directoryIdentity { gap: 16px; padding: 13px 26px 14px; }
+.directoryIdentity > i { width: 72px; height: 72px; border: 2px solid rgba(255,255,255,.78); border-radius: 8px; background: linear-gradient(145deg,#2c6670,#194755); color: #f0d48a; font-family: Georgia, serif; font-size: 31px; }
+.directoryIdentity small { color: #e7cc83; font-size: 11px; }
+.directoryIdentity h3 { margin: 3px 0; color: #fff; font-family: Georgia, "Yu Mincho", serif; font-size: 25px; }
+.directoryIdentity p { color: #e4eeee; font-size: 14px; }
+.directorySummary { min-height: 0; margin: 0; padding: 0 26px 14px; color: #e8f0ef; font-size: 14px; }
+.directoryTags { padding: 0 26px 19px; border-bottom: 1px solid rgba(228,238,238,.26); }
+.directoryTags span { border: 1px solid rgba(228,238,238,.26); border-radius: 5px; background: rgba(255,255,255,.1); color: #e8f0ef; }
+.directoryTeacherCard dl { margin: 0; padding: 16px 26px; border: 0; background: #fff; }
+.directoryTeacherCard dl div { padding: 0 14px; border-color: #dbe5e1; }
+.directoryTeacherCard dd { color: #164957; font-size: 15px; }
+.directoryFree { margin: 0; padding: 0 26px 18px; background: #fff; color: #9a7629; }
+.directoryTeacherCard:has(.directoryFree) dl { padding-bottom: 9px; }
+
+@media (max-width: 760px) {
+  .directoryTeacherCard > header { padding: 15px 16px 0; }
+  .directoryIdentity { padding: 11px 16px 12px; }
+  .directoryIdentity > i { width: 58px; height: 58px; font-size: 25px; }
+  .directoryIdentity h3 { font-size: 20px; }
+  .directorySummary { padding: 0 16px 12px; font-size: 13px; }
+  .directoryTags { padding: 0 16px 15px; }
+  .directoryTeacherCard dl { padding: 14px 16px; }
+  .directoryTeacherCard dl div { padding: 0 8px; }
+  .directoryFree { padding: 0 16px 15px; }
+}
