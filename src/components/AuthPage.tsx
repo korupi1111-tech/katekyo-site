@@ -98,15 +98,15 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
       const account = await getCurrentAccount();
       if (!account) throw new Error("アカウント情報を確認できませんでした。もう一度ログインしてください。");
       onAuthenticated(account.role === "teacher" ? "teacher-dashboard" : "student-dashboard");
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "認証に失敗しました。コードを確認してもう一度お試しください。");
+    } catch {
+      setMessage("認証コードが正しくないか、有効期限が切れています。最新のメールに届いたコードを確認してください。");
     } finally { setBusy(false); }
   };
 
   if (screen === "verify-email") return <main className="auth withTopbar"><span>{teacher ? "FOR TEACHERS" : "FOR STUDENTS & FAMILIES"}</span><h1>メール認証</h1><p className="authDescription">{email} 宛に届いた6桁の認証コードを入力してください。メール内のリンクを開く必要はありません。</p>
     <form onSubmit={verifyEmail}>
       <label>メールアドレス<input required type="email" value={email} onChange={event => setEmail(event.target.value)} autoComplete="email" /></label>
-      <label>認証コード<input className="authCodeInput" required inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={event => setCode(event.target.value.replace(/\D/g, ""))} placeholder="123456" /><small>6桁の数字を入力してください。</small></label>
+      <label>認証コード<input className="authCodeInput" required inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={event => setCode(event.target.value.replace(/\D/g, ""))} placeholder="123456" /><small>メールに届いた6桁の数字を入力してください。</small></label>
       <button disabled={busy} type="submit">{busy ? "認証中…" : "メールアドレスを認証する"}</button>
     </form>
     <button className="outline" type="button" disabled={busy || resendWait > 0 || !email} onClick={resend}>{resendWait ? `認証コードを再送する（${resendWait}秒）` : "認証コードを再送する"}</button>

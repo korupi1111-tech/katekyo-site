@@ -2,3 +2,6 @@
 # (input validation, honeypot, and per-email rate limiting).
 [functions.send-inquiry]
 verify_jwt = false
+
+[auth.email]
+otp_length = 6
