@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { getPublishedDirectoryTeachers, type DirectoryTeacher } from "../lib/teacherDirectory";
 import "../advanced-search.css";
 
 const englishTopics = ["長文読解", "英作文・ライティング", "英文法", "リスニング", "スピーキング", "英検対策", "共通テスト対策", "定期テスト対策", "過去問指導", "その他"];
@@ -8,6 +9,28 @@ const mathLevels = ["基礎から", "定期テスト", "高校受験", "共通�
 
 function Chips({ values }: { values: string[] }) {
   return <div className="searchChips">{values.map(value => <label key={value}><input type="checkbox" />{value}</label>)}</div>;
+}
+
+function DirectoryResults({ subject, inPerson }: { subject: string; inPerson: boolean }) {
+  const [teachers, setTeachers] = useState<DirectoryTeacher[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    void getPublishedDirectoryTeachers()
+      .then(data => { if (active) setTeachers(data); })
+      .catch(() => { if (active) setError("講師データを読み込めませんでした。接続設定または公開設定を確認してください。"); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, []);
+
+  const results = teachers.filter(teacher => teacher.subjects.includes(subject) && (!inPerson || teacher.supports_in_person));
+
+  return <section className="directoryResults" aria-live="polite">
+    <div className="directoryResultsHead"><div><span>DATABASE RESULTS</span><h2>講師検索結果</h2></div><b>{loading ? "読み込み中" : `${results.length}人`}</b></div>
+    {error ? <p className="directoryState">{error}</p> : loading ? <p className="directoryState">公開中の講師データを読み込んでいます。</p> : results.length === 0 ? <p className="directoryState">条件に合う講師が見つかりませんでした。条件を少し広げてお試しください。</p> : <div className="directoryTeacherGrid">{results.map(teacher => <article className="directoryTeacherCard" key={teacher.id}><header><span>{teacher.main_subject}</span><b>{teacher.recruitment_status}</b></header><div className="directoryIdentity"><i aria-hidden="true">{teacher.display_name.slice(0, 1)}</i><div><small>RANK {teacher.current_rank}</small><h3>{teacher.display_name}</h3><p>{teacher.catchphrase}</p></div></div><p className="directorySummary">{teacher.summary}</p><div className="directoryTags">{[...teacher.topics, ...teacher.levels].slice(0, 4).map(tag => <span key={tag}>{tag}</span>)}</div><dl><div><dt>確認済み授業</dt><dd>{teacher.verified_lesson_count}回</dd></div><div><dt>一致率</dt><dd>{teacher.profile_match_rate === null ? "蓄積中" : `${teacher.profile_match_rate}%`}</dd></div><div><dt>料金</dt><dd>{teacher.price_yen.toLocaleString()}円</dd></div></dl>{teacher.free_consultation && <p className="directoryFree">無料相談あり</p>}</article>)}</div>}
+  </section>;
 }
 
 export function AdvancedSearchPage({}: { onOpenTeacher?: () => void }) {
@@ -33,8 +56,9 @@ export function AdvancedSearchPage({}: { onOpenTeacher?: () => void }) {
         <label><b>料金</b><div className="priceRange"><select><option>下限なし</option><option>無料</option><option>1,000円</option></select>から<select><option>上限なし</option><option>2,000円</option><option>5,000円</option></select></div></label>
         <div className="searchChecks feeChecks"><label><input type="checkbox" />無料相談あり</label><label><input type="checkbox" />初回無料あり</label></div>
       </div>
-      <button className="searchApply" onClick={() => setApplied(true)}>この条件で検索する</button>{applied && <p className="searchApplied">条件を適用しました。講師データとの絞り込み連携は、プロフィール登録データの整備後に追加します。</p>}
+      <button className="searchApply" onClick={() => setApplied(true)}>この条件で検索する</button>{applied && <p className="searchApplied">講師データベースの検索結果を更新しました。</p>}
     </section>
+    <DirectoryResults subject={subject} inPerson={inPerson} />
     <button className="moreSearchToggle" aria-expanded={more} onClick={() => setMore(!more)}>さらに詳しく探す <span>{more ? "−" : "＋"}</span></button>
     {more && <section className="searchPanel detailedSearch"><h2>詳細条件</h2><div className="searchFieldGrid"><fieldset><legend>指導タイプ <small>最大2つ</small></legend><Chips values={["感覚型", "理論型", "暗記型", "演習型", "その他"]} /></fieldset><fieldset><legend>授業の進め方</legend><Chips values={["質問重視", "演習重視", "精読重視", "添削重視", "アウトプット重視", "インプット重視", "対話重視", "生徒に合わせて変更"]} /></fieldset><fieldset><legend>授業外サポート</legend><div className="searchChecks"><label><input type="checkbox" />質問対応あり</label><label><input type="checkbox" />添削対応あり</label><label><input type="checkbox" />学習管理あり</label></div></fieldset><fieldset><legend>確認・実績</legend><div className="searchChecks"><label><input type="checkbox" />本人確認済み</label><label><input type="checkbox" />学歴確認済み</label><label><input type="checkbox" />資格確認済み</label><label><input type="checkbox" />成績確認済み</label></div></fieldset><label><b>講師ランク</b><select><option>指定なし</option><option>R以上</option><option>SR以上</option><option>SSR以上</option><option>UR以上</option><option>LR以上</option><option>KING以上</option><option>OMEGA</option></select></label><label><b>確認済み授業数</b><select><option>指定なし</option><option>10回以上</option><option>30回以上</option><option>50回以上</option><option>100回以上</option><option>300回以上</option></select></label><label><b>プロフィール一致率</b><select><option>指定なし</option><option>評価蓄積中を含む</option><option>80％以上</option><option>90％以上</option><option>95％以上</option></select></label></div><button className="searchApply">詳細条件を適用する</button></section>}
     <section className="concernSearch"><span>SEARCH BY CONCERN</span><h2>悩みから探す</h2><div>{[["英語", ["長文の点数が安定しない", "感覚で読んでいて、解答根拠を説明できない", "英作文を添削してほしい", "英文法を基礎から学び直したい", "英検対策をしてほしい", "TOEIC対策をしてほしい", "一問だけ質問したい"]], ["数学", ["計算ミスが多い", "公式は覚えているが使い方が分からない", "解説を読んでも理解できない", "証明問題が苦手", "共通テスト対策をしたい", "難関大学の記述対策をしたい", "一問だけ質問したい"]], ["学習全般", ["勉強方法を相談したい", "学習計画を立ててほしい", "進路について相談したい", "志望校を決めたい", "面接練習をしたい", "志望理由書を添削してほしい"]]].map(([title, values]) => <article key={title as string}><h3>{title}</h3><ul>{(values as string[]).map(value => <li key={value}><button>{value}</button></li>)}</ul></article>)}</div></section>

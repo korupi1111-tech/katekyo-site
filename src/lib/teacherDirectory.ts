@@ -1,0 +1,42 @@
+import { supabase } from "./supabase";
+
+export type DirectoryTeacher = {
+  id: string;
+  display_name: string;
+  catchphrase: string;
+  main_subject: string;
+  subjects: string[];
+  topics: string[];
+  levels: string[];
+  lesson_types: string[];
+  contact_methods: string[];
+  teaching_types: string[];
+  lesson_styles: string[];
+  supports_in_person: boolean;
+  prefecture: string | null;
+  city: string | null;
+  recruitment_status: string;
+  price_yen: number;
+  free_consultation: boolean;
+  initial_free: boolean;
+  education_verified: boolean;
+  qualification_verified: boolean;
+  mock_exam_verified: boolean;
+  current_rank: string;
+  verified_lesson_count: number;
+  profile_match_rate: number | null;
+  summary: string | null;
+};
+
+export async function getPublishedDirectoryTeachers() {
+  if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。");
+
+  const { data, error } = await supabase
+    .from("teacher_directory")
+    .select("*")
+    .eq("is_published", true)
+    .order("price_yen", { ascending: true });
+
+  if (error) throw error;
+  return (data ?? []) as DirectoryTeacher[];
+}
