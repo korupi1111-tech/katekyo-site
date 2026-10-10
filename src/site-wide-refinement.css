@@ -380,6 +380,18 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
 .ownerProfileQuickFacts b { color: #194b57; font-size: 14px; }
 .ownerProfileQuickFacts article:last-child b { color: #9a7629; font-family: Georgia, serif; font-size: 22px; line-height: 1; }
 .ownerProfileQuickFacts small { margin-top: 6px; color: #637772; font-family: inherit; font-size: 10px; font-weight: 700; line-height: 1.35; }
+.featuredTeacherSection .ownerPriceStack span:last-child,
+.ownerProfileQuickFacts article:last-child small { font-size: 0; }
+.featuredTeacherSection .ownerPriceStack span:last-child::after,
+.ownerProfileQuickFacts article:last-child small::after {
+  content: "メール相談無料開放中！";
+  display: block;
+  color: #9a7629;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.35;
+}
 .ownerProfileResultsCompact { margin-top: 14px !important; }
 .ownerProfileResultsNote { margin: 12px 0 0 !important; padding: 10px 12px !important; border: 0 !important; border-left: 3px solid #b08a32 !important; background: #fffaf0; color: #5f665c; font-size: 12px; line-height: 1.6; }
 
