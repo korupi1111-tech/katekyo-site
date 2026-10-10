@@ -69,9 +69,9 @@ export async function verifySignupEmailCode(email: string, token: string): Promi
   const { error } = await supabase.auth.verifyOtp({
     email,
     token,
-    // 登録確認メールは signup 用のOTPとして発行されるため、
-    // resend と同じ種別でSupabaseに検証させる。
-    type: "signup",
+    // Supabaseの登録確認メール内のOTPは email 型として検証する。
+    // resend の用途（signup）と verifyOtp の検証種別は異なる。
+    type: "email",
   });
   if (error) throw error;
 }

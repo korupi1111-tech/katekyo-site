@@ -56,7 +56,14 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
         if (error) {
           if (/email.*confirm|confirm.*email|not confirmed/i.test(error.message)) {
             setScreen("verify-email");
-            setMessage("メールアドレスの認証がまだ完了していません。メールで届いた6桁の認証コードを入力してください。");
+            try {
+              await resendConfirmation(normalizeEmail(email));
+              setCode("");
+              setResendWait(cooldownSeconds);
+              setMessage("メールアドレスの認証がまだ完了していません。最新の6桁の認証コードを再送しました。");
+            } catch {
+              setMessage("メールアドレスの認証がまだ完了していません。認証コードを入力するか、再送ボタンで最新のコードを取得してください。");
+            }
             return;
           }
           throw error;
