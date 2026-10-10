@@ -37,6 +37,8 @@ export type DirectoryTeacher = {
   strengths: string[];
   limitations: string[];
   teaching_policy: string | null;
+  other_subjects: string[];
+  extra_subjects: string[];
 };
 
 export async function getPublishedDirectoryTeachers() {

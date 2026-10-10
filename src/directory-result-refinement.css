@@ -57,6 +57,37 @@
 .directoryAreas p { margin: 6px 0; color: #475d57; font-size: 13px; line-height: 1.6; }
 .directoryAreas > article:nth-child(2) span { display: inline-block; margin: 4px 5px 0 0; border: 1px solid #d5b65f; border-radius: 5px; background: #fffbef; padding: 4px 6px; color: #755719; font-size: 10px; font-weight: 900; }
 
+/* Same layout values as the featured owner profile on the home page. */
+.directoryOwnerLayout { border: 1px solid #143d4c; border-radius: 10px; background: #102f40; box-shadow: 0 22px 45px rgba(13,44,53,.16); }
+.directoryOwnerLayout .ownerCompactHeader { display: grid; width: 100%; min-height: 204px; margin: 0; grid-template-columns: 96px 106px minmax(0, 1fr); gap: 17px; padding: 25px 180px 19px 27px; border-radius: 9px 9px 0 0; background: linear-gradient(120deg,#102f40,#184858 65%,#245e65); color: #fff; }
+.directoryOwnerLayout .ownerPublicCurrentRank { grid-column: 1; grid-row: 1; color: #e6cc82; text-align: center; }
+.directoryOwnerLayout .ownerPublicCurrentRank small { color: #e6cc82; font-size: 11px; }
+.directoryRankBadge { display: grid; place-items: center; width: 84px; height: 84px; margin: 4px auto 0; border: 2px solid #e6cc82; border-radius: 50%; background: radial-gradient(circle at 35% 28%,#456f79,#102f40 68%); color: #f0d48a; font-family: Georgia, serif; font-size: 24px; font-weight: 900; box-shadow: inset 0 0 0 4px rgba(240,212,138,.16); }
+.directoryRankBadgeSmall { display: inline-grid; width: 54px; height: 54px; margin: 0; font-size: 15px; }
+.directoryAvatar { display: grid; grid-column: 2; grid-row: 1; place-items: center; width: 106px; height: 106px; border: 2px solid rgba(255,255,255,.77); border-radius: 8px; background: linear-gradient(145deg,#326c73,#173f4d); box-shadow: 0 8px 18px rgba(0,0,0,.20); color: #f0d48a; font-family: Georgia, serif; font-size: 44px; font-weight: 900; }
+.directoryOwnerLayout .ownerCompactIdentity { grid-column: 3; grid-row: 1; min-width: 0; }
+.directoryOwnerLayout .ownerCompactIdentity > small { color: #e6cc82; font-size: 11px; font-weight: 900; letter-spacing: .1em; }
+.directoryOwnerLayout .ownerCompactIdentity h2 { margin: 7px 0 12px; color: #fff; font-family: Georgia,"Yu Mincho",serif; font-size: clamp(24px,2.5vw,33px); letter-spacing: .02em; }
+.directoryOwnerLayout .ownerQualificationRow, .directoryOwnerLayout .ownerScore { color: #e4eeee; }
+.directoryOwnerLayout .ownerQualificationRow > span:first-child { border: 1px solid rgba(228,238,238,.28); background: rgba(255,255,255,.1); }
+.directoryOwnerLayout .ownerQualificationRow b, .directoryOwnerLayout .ownerScore b { color: #f0d48a; }
+.directoryOwnerLayout .ownerHighestRank { color: #e4eeee; font-size: 14px; }
+.directoryOwnerLayout .ownerCompactMeta { grid-column: 1 / -1; grid-row: 2; align-self: stretch; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 7px 22px; padding: 13px 0 0; border-top: 1px solid rgba(228,238,238,.26); border-left: 0; color: #ecf3f3; }
+.directoryOwnerLayout .ownerCompactMeta p, .directoryOwnerLayout .ownerCompactMeta > div { color: inherit; }
+.directoryOwnerLayout .ownerCompactMeta > div { grid-column: 1 / -1; }
+.directoryOwnerLayout .ownerCompactMeta b { color: #e7cc83; }
+.directoryOwnerLayout .ownerPriceStack { position: absolute; top: 21px; right: 56px; width: 100px; color: #f0d48a; }
+.directoryOwnerLayout .ownerPriceStack strong { color: #f0d48a; font-size: 34px; }
+.directoryOwnerLayout .ownerPriceStack span { color: #e8f0ef; }
+.directoryOwnerLayout .ownerPublicResults { margin: 0; padding: 18px 28px 15px; border-top-color: #d7e3df; border-bottom-color: #d7e3df; background: #fff; }
+.directoryOwnerLayout .ownerPublicResults h3 { color: #174956; font-size: 14px; letter-spacing: .12em; }
+.directoryOwnerLayout .ownerPublicResults b { color: #0b6257; font-size: 16px; }
+.directoryOwnerLayout .ownerPublicAreas { margin: 0; padding: 0 28px 23px; border-top-color: #dce6e2; background: #fff; }
+.directoryOwnerLayout .ownerPublicAreas article { border-color: #dce6e2; }
+.directoryOwnerLayout .ownerPublicAreas h3 { color: #164957; }
+.directoryOwnerLayout .ownerTargetLevel { border-color: #d5b65f; background: #fffbef; color: #755719; }
+.directoryOwnerLayout .ownerPublicDetail { display: block; margin: 0; padding: 0 28px 24px; background: #fff; color: #075f52; font-weight: 900; }
+
 @media (max-width: 760px) {
   .directoryTeacherCard > header { padding: 15px 16px 0; }
   .directoryIdentity { padding: 11px 16px 12px; }
@@ -81,4 +112,18 @@
   .directoryAreas { grid-template-columns: 1fr; }
   .directoryAreas article { padding: 15px 16px; border-right: 0; border-bottom: 1px solid #e1ece8; }
   .directoryAreas article:last-child { border-bottom: 0; }
+  .directoryOwnerLayout .ownerCompactHeader { grid-template-columns: 61px 76px minmax(0,1fr); gap: 10px; min-height: 0; padding: 53px 105px 18px 16px; }
+  .directoryOwnerLayout .ownerPublicCurrentRank { grid-column: 1; }
+  .directoryOwnerLayout .directoryRankBadge { width: 58px; height: 58px; font-size: 16px; }
+  .directoryOwnerLayout .directoryRankBadgeSmall { width: 40px; height: 40px; font-size: 12px; }
+  .directoryAvatar { grid-column: 2; width: 76px; height: 76px; font-size: 30px; }
+  .directoryOwnerLayout .ownerCompactIdentity { grid-column: 3; }
+  .directoryOwnerLayout .ownerCompactIdentity h2 { font-size: 18px; line-height: 1.35; }
+  .directoryOwnerLayout .ownerCompactMeta { grid-column: 1 / -1; grid-row: 2; grid-template-columns: 1fr; padding-top: 12px; border-top: 1px solid rgba(228,238,238,.25); border-left: 0; font-size: 11px; }
+  .directoryOwnerLayout .ownerPriceStack { top: 18px; right: 43px; width: 58px; }
+  .directoryOwnerLayout .ownerPriceStack strong { font-size: 22px; }
+  .directoryOwnerLayout .ownerPriceStack span { font-size: 9px; }
+  .directoryOwnerLayout .ownerPublicResults { padding-right: 15px; padding-left: 15px; }
+  .directoryOwnerLayout .ownerPublicAreas { padding-right: 15px; padding-left: 15px; }
+  .directoryOwnerLayout .ownerPublicDetail { padding: 0 15px 19px; }
 }
