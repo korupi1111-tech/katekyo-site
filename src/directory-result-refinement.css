@@ -189,3 +189,14 @@
 @media (max-width: 760px) {
   .directoryFeaturedTeacherSection .ownerCompactHeader > .directoryAvatar { width: 76px; height: 76px; font-size: 30px; }
 }
+
+/* The opened profile uses the same dossier components as the site-owner profile. */
+.directoryProfileDialog .ownerProfileHero > .directoryDetailAvatar { display: grid; grid-column: 1; grid-row: 1; place-items: center; width: 108px; height: 108px; border: 2px solid rgba(255,255,255,.78); border-radius: 7px; background: linear-gradient(145deg,#326c73,#173f4d); box-shadow: 0 9px 20px rgba(0,0,0,.24); color: #f0d48a; font-family: Georgia, serif; font-size: 46px; font-weight: 900; }
+.directoryProfileDialog .directoryDetailDemoNote { margin: 0 30px 26px; color: #62756f; font-size: 12px; text-align: center; }
+.directoryProfileDialog .directoryDetailRecord { margin-top: 20px; padding-top: 20px; border-top: 1px solid #dde9e5; }
+.directoryProfileDialog .directoryDetailRecord p { font-size: 13px; }
+
+@media (max-width: 700px) {
+  .directoryProfileDialog .ownerProfileHero > .directoryDetailAvatar { width: 82px; height: 82px; font-size: 36px; }
+  .directoryProfileDialog .directoryDetailDemoNote { margin-right: 16px; margin-left: 16px; }
+}
