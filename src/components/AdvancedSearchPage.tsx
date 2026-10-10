@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { ChevronRight, Crown } from "lucide-react";
 import { getPublishedDirectoryTeachers, type DirectoryTeacher } from "../lib/teacherDirectory";
 import "../advanced-search.css";
-import "../directory-result-refinement.css";
 
 const englishTopics = ["長文読解", "英作文・ライティング", "英文法", "リスニング", "スピーキング", "英検対策", "共通テスト対策", "定期テスト対策", "過去問指導", "その他"];
 const mathTopics = ["計算", "文章題", "図形", "証明", "関数", "確率", "共通テスト対策", "定期テスト対策", "過去問指導", "その他"];
@@ -12,19 +12,28 @@ function Chips({ values }: { values: string[] }) {
   return <div className="searchChips">{values.map(value => <label key={value}><input type="checkbox" />{value}</label>)}</div>;
 }
 
+const rankBadgeSources: Record<string, string> = { R: "/rank-r.png", SR: "/rank-sr.png", SSR: "/rank-ssr.png" };
+
+function RankBadge({ rank }: { rank: string }) {
+  const normalizedRank = rank.trim().toUpperCase();
+  const src = rankBadgeSources[normalizedRank];
+  return src ? <img className="rankBadge" src={src} alt={`${normalizedRank}ランク`} /> : <strong>{rank}</strong>;
+}
+
 function DirectoryTeacherCard({ teacher, onOpen }: { teacher: DirectoryTeacher; onOpen: () => void }) {
-  return <article className="directoryTeacherCard directoryOwnerLayout ownerPublicCard" role="button" tabIndex={0} onClick={onOpen} onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onOpen(); } }}>
+  return <button className="directoryTeacherCard ownerPublicCard" type="button" onClick={onOpen}>
     <header className="ownerCompactHeader">
-      <div className="ownerPublicCurrentRank"><small>今季ランク</small><span className="directoryRankBadge">{teacher.current_rank}</span></div>
+      <div className="ownerPublicCurrentRank"><small>今季ランク</small><RankBadge rank={teacher.current_rank} /></div>
       <div className="directoryAvatar" aria-hidden="true">{teacher.display_name.slice(0, 1)}</div>
-      <div className="ownerCompactIdentity"><small className="ownerIdentityLine"><b>DEMO TEACHER</b><i aria-hidden="true"/><strong>{teacher.display_name}</strong><span>{teacher.target_label ?? teacher.main_subject}</span></small><h2>{teacher.catchphrase}</h2><div className="ownerQualificationRow"><span><b>資格：</b>{teacher.qualifications.map(value => <span className="ownerVerifiedQualification" key={value}>{value}{teacher.qualification_verified && <i className="ownerVerifiedCheck" aria-label="確認済み">✓</i>}</span>)}</span><span className="ownerHighestRank"><b>過去最高ランク</b><span className="directoryRankBadge directoryRankBadgeSmall">{teacher.highest_rank}</span></span></div><p className="ownerScore"><b>模試成績：</b>{teacher.mock_exam_result ?? "実績収集中"}{teacher.mock_exam_verified && <i className="ownerVerifiedCheck" aria-label="確認済み">✓</i>}</p></div>
+      <div className="ownerCompactIdentity"><small className="ownerIdentityLine"><Crown aria-hidden="true"/><b>DEMO TEACHER</b><i aria-hidden="true"/><strong>{teacher.display_name}</strong><span>{teacher.target_label ?? teacher.main_subject}</span></small><h2>{teacher.catchphrase}</h2><div className="ownerQualificationRow"><span><b>資格：</b>{teacher.qualifications.map(value => <span className="ownerVerifiedQualification" key={value}>{value}{teacher.qualification_verified && <i className="ownerVerifiedCheck" aria-label="確認済み">✓</i>}</span>)}</span><span className="ownerHighestRank"><b>過去最高ランク</b><RankBadge rank={teacher.highest_rank}/></span></div><p className="ownerScore"><b>模試成績：</b>{teacher.mock_exam_result ?? "実績収集中"}{teacher.mock_exam_verified && <i className="ownerVerifiedCheck" aria-label="確認済み">✓</i>}</p></div>
       <aside className="ownerCompactMeta"><p><b>学歴：</b>{teacher.education ?? "確認中"}{teacher.education_verified && <i className="ownerVerifiedCheck" aria-label="確認済み">✓</i>}</p><p><b>担当可能方式：</b>{teacher.contact_method ?? "確認中"}</p><div><span><b>性別：</b>{teacher.gender ?? "非公開"}</span><span><b>指導歴：</b>{teacher.teaching_experience ?? "確認中"}</span><span><b>授業形式：</b>{teacher.lesson_types.join("・")}</span><span><b>状態：</b>{teacher.recruitment_status}</span></div></aside>
       <div className="ownerPriceStack"><strong>{teacher.price_yen.toLocaleString()}円</strong><span>{teacher.free_consultation ? "メール相談無料開放中！" : "1時間あたり"}</span></div>
+      <span className="ownerFavorite" aria-label="お気に入り登録" title="お気に入り登録">☆</span>
     </header>
-    <section className="ownerPublicResults"><h3>実績</h3><div><p><b>{teacher.verified_lesson_count}回</b><span>確認済み授業</span></p><p><b>{teacher.profile_match_rate === null ? "蓄積中" : `${teacher.profile_match_rate}%`}</b><span>プロフィール一致率</span></p><p><b>{teacher.current_rank}</b><span>現在ランク</span></p></div></section>
+    <section className="ownerPublicResults"><h3>実績</h3><div><p><b>{teacher.verified_lesson_count}</b><span>今季授業数</span></p><p><b>{teacher.total_lesson_count}</b><span>総授業数</span></p><p><b>{teacher.profile_match_rate === null ? "−" : `${teacher.profile_match_rate}%`}</b><span>プロフィール一致率<br/><small>プロフィール通りの授業が行われているかを示します。</small></span></p></div></section>
     <section className="ownerPublicAreas"><article><h3>① 専門分野</h3><p><b>メイン科目：</b>{teacher.main_subject}</p><p><b>得意分野：</b>{teacher.strengths.join("、")}</p><p><b>不得意分野：</b>{teacher.limitations.join("、")}</p></article><article><h3>② 対象生徒</h3><p>{teacher.target_label ?? teacher.main_subject}</p><p className="ownerTargetLevel">{teacher.levels.join("・")}</p></article><article><h3>③ 指導方針</h3><p>{teacher.teaching_policy ?? teacher.summary}</p></article><article><h3>他に教えられる科目</h3><p><b>対応科目：</b>{teacher.other_subjects.join("、")}</p><p><b>相談等：</b>{teacher.extra_subjects.join("、")}</p></article></section>
-    <span className="ownerPublicDetail">講師プロフィールを見る　→</span>
-  </article>;
+    <span className="ownerPublicDetail">講師プロフィールを見る <ChevronRight/></span>
+  </button>;
 }
 
 function DirectoryTeacherDetail({ teacher, onClose }: { teacher: DirectoryTeacher; onClose: () => void }) {
@@ -50,7 +59,7 @@ function DirectoryResults({ subject, inPerson }: { subject: string; inPerson: bo
 
   return <section className="directoryResults" aria-live="polite">
     <div className="directoryResultsHead"><div><span>DATABASE RESULTS</span><h2>講師検索結果</h2></div><b>{loading ? "読み込み中" : `${results.length}人`}</b></div>
-    {error ? <p className="directoryState">{error}</p> : loading ? <p className="directoryState">公開中の講師データを読み込んでいます。</p> : results.length === 0 ? <p className="directoryState">条件に合う講師が見つかりませんでした。条件を少し広げてお試しください。</p> : <div className="directoryTeacherGrid">{results.map(teacher => <DirectoryTeacherCard key={teacher.id} teacher={teacher} onOpen={() => setSelectedTeacher(teacher)} />)}</div>}
+    {error ? <p className="directoryState">{error}</p> : loading ? <p className="directoryState">公開中の講師データを読み込んでいます。</p> : results.length === 0 ? <p className="directoryState">条件に合う講師が見つかりませんでした。条件を少し広げてお試しください。</p> : <div className="featuredTeacherSection directoryFeaturedTeacherSection"><div className="directoryTeacherGrid">{results.map(teacher => <DirectoryTeacherCard key={teacher.id} teacher={teacher} onOpen={() => setSelectedTeacher(teacher)} />)}</div></div>}
     {selectedTeacher && <DirectoryTeacherDetail teacher={selectedTeacher} onClose={() => setSelectedTeacher(null)} />}
   </section>;
 }

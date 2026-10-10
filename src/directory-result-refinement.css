@@ -166,3 +166,26 @@
   .directoryDetailDialog dl div { border-right: 0; }
   .directoryDetailDialog > aside { padding: 13px 20px; }
 }
+
+/* The directory deliberately reuses the home owner card, rather than a look-alike. */
+.directoryFeaturedTeacherSection { padding: 0; background: transparent; }
+.directoryFeaturedTeacherSection .directoryTeacherGrid { display: grid; width: min(1120px, 100%); margin: 0 auto; grid-template-columns: 1fr; gap: 20px; }
+.directoryFeaturedTeacherSection .directoryTeacherCard { position: relative; width: 100%; overflow: hidden; padding: 0; font: inherit; text-align: left; cursor: pointer; }
+.directoryFeaturedTeacherSection .directoryTeacherCard > .ownerCompactHeader span { background: transparent; }
+.directoryFeaturedTeacherSection .directoryTeacherCard > .ownerCompactHeader b { background: transparent; color: inherit; }
+.directoryFeaturedTeacherSection .ownerCompactHeader > .directoryAvatar { display: grid; grid-column: 2; grid-row: 1; place-items: center; width: 106px; height: 106px; border: 2px solid rgba(255,255,255,.77); border-radius: 8px; background: linear-gradient(145deg,#326c73,#173f4d); box-shadow: 0 8px 18px rgba(0,0,0,.20); color: #f0d48a; font-family: Georgia, serif; font-size: 44px; font-weight: 900; }
+.directoryFeaturedTeacherSection .ownerQualificationRow > span:first-child { background: rgba(255,255,255,.1); }
+.directoryFeaturedTeacherSection .ownerCompactHeader .ownerFavorite { background: transparent; color: #f3d885; }
+.directoryFeaturedTeacherSection .ownerCompactHeader .ownerPriceStack span { color: #e8f0ef; }
+.directoryFeaturedTeacherSection .ownerPublicResults b { font-size: 27px !important; background: transparent !important; }
+.directoryFeaturedTeacherSection .ownerPublicResults b::after { display: none !important; content: none !important; }
+.directoryFeaturedTeacherSection .ownerPublicAreas article:nth-child(2) > p:first-of-type,
+.directoryFeaturedTeacherSection .ownerPublicAreas article:last-child p:last-child { display: block !important; background: transparent !important; color: #42544f !important; font-size: inherit !important; }
+.directoryFeaturedTeacherSection .ownerPublicAreas article:nth-child(2) > p:first-of-type::after,
+.directoryFeaturedTeacherSection .ownerPublicAreas article:last-child p:last-child::after { display: none !important; content: none !important; }
+.directoryFeaturedTeacherSection .ownerPublicAreas article:nth-child(3) p:last-child { display: block !important; }
+.directoryFeaturedTeacherSection .ownerTargetLevel { background: #fffbef !important; color: #755719 !important; }
+
+@media (max-width: 760px) {
+  .directoryFeaturedTeacherSection .ownerCompactHeader > .directoryAvatar { width: 76px; height: 76px; font-size: 30px; }
+}

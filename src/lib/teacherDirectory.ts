@@ -24,6 +24,7 @@ export type DirectoryTeacher = {
   mock_exam_verified: boolean;
   current_rank: string;
   verified_lesson_count: number;
+  total_lesson_count: number;
   profile_match_rate: number | null;
   summary: string | null;
   education: string | null;
