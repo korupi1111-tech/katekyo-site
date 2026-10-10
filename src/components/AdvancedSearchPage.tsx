@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronRight, Crown } from "lucide-react";
 import { getPublishedDirectoryTeachers, type DirectoryTeacher } from "../lib/teacherDirectory";
+import { ProfileModalShell, PublicProfileCard, type ProfileTemplateData } from "./ProfileTemplates";
 import "../advanced-search.css";
 
 const englishTopics = ["長文読解", "英作文・ライティング", "英文法", "リスニング", "スピーキング", "英検対策", "共通テスト対策", "定期テスト対策", "過去問指導", "その他"];
@@ -12,33 +12,29 @@ function Chips({ values }: { values: string[] }) {
   return <div className="searchChips">{values.map(value => <label key={value}><input type="checkbox" />{value}</label>)}</div>;
 }
 
-const rankBadgeSources: Record<string, string> = { R: "/rank-r.png", SR: "/rank-sr.png", SSR: "/rank-ssr.png" };
-
-function RankBadge({ rank }: { rank: string }) {
-  const normalizedRank = rank.trim().toUpperCase();
-  const src = rankBadgeSources[normalizedRank];
-  return src ? <img className="rankBadge" src={src} alt={`${normalizedRank}ランク`} /> : <strong>{rank}</strong>;
+function toDirectoryProfile(teacher: DirectoryTeacher): ProfileTemplateData {
+  const targetLabel = teacher.target_label ?? teacher.main_subject;
+  const strengths = teacher.strengths.join("、") || "確認中";
+  const limitations = teacher.limitations.join("、") || "確認中";
+  return {
+    avatarSrc: "/demo-teacher-avatar.svg", avatarAlt: `${teacher.display_name}のプロフィール画像`, identityLabel: "DEMO TEACHER", name: teacher.display_name, targetLabel,
+    title: teacher.catchphrase, titleAccent: teacher.main_subject, currentRank: teacher.current_rank, highestRank: teacher.highest_rank,
+    qualifications: teacher.qualifications, qualificationVerified: teacher.qualification_verified, mockExamResult: teacher.mock_exam_result ?? "実績収集中", mockExamVerified: teacher.mock_exam_verified,
+    education: teacher.education ?? "確認中", educationVerified: teacher.education_verified, contactMethod: teacher.contact_method ?? "確認中", gender: teacher.gender ?? "非公開", teachingExperience: teacher.teaching_experience ?? "確認中", lessonFormat: teacher.lesson_types.join("・"), recruitmentStatus: teacher.recruitment_status,
+    priceText: `${teacher.price_yen.toLocaleString()}円`, priceNote: teacher.free_consultation ? "メール相談無料開放中！" : "1時間あたり", seasonLessons: teacher.verified_lesson_count, totalLessons: teacher.total_lesson_count, matchRate: teacher.profile_match_rate === null ? null : `${teacher.profile_match_rate}%`,
+    mainSubject: teacher.main_subject, strengths, limitations, targetDescription: targetLabel, targetLevel: teacher.levels.join("・"), teachingPolicy: teacher.teaching_policy ?? teacher.summary ?? "現在、指導方針を準備中です。", teachingType: teacher.teaching_types.join("・") || "確認中", otherSubjectsLine: `2科目：${teacher.other_subjects.join("、") || "無し"}`, extraSubjectsLine: `その他の対応している科目：${teacher.extra_subjects.join("、") || "無し"}`,
+    lessonDescription: `${teacher.lesson_types.join("・")}に対応しています。${teacher.contact_method ?? "確認中"}で、ご希望に合わせて進めます。`, recommendations: [targetLabel, ...teacher.levels.slice(0, 2).map(level => `${level}を目指している方`), `${strengths}を伸ばしたい方`], notRecommendations: teacher.limitations.map(item => `${item}を中心に学びたい方`), paceDescription: teacher.teaching_types.join("・") || "生徒に合わせて調整", homeworkDescription: teacher.lesson_styles.join("・") || "相談して決定",
+    teacherMessage: <><p>{teacher.summary ?? "現在、講師メッセージを準備中です。"}</p><p>{teacher.teaching_policy ?? "生徒の目標に合わせた指導を行います。"}</p></>,
+  };
 }
 
 function DirectoryTeacherCard({ teacher, onOpen }: { teacher: DirectoryTeacher; onOpen: () => void }) {
-  return <button className="directoryTeacherCard ownerPublicCard" type="button" onClick={onOpen}>
-    <header className="ownerCompactHeader">
-      <div className="ownerPublicCurrentRank"><small>今季ランク</small><RankBadge rank={teacher.current_rank} /></div>
-      <div className="directoryAvatar" aria-hidden="true">{teacher.display_name.slice(0, 1)}</div>
-      <div className="ownerCompactIdentity"><small className="ownerIdentityLine"><Crown aria-hidden="true"/><b>DEMO TEACHER</b><i aria-hidden="true"/><strong>{teacher.display_name}</strong><span>{teacher.target_label ?? teacher.main_subject}</span></small><h2>{teacher.catchphrase}</h2><div className="ownerQualificationRow"><span><b>資格：</b>{teacher.qualifications.map(value => <span className="ownerVerifiedQualification" key={value}>{value}{teacher.qualification_verified && <i className="ownerVerifiedCheck" aria-label="確認済み">✓</i>}</span>)}</span><span className="ownerHighestRank"><b>過去最高ランク</b><RankBadge rank={teacher.highest_rank}/></span></div><p className="ownerScore"><b>模試成績：</b>{teacher.mock_exam_result ?? "実績収集中"}{teacher.mock_exam_verified && <i className="ownerVerifiedCheck" aria-label="確認済み">✓</i>}</p></div>
-      <aside className="ownerCompactMeta"><p><b>学歴：</b>{teacher.education ?? "確認中"}{teacher.education_verified && <i className="ownerVerifiedCheck" aria-label="確認済み">✓</i>}</p><p><b>担当可能方式：</b>{teacher.contact_method ?? "確認中"}</p><div><span><b>性別：</b>{teacher.gender ?? "非公開"}</span><span><b>指導歴：</b>{teacher.teaching_experience ?? "確認中"}</span><span><b>授業形式：</b>{teacher.lesson_types.join("・")}</span><span><b>状態：</b>{teacher.recruitment_status}</span></div></aside>
-      <div className="ownerPriceStack"><strong>{teacher.price_yen.toLocaleString()}円</strong><span>{teacher.free_consultation ? "メール相談無料開放中！" : "1時間あたり"}</span></div>
-      <span className="ownerFavorite" aria-label="お気に入り登録" title="お気に入り登録">☆</span>
-    </header>
-    <section className="ownerPublicResults"><h3>実績</h3><div><p><b>{teacher.verified_lesson_count}</b><span>今季授業数</span></p><p><b>{teacher.total_lesson_count}</b><span>総授業数</span></p><p><b>{teacher.profile_match_rate === null ? "−" : `${teacher.profile_match_rate}%`}</b><span>プロフィール一致率<br/><small>プロフィール通りの授業が行われているかを示します。</small></span></p></div></section>
-    <section className="ownerPublicAreas"><article><h3>① 専門分野</h3><p><b>メイン科目：</b>{teacher.main_subject}</p><p><b>得意分野：</b>{teacher.strengths.join("、")}</p><p><b>不得意分野：</b>{teacher.limitations.join("、")}</p></article><article><h3>② 対象生徒</h3><p>{teacher.target_label ?? teacher.main_subject}</p><p className="ownerTargetLevel">{teacher.levels.join("・")}</p></article><article><h3>③ 指導方針</h3><p>{teacher.teaching_policy ?? teacher.summary}</p></article><article><h3>他に教えられる科目</h3><p><b>対応科目：</b>{teacher.other_subjects.join("、")}</p><p><b>相談等：</b>{teacher.extra_subjects.join("、")}</p></article></section>
-    <span className="ownerPublicDetail">講師プロフィールを見る <ChevronRight/></span>
-  </button>;
+  return <PublicProfileCard profile={toDirectoryProfile(teacher)} open={onOpen}/>;
 }
 
 function DirectoryTeacherDetail({ teacher, onClose }: { teacher: DirectoryTeacher; onClose: () => void }) {
-  const recommended = [teacher.target_label ?? `${teacher.main_subject}を学びたい方`, ...teacher.levels.slice(0, 2).map(level => `${level}を目指している方`), `${teacher.strengths.join("・")}を伸ばしたい方`];
-  return <div className="overlay" onClick={onClose}><article className="modal ownerProfileDialog directoryProfileDialog" role="dialog" aria-modal="true" aria-label={`${teacher.display_name}のプロフィール詳細`} onClick={event => event.stopPropagation()}><button className="close" type="button" onClick={onClose} aria-label="閉じる">×</button><div className="ownerProfileModal"><header className="ownerProfileHero"><div className="directoryDetailAvatar" aria-hidden="true">{teacher.display_name.slice(0, 1)}</div><div className="ownerProfileRank"><RankBadge rank={teacher.current_rank}/><span>現在・過去最高ランク</span></div><div><small className="ownerIdentityLine"><Crown aria-hidden="true"/><b>DEMO TEACHER</b><i aria-hidden="true"/><strong>{teacher.display_name}</strong><span>{teacher.target_label ?? teacher.main_subject}</span></small><h2>{teacher.catchphrase}</h2><p><b>メイン科目：</b>{teacher.main_subject}　 <b>ターゲット：</b>{teacher.target_label ?? teacher.main_subject}</p><p className="ownerProfileCurrentStatus"><b>状態：</b>{teacher.recruitment_status}</p></div></header><section className="ownerProfileQuickFacts" aria-label="問い合わせ前の確認情報"><article><span>受付状態</span><b>{teacher.recruitment_status}</b></article><article><span>対応方法</span><b>{teacher.contact_method ?? "確認中"}</b></article><article><span>料金</span><b>{teacher.price_yen.toLocaleString()}円 <small>{teacher.free_consultation ? "メール相談無料開放中！" : "1時間あたり"}</small></b></article></section><section className="ownerProfileResults ownerProfileResultsCompact"><h3>実績</h3><div><p><b>{teacher.verified_lesson_count}</b><span>今季授業数</span></p><p><b>{teacher.total_lesson_count}</b><span>総授業数</span></p><p><b>{teacher.profile_match_rate === null ? "−" : `${teacher.profile_match_rate}%`}</b><span>プロフィール一致率</span></p></div><p className="ownerProfileResultsNote">確認済み授業実績・評価・信頼性をもとに更新します。</p></section><section className="ownerProfileLong"><h3>授業形式</h3><p>{teacher.lesson_types.join("・")}に対応しています。{teacher.contact_method ?? "確認中"}で、ご希望に合わせて進めます。</p><div className="ownerProfileColumns"><section><h3>こんな生徒におすすめです</h3><ul>{recommended.map(item => <li key={item}>{item}</li>)}</ul></section><section><h3>こんな生徒にはおすすめしません</h3><ul>{teacher.limitations.map(item => <li key={item}>{item}を中心に学びたい方</li>)}</ul></section></div><section className="ownerProfileStrictness"><h3>授業の厳しさ</h3><p><b>指導タイプ：</b>{teacher.teaching_types.join("・")}</p><p><b>授業スタイル：</b>{teacher.lesson_styles.join("・")}</p></section><section className="ownerProfileUnsupported"><h3>非対応</h3><p>{teacher.limitations.join("、")}</p></section><section className="ownerProfileMessage"><h3>講師からのメッセージ</h3><p>{teacher.summary ?? "現在、講師メッセージを準備中です。"}</p><p>{teacher.teaching_policy ?? "生徒の目標に合わせた指導を行います。"}</p></section></section></div><section className="ownerReviews"><h3>口コミ</h3><p>口コミは確認済みの評価が蓄積され次第、公開します。</p></section><button className="ownerInquiry" type="button">この先生に問い合わせる</button></article></div>;
+  const profile = toDirectoryProfile(teacher);
+  return <ProfileModalShell profile={profile} close={onClose} reviewsText="口コミは確認済みの評価が蓄積され次第、公開します。"/>;
 }
 
 function DirectoryResults({ subject, inPerson }: { subject: string; inPerson: boolean }) {
@@ -60,7 +56,7 @@ function DirectoryResults({ subject, inPerson }: { subject: string; inPerson: bo
 
   return <section className="directoryResults" aria-live="polite">
     <div className="directoryResultsHead"><div><span>DATABASE RESULTS</span><h2>講師検索結果</h2></div><b>{loading ? "読み込み中" : `${results.length}人`}</b></div>
-    {error ? <p className="directoryState">{error}</p> : loading ? <p className="directoryState">公開中の講師データを読み込んでいます。</p> : results.length === 0 ? <p className="directoryState">条件に合う講師が見つかりませんでした。条件を少し広げてお試しください。</p> : <div className="featuredTeacherSection directoryFeaturedTeacherSection"><div className="directoryTeacherGrid">{results.map(teacher => <DirectoryTeacherCard key={teacher.id} teacher={teacher} onOpen={() => setSelectedTeacher(teacher)} />)}</div></div>}
+    {error ? <p className="directoryState">{error}</p> : loading ? <p className="directoryState">公開中の講師データを読み込んでいます。</p> : results.length === 0 ? <p className="directoryState">条件に合う講師が見つかりませんでした。条件を少し広げてお試しください。</p> : <section className="section featuredTeacherSection"><div className="directoryTeacherGrid">{results.map(teacher => <DirectoryTeacherCard key={teacher.id} teacher={teacher} onOpen={() => setSelectedTeacher(teacher)} />)}</div></section>}
     {selectedTeacher && <DirectoryTeacherDetail teacher={selectedTeacher} onClose={() => setSelectedTeacher(null)} />}
   </section>;
 }
