@@ -12,25 +12,30 @@ function Chips({ values }: { values: string[] }) {
   return <div className="searchChips">{values.map(value => <label key={value}><input type="checkbox" />{value}</label>)}</div>;
 }
 
-function DirectoryTeacherCard({ teacher }: { teacher: DirectoryTeacher }) {
-  return <article className="directoryTeacherCard directoryOwnerLayout ownerPublicCard">
+function DirectoryTeacherCard({ teacher, onOpen }: { teacher: DirectoryTeacher; onOpen: () => void }) {
+  return <article className="directoryTeacherCard directoryOwnerLayout ownerPublicCard" role="button" tabIndex={0} onClick={onOpen} onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onOpen(); } }}>
     <header className="ownerCompactHeader">
       <div className="ownerPublicCurrentRank"><small>今季ランク</small><span className="directoryRankBadge">{teacher.current_rank}</span></div>
       <div className="directoryAvatar" aria-hidden="true">{teacher.display_name.slice(0, 1)}</div>
-      <div className="ownerCompactIdentity"><small className="ownerIdentityLine"><b>REGISTERED TEACHER</b><i aria-hidden="true"/><strong>{teacher.display_name}</strong><span>{teacher.target_label ?? teacher.main_subject}</span></small><h2>{teacher.catchphrase}</h2><div className="ownerQualificationRow"><span><b>資格：</b>{teacher.qualifications.map(value => <span className="ownerVerifiedQualification" key={value}>{value}{teacher.qualification_verified && <i className="ownerVerifiedCheck" aria-label="確認済み">✓</i>}</span>)}</span><span className="ownerHighestRank"><b>過去最高ランク</b><span className="directoryRankBadge directoryRankBadgeSmall">{teacher.highest_rank}</span></span></div><p className="ownerScore"><b>模試成績：</b>{teacher.mock_exam_result ?? "実績収集中"}{teacher.mock_exam_verified && <i className="ownerVerifiedCheck" aria-label="確認済み">✓</i>}</p></div>
+      <div className="ownerCompactIdentity"><small className="ownerIdentityLine"><b>DEMO TEACHER</b><i aria-hidden="true"/><strong>{teacher.display_name}</strong><span>{teacher.target_label ?? teacher.main_subject}</span></small><h2>{teacher.catchphrase}</h2><div className="ownerQualificationRow"><span><b>資格：</b>{teacher.qualifications.map(value => <span className="ownerVerifiedQualification" key={value}>{value}{teacher.qualification_verified && <i className="ownerVerifiedCheck" aria-label="確認済み">✓</i>}</span>)}</span><span className="ownerHighestRank"><b>過去最高ランク</b><span className="directoryRankBadge directoryRankBadgeSmall">{teacher.highest_rank}</span></span></div><p className="ownerScore"><b>模試成績：</b>{teacher.mock_exam_result ?? "実績収集中"}{teacher.mock_exam_verified && <i className="ownerVerifiedCheck" aria-label="確認済み">✓</i>}</p></div>
       <aside className="ownerCompactMeta"><p><b>学歴：</b>{teacher.education ?? "確認中"}{teacher.education_verified && <i className="ownerVerifiedCheck" aria-label="確認済み">✓</i>}</p><p><b>担当可能方式：</b>{teacher.contact_method ?? "確認中"}</p><div><span><b>性別：</b>{teacher.gender ?? "非公開"}</span><span><b>指導歴：</b>{teacher.teaching_experience ?? "確認中"}</span><span><b>授業形式：</b>{teacher.lesson_types.join("・")}</span><span><b>状態：</b>{teacher.recruitment_status}</span></div></aside>
       <div className="ownerPriceStack"><strong>{teacher.price_yen.toLocaleString()}円</strong><span>{teacher.free_consultation ? "メール相談無料開放中！" : "1時間あたり"}</span></div>
     </header>
     <section className="ownerPublicResults"><h3>実績</h3><div><p><b>{teacher.verified_lesson_count}回</b><span>確認済み授業</span></p><p><b>{teacher.profile_match_rate === null ? "蓄積中" : `${teacher.profile_match_rate}%`}</b><span>プロフィール一致率</span></p><p><b>{teacher.current_rank}</b><span>現在ランク</span></p></div></section>
     <section className="ownerPublicAreas"><article><h3>① 専門分野</h3><p><b>メイン科目：</b>{teacher.main_subject}</p><p><b>得意分野：</b>{teacher.strengths.join("、")}</p><p><b>不得意分野：</b>{teacher.limitations.join("、")}</p></article><article><h3>② 対象生徒</h3><p>{teacher.target_label ?? teacher.main_subject}</p><p className="ownerTargetLevel">{teacher.levels.join("・")}</p></article><article><h3>③ 指導方針</h3><p>{teacher.teaching_policy ?? teacher.summary}</p></article><article><h3>他に教えられる科目</h3><p><b>対応科目：</b>{teacher.other_subjects.join("、")}</p><p><b>相談等：</b>{teacher.extra_subjects.join("、")}</p></article></section>
-    <span className="ownerPublicDetail">講師プロフィールを見る</span>
+    <span className="ownerPublicDetail">講師プロフィールを見る　→</span>
   </article>;
+}
+
+function DirectoryTeacherDetail({ teacher, onClose }: { teacher: DirectoryTeacher; onClose: () => void }) {
+  return <div className="directoryOverlay" onClick={onClose}><article className="directoryDetailDialog" role="dialog" aria-modal="true" aria-label={`${teacher.display_name}のプロフィール詳細`} onClick={event => event.stopPropagation()}><button className="directoryDetailClose" type="button" onClick={onClose} aria-label="閉じる">×</button><header><span>DEMO TEACHER PROFILE</span><h2>{teacher.display_name}</h2><p>{teacher.catchphrase}</p></header><section><h3>プロフィール情報</h3><dl><div><dt>現在ランク</dt><dd>{teacher.current_rank}</dd></div><div><dt>過去最高ランク</dt><dd>{teacher.highest_rank}</dd></div><div><dt>学歴</dt><dd>{teacher.education ?? "確認中"}</dd></div><div><dt>資格</dt><dd>{teacher.qualifications.join("、")}</dd></div><div><dt>模試成績</dt><dd>{teacher.mock_exam_result ?? "実績収集中"}</dd></div><div><dt>担当可能方式</dt><dd>{teacher.contact_method ?? "確認中"}</dd></div><div><dt>性別・指導歴</dt><dd>{teacher.gender ?? "非公開"}・{teacher.teaching_experience ?? "確認中"}</dd></div><div><dt>料金</dt><dd>{teacher.price_yen.toLocaleString()}円／時間</dd></div></dl></section><section><h3>指導内容</h3><p><b>専門分野：</b>{teacher.strengths.join("、")}</p><p><b>対象生徒：</b>{teacher.target_label ?? teacher.main_subject}</p><p><b>指導方針：</b>{teacher.teaching_policy ?? teacher.summary}</p><p><b>非対応：</b>{teacher.limitations.join("、")}</p><p><b>他に教えられる科目：</b>{teacher.other_subjects.join("、")}</p><p><b>相談等：</b>{teacher.extra_subjects.join("、")}</p></section><aside>この講師プロフィールは、検索機能確認用のサンプルデータです。</aside></article></div>;
 }
 
 function DirectoryResults({ subject, inPerson }: { subject: string; inPerson: boolean }) {
   const [teachers, setTeachers] = useState<DirectoryTeacher[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedTeacher, setSelectedTeacher] = useState<DirectoryTeacher | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -45,7 +50,8 @@ function DirectoryResults({ subject, inPerson }: { subject: string; inPerson: bo
 
   return <section className="directoryResults" aria-live="polite">
     <div className="directoryResultsHead"><div><span>DATABASE RESULTS</span><h2>講師検索結果</h2></div><b>{loading ? "読み込み中" : `${results.length}人`}</b></div>
-    {error ? <p className="directoryState">{error}</p> : loading ? <p className="directoryState">公開中の講師データを読み込んでいます。</p> : results.length === 0 ? <p className="directoryState">条件に合う講師が見つかりませんでした。条件を少し広げてお試しください。</p> : <div className="directoryTeacherGrid">{results.map(teacher => <DirectoryTeacherCard key={teacher.id} teacher={teacher} />)}</div>}
+    {error ? <p className="directoryState">{error}</p> : loading ? <p className="directoryState">公開中の講師データを読み込んでいます。</p> : results.length === 0 ? <p className="directoryState">条件に合う講師が見つかりませんでした。条件を少し広げてお試しください。</p> : <div className="directoryTeacherGrid">{results.map(teacher => <DirectoryTeacherCard key={teacher.id} teacher={teacher} onOpen={() => setSelectedTeacher(teacher)} />)}</div>}
+    {selectedTeacher && <DirectoryTeacherDetail teacher={selectedTeacher} onClose={() => setSelectedTeacher(null)} />}
   </section>;
 }
 
@@ -62,7 +68,7 @@ export function AdvancedSearchPage({}: { onOpenTeacher?: () => void }) {
     <section className="searchPanel" aria-label="講師検索条件">
       <h2>基本条件</h2>
       <div className="searchFieldGrid">
-        <label><b>科目</b><select value={subject} onChange={event => setSubject(event.target.value)}><option>高校英語</option><option>高校数学</option><option>中学英語</option><option>中学数学</option><option>現代文</option></select></label>
+        <label><b>科目</b><select value={subject} onChange={event => setSubject(event.target.value)}><option>高校英語</option><option>高校数学</option><option>中学英語</option><option>中学数学</option><option>現代文</option><option>高校理科</option><option>中学国語</option><option>小学生英語</option><option>地理</option></select></label>
         <fieldset className="searchWide"><legend>何を教えてほしいですか？</legend><Chips values={topics} /></fieldset>
         <fieldset className="searchWide"><legend>目標・レベル</legend><Chips values={levels} /></fieldset>
         <fieldset><legend>授業形式</legend><Chips values={["単発授業", "長期指導", "学習相談", "進路相談", "質問対応", "添削", "面接練習"]} /></fieldset>
