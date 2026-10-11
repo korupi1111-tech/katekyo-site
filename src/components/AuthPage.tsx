@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { getCurrentAccount, resendConfirmation, sendPasswordResetCode, updateMyPassword, verifyPasswordResetCode, verifySignupEmailCode } from "../lib/account";
+import { getCurrentAccount, resendConfirmation, sendPasswordResetCode, signInWithPasswordLocked, updateMyPassword, verifyPasswordResetCode, verifySignupEmailCode } from "../lib/account";
 import "../auth.css";
 
 type Props = { teacher: boolean; onAuthenticated: (page: "student-dashboard" | "teacher-dashboard") => void };
@@ -60,9 +60,10 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
     setBusy(true); setMessage("");
     try {
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email: normalizeEmail(email), password });
-        if (error) {
-          if (/email.*confirm|confirm.*email|not confirmed/i.test(error.message)) {
+        try { await signInWithPasswordLocked(normalizeEmail(email), password); }
+        catch (error) {
+          const errorMessage = error instanceof Error ? error.message : "ログインできませんでした。";
+          if (/email.*confirm|confirm.*email|not confirmed/i.test(errorMessage)) {
             setScreen("verify-email");
             setMessage("メールアドレスの認証がまだ完了していません。既に届いているコードを入力するか、必要な場合だけ再送してください。");
             return;

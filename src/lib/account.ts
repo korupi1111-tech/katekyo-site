@@ -95,3 +95,22 @@ export async function updateMyPassword(password: string): Promise<void> {
   const { error } = await supabase.auth.updateUser({ password });
   if (error) throw error;
 }
+
+/**
+ * ログイン失敗回数とロックアウトをサーバーで管理するログイン処理。
+ * 直接の signInWithPassword は使わず、成功時のセッションだけを受け取る。
+ */
+export async function signInWithPasswordLocked(email: string, password: string): Promise<void> {
+  if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。");
+  const { data, error } = await supabase.functions.invoke("password-login", { body: { email, password } });
+  if (error) {
+    const context = (error as { context?: { json?: () => Promise<{ error?: string }> } }).context;
+    const body = context?.json ? await context.json().catch(() => null) : null;
+    if (body?.error === "Email not confirmed") throw new Error("Email not confirmed");
+    throw new Error(body?.error ?? "ログインできませんでした。時間をおいてお試しください。");
+  }
+  const session = data?.session as { access_token?: string; refresh_token?: string } | undefined;
+  if (!session?.access_token || !session.refresh_token) throw new Error("ログイン情報を受け取れませんでした。");
+  const { error: sessionError } = await supabase.auth.setSession({ access_token: session.access_token, refresh_token: session.refresh_token });
+  if (sessionError) throw sessionError;
+}
