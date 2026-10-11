@@ -51,6 +51,7 @@ export async function getPublishedDirectoryTeachers() {
     .from("teacher_directory")
     .select("*")
     .eq("is_published", true)
+    .eq("is_demo", false)
     .order("price_yen", { ascending: true });
 
   if (error) throw error;
