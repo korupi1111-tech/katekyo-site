@@ -6,6 +6,7 @@ import { supabase } from "../lib/supabase";
 import { TeacherProfileEditor } from "./TeacherProfileEditor";
 import { MyLessonCalendar } from "./MyLessonCalendar";
 import { ReservationInbox } from "./ReservationInbox";
+import { FavoriteTeachers } from "./FavoriteTeachers";
 
 type DashboardProps = { onNavigate: (page: "family-auth" | "teacher-auth" | "chat-list") => void };
 
@@ -44,5 +45,5 @@ export function TeacherDashboard({ onNavigate }: DashboardProps) {
 }
 
 export function StudentDashboard({ onNavigate }: DashboardProps) {
-  return <AccountGate expectedRole="student" onNavigate={onNavigate}>{account => <main className="dashboardPage withTopbar"><header className="dashboardHero"><div><span>STUDENT DASHBOARD</span><h1>{account.displayName}</h1><p>プロフィール、認証状態、利用状況を確認できます。</p></div></header><AccountStatus account={account}/>{account.emailVerified && <><section className="accountFeature chatShortcut"><div><span>MESSAGES</span><h2>チャット一覧</h2><p>先生を選び、サイト内で個別にメッセージを送れます。</p></div><button onClick={() => onNavigate("chat-list")}>チャット一覧を開く</button></section><ReservationInbox role="student" onOpenChat={() => onNavigate("chat-list")} /><MyLessonCalendar /><section className="accountFeature"><h2>無料会員</h2><p>現在のプラン：無料。プロフィール登録・編集、アカウント設定、認証状態の確認、講師とのサイト内チャットを利用できます。</p><dl><div><dt>電話番号認証</dt><dd>未実装（将来の有料機能解放時に対応）</dd></div><div><dt>有料プラン</dt><dd>未実装</dd></div></dl></section><StudentProfileEditor /></>}<section className="accountActions"><button onClick={() => signOut(onNavigate, "family-auth")}>ログアウト</button><button disabled title="退会は本人確認を伴うサーバー処理として後続実装します。">退会</button></section></main>}</AccountGate>;
+  return <AccountGate expectedRole="student" onNavigate={onNavigate}>{account => <main className="dashboardPage withTopbar"><header className="dashboardHero"><div><span>STUDENT DASHBOARD</span><h1>{account.displayName}</h1><p>プロフィール、認証状態、利用状況を確認できます。</p></div></header><AccountStatus account={account}/>{account.emailVerified && <><section className="accountFeature chatShortcut"><div><span>MESSAGES</span><h2>チャット一覧</h2><p>先生を選び、サイト内で個別にメッセージを送れます。</p></div><button onClick={() => onNavigate("chat-list")}>チャット一覧を開く</button></section><FavoriteTeachers /><ReservationInbox role="student" onOpenChat={() => onNavigate("chat-list")} /><MyLessonCalendar /><section className="accountFeature"><h2>無料会員</h2><p>現在のプラン：無料。プロフィール登録・編集、アカウント設定、認証状態の確認、講師とのサイト内チャットを利用できます。</p><dl><div><dt>電話番号認証</dt><dd>未実装（将来の有料機能解放時に対応）</dd></div><div><dt>有料プラン</dt><dd>未実装</dd></div></dl></section><StudentProfileEditor /></>}<section className="accountActions"><button onClick={() => signOut(onNavigate, "family-auth")}>ログアウト</button><button disabled title="退会は本人確認を伴うサーバー処理として後続実装します。">退会</button></section></main>}</AccountGate>;
 }

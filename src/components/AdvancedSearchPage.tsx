@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { getPublishedDirectoryTeachers, type DirectoryTeacher } from "../lib/teacherDirectory";
 import { ProfileModalShell, PublicProfileCard, type ProfileTemplateData } from "./ProfileTemplates";
+import { getCurrentAccount } from "../lib/account";
+import { getTeacherAvatarUrl } from "../lib/teacherProfiles";
+import { isTeacherFavorite, toggleTeacherFavorite } from "../lib/teacherFavorites";
 import { contactMethodOptions, lessonStyleOptions, lessonTypeOptions, levelOptionsForSubject, qualificationLabelOptions, subjectMatches, subjectOptions, teachingTypeOptions, topicOptionsForSubject } from "../lib/teacherLabels";
 import "../advanced-search.css";
 
@@ -53,7 +56,7 @@ function toDirectoryProfile(teacher: DirectoryTeacher): ProfileTemplateData {
   const strengths = teacher.strengths.join("、") || "確認中";
   const limitations = teacher.limitations.join("、") || "確認中";
   return {
-    avatarSrc: "/demo-teacher-avatar.svg", avatarAlt: `${teacher.display_name}のプロフィール画像`, identityLabel: teacher.is_demo ? "DEMO TEACHER" : "REGISTERED TEACHER", name: teacher.display_name, targetLabel,
+    avatarSrc: getTeacherAvatarUrl(teacher.avatar_path) ?? "/demo-teacher-avatar.svg", avatarAlt: `${teacher.display_name}のプロフィール画像`, identityLabel: teacher.is_demo ? "DEMO TEACHER" : "REGISTERED TEACHER", name: teacher.display_name, targetLabel,
     title: teacher.catchphrase, titleAccent: teacher.main_subject, currentRank: teacher.current_rank, highestRank: teacher.highest_rank,
     qualifications: teacher.qualifications, qualificationVerified: teacher.qualification_verified, mockExamResult: teacher.mock_exam_result ?? "実績収集中", mockExamVerified: teacher.mock_exam_verified,
     education: teacher.education ?? "確認中", educationVerified: teacher.education_verified, contactMethod: teacher.contact_method ?? "確認中", gender: teacher.gender ?? "非公開", teachingExperience: teacher.teaching_experience ?? "確認中", lessonFormat: teacher.lesson_types.join("・"), recruitmentStatus: teacher.recruitment_status,
@@ -68,9 +71,21 @@ function DirectoryTeacherCard({ teacher, onOpen }: { teacher: DirectoryTeacher; 
   return <PublicProfileCard profile={toDirectoryProfile(teacher)} open={onOpen}/>;
 }
 
-function DirectoryTeacherDetail({ teacher, onClose }: { teacher: DirectoryTeacher; onClose: () => void }) {
+function DirectoryTeacherDetail({ teacher, onClose, onStartChat }: { teacher: DirectoryTeacher; onClose: () => void; onStartChat: (teacherProfileId: string) => void }) {
   const profile = toDirectoryProfile(teacher);
-  return <ProfileModalShell profile={profile} close={onClose} reviewsText="口コミは確認済みの評価が蓄積され次第、公開します。"/>;
+  const [student, setStudent] = useState(false);
+  const [favorite, setFavorite] = useState(false);
+  const [status, setStatus] = useState("");
+  useEffect(() => { let active = true; void getCurrentAccount().then(async account => {
+    if (!active || account?.role !== "student" || !teacher.teacher_profile_id) return;
+    setStudent(true); setFavorite(await isTeacherFavorite(teacher.teacher_profile_id));
+  }).catch(() => undefined); return () => { active = false; }; }, [teacher.teacher_profile_id]);
+  const changeFavorite = async () => {
+    if (!teacher.teacher_profile_id) return;
+    try { const next = await toggleTeacherFavorite(teacher.teacher_profile_id, favorite); setFavorite(next); setStatus(next ? "お気に入りに追加しました。" : "お気に入りから外しました。"); }
+    catch (error) { setStatus(error instanceof Error ? error.message : "お気に入りを更新できませんでした。"); }
+  };
+  return <ProfileModalShell profile={profile} close={onClose} reviewsText={status || "口コミは確認済みの評価が蓄積され次第、公開します。"} onFavorite={student && teacher.teacher_profile_id ? changeFavorite : undefined} favoriteLabel={favorite ? "★ お気に入りから外す" : "☆ お気に入りに追加"} onContact={student && teacher.teacher_profile_id ? () => onStartChat(teacher.teacher_profile_id!) : undefined}/>;
 }
 
 function includesAny(values: string[], selected: string[]) {
@@ -116,18 +131,18 @@ function matchesFilters(teacher: DirectoryTeacher, filters: SearchFilters) {
     && (minimumMatchRate === null || (teacher.profile_match_rate !== null && teacher.profile_match_rate >= minimumMatchRate));
 }
 
-function DirectoryResults({ teachers, loading, error, filters }: { teachers: DirectoryTeacher[]; loading: boolean; error: string; filters: SearchFilters }) {
+function DirectoryResults({ teachers, loading, error, filters, onStartChat }: { teachers: DirectoryTeacher[]; loading: boolean; error: string; filters: SearchFilters; onStartChat: (teacherProfileId: string) => void }) {
   const [selectedTeacher, setSelectedTeacher] = useState<DirectoryTeacher | null>(null);
   const results = useMemo(() => teachers.filter(teacher => matchesFilters(teacher, filters)), [teachers, filters]);
 
   return <section className="directoryResults" aria-live="polite">
     <div className="directoryResultsHead"><div><span>DATABASE RESULTS</span><h2>講師検索結果</h2></div><b>{loading ? "読み込み中" : `${results.length}人`}</b></div>
     {error ? <p className="directoryState">{error}</p> : loading ? <p className="directoryState">公開中の講師データを読み込んでいます。</p> : results.length === 0 ? <p className="directoryState">条件に合う講師が見つかりませんでした。条件を少し広げてお試しください。</p> : <section className="section featuredTeacherSection"><div className="directoryTeacherGrid">{results.map(teacher => <DirectoryTeacherCard key={teacher.id} teacher={teacher} onOpen={() => setSelectedTeacher(teacher)} />)}</div></section>}
-    {selectedTeacher && <DirectoryTeacherDetail teacher={selectedTeacher} onClose={() => setSelectedTeacher(null)} />}
+    {selectedTeacher && <DirectoryTeacherDetail teacher={selectedTeacher} onClose={() => setSelectedTeacher(null)} onStartChat={onStartChat} />}
   </section>;
 }
 
-export function AdvancedSearchPage({}: { onOpenTeacher?: () => void }) {
+export function AdvancedSearchPage({ onStartChat }: { onStartChat: (teacherProfileId: string) => void }) {
   const [teachers, setTeachers] = useState<DirectoryTeacher[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -169,7 +184,7 @@ export function AdvancedSearchPage({}: { onOpenTeacher?: () => void }) {
       </div>
       <button className="searchApply" onClick={applyFilters} type="button">この条件で検索する</button>{applied && <p className="searchApplied">選択したラベルを講師データベースの検索条件に適用しました。</p>}
     </section>
-    <DirectoryResults teachers={teachers} loading={loading} error={error} filters={appliedFilters} />
+    <DirectoryResults teachers={teachers} loading={loading} error={error} filters={appliedFilters} onStartChat={onStartChat} />
     <button className="moreSearchToggle" aria-expanded={more} onClick={() => setMore(!more)}>さらに詳しく探す <span>{more ? "−" : "＋"}</span></button>
     {more && <section className="searchPanel detailedSearch"><h2>詳細条件</h2><div className="searchFieldGrid"><fieldset><legend>指導タイプ <small>最大2つ</small></legend><Chips values={teachingTypeOptions} selected={filters.teachingTypes} onChange={teachingTypes => update({ teachingTypes })} limit={2} /></fieldset><fieldset><legend>授業の進め方</legend><Chips values={lessonStyleOptions} selected={filters.lessonStyles} onChange={lessonStyles => update({ lessonStyles })} /></fieldset><fieldset className="searchWide"><legend>資格・認定 <small>講師の自己申告ラベル</small></legend><Chips values={qualificationLabelOptions} selected={filters.qualificationLabels} onChange={qualificationLabels => update({ qualificationLabels })} /></fieldset><fieldset><legend>授業外サポート</legend><div className="searchChecks">{["質問対応あり", "添削対応あり", "学習管理あり"].map(option => <label key={option}><input checked={filters.supportOptions.includes(option)} onChange={() => update({ supportOptions: toggleValue(filters.supportOptions, option) })} type="checkbox" />{option}</label>)}</div></fieldset><fieldset><legend>確認・実績</legend><div className="searchChecks">{["本人確認済み", "学歴確認済み", "資格確認済み", "成績確認済み"].map(option => <label key={option}><input checked={filters.verificationOptions.includes(option)} onChange={() => update({ verificationOptions: toggleValue(filters.verificationOptions, option) })} type="checkbox" />{option}</label>)}</div></fieldset><label><b>講師ランク</b><select value={filters.minimumRank} onChange={event => update({ minimumRank: event.target.value })}><option value="">指定なし</option>{rankOrder.map(rank => <option key={rank} value={rank}>{rank}以上</option>)}</select></label><label><b>確認済み授業数</b><select value={filters.minimumLessonCount} onChange={event => update({ minimumLessonCount: event.target.value })}><option value="">指定なし</option><option value="10">10回以上</option><option value="30">30回以上</option><option value="50">50回以上</option><option value="100">100回以上</option><option value="300">300回以上</option></select></label><label><b>プロフィール一致率</b><select value={filters.minimumMatchRate} onChange={event => update({ minimumMatchRate: event.target.value })}><option value="">指定なし</option><option value="0">評価蓄積中を含む</option><option value="80">80％以上</option><option value="90">90％以上</option><option value="95">95％以上</option></select></label></div><button className="searchApply" onClick={applyFilters} type="button">詳細条件を適用する</button></section>}
     <section className="concernSearch"><span>SEARCH BY CONCERN</span><h2>悩みから探す</h2><div>{[["英語", ["長文の点数が安定しない", "感覚で読んでいて、解答根拠を説明できない", "英作文を添削してほしい", "英文法を基礎から学び直したい", "英検対策をしてほしい", "TOEIC対策をしてほしい", "一問だけ質問したい"]], ["数学", ["計算ミスが多い", "公式は覚えているが使い方が分からない", "解説を読んでも理解できない", "証明問題が苦手", "共通テスト対策をしたい", "難関大学の記述対策をしたい", "一問だけ質問したい"]], ["学習全般", ["勉強方法を相談したい", "学習計画を立ててほしい", "進路について相談したい", "志望校を決めたい", "面接練習をしたい", "志望理由書を添削してほしい"]]].map(([title, values]) => <article key={title as string}><h3>{title}</h3><ul>{(values as string[]).map(value => <li key={value}><button>{value}</button></li>)}</ul></article>)}</div></section>

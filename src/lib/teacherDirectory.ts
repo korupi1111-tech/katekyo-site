@@ -2,6 +2,8 @@ import { supabase } from "./supabase";
 
 export type DirectoryTeacher = {
   id: string;
+  teacher_profile_id: string | null;
+  avatar_path: string | null;
   is_demo: boolean;
   display_name: string;
   catchphrase: string;

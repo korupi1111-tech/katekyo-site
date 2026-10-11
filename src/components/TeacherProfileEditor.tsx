@@ -1,5 +1,5 @@
 import { type FormEvent, useEffect, useState } from "react";
-import { getMyTeacherProfile, saveMyTeacherProfile, type TeacherProfileInput, type TeacherProfileRow } from "../lib/teacherProfiles";
+import { getMyTeacherProfile, getTeacherAvatarUrl, saveMyTeacherProfile, uploadMyTeacherAvatar, type TeacherProfileInput, type TeacherProfileRow } from "../lib/teacherProfiles";
 import { supabase } from "../lib/supabase";
 import { contactMethodOptions, lessonStyleOptions, lessonTypeOptions, levelOptions, qualificationLabelOptions, qualificationOptions, subjectOptions, teachingTypeOptions, topicOptions } from "../lib/teacherLabels";
 
@@ -46,6 +46,7 @@ const initialProfile: EditorState = {
   homeworkPolicy: "単語を毎日5分ほど、週に2回の長文（少し難しめ）",
   unsupportedContent: "文法中心の英語学習、初学者、TOEIC対策",
   teacherMessage: "",
+  avatarPath: null,
   isPublished: false,
 };
 
@@ -68,6 +69,7 @@ function toEditorState(profile: TeacherProfileRow): EditorState {
     publicSlug: profile.public_slug,
     displayName: profile.display_name,
     catchphrase: profile.catchphrase,
+    avatarPath: profile.avatar_path,
     education: profile.education,
     teachingExperience: profile.teaching_experience,
     qualifications: profile.qualifications,
@@ -113,6 +115,7 @@ export function TeacherProfileEditor() {
   const [status, setStatus] = useState("ログインすると、ここからプロフィールを保存できます。");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -152,7 +155,9 @@ export function TeacherProfileEditor() {
     }
     setSaving(true);
     try {
-      await saveMyTeacherProfile({ ...profile, priceYen: profile.priceYen === "" ? null : Number(profile.priceYen) });
+      const avatarPath = avatarFile ? await uploadMyTeacherAvatar(avatarFile) : profile.avatarPath;
+      const saved = await saveMyTeacherProfile({ ...profile, avatarPath, priceYen: profile.priceYen === "" ? null : Number(profile.priceYen) });
+      setProfile(toEditorState(saved)); setAvatarFile(null);
       setStatus(profile.isPublished ? "公開プロフィールを保存し、講師検索用データベースに反映しました。" : "下書きを保存しました。公開するには「公開する」を選択して保存してください。");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "保存に失敗しました。");
@@ -167,6 +172,7 @@ export function TeacherProfileEditor() {
 
   return <section className="teacherProfileEditor"><header><span>PROFILE EDITOR</span><h2>講師プロフィールを編集</h2><p>{status}</p></header><form onSubmit={save}><div className="profileEditorGrid">
     <label>表示名<input required value={profile.displayName} onChange={event => updateText("displayName", event.target.value)} /></label>
+    <label>プロフィール画像<input type="file" accept="image/png,image/jpeg,image/webp" onChange={event => setAvatarFile(event.target.files?.[0] ?? null)} /><small>PNG・JPEG・WebP、5MB以下。保存時に反映されます。</small>{profile.avatarPath && !avatarFile && <img className="profileAvatarPreview" src={getTeacherAvatarUrl(profile.avatarPath) ?? ""} alt="プロフィール画像のプレビュー" />}{avatarFile && <small>{avatarFile.name}（保存時に反映）</small>}</label>
     <label>公開URL用ID<input required pattern="[a-z0-9-]{3,80}" value={profile.publicSlug} onChange={event => updateText("publicSlug", event.target.value.toLowerCase())} /><small>半角英小文字・数字・ハイフンのみ</small></label>
     <label className="wide">キャッチコピー<input required value={profile.catchphrase} onChange={event => updateText("catchphrase", event.target.value)} /></label>
     <label>学歴<input value={profile.education ?? ""} onChange={event => updateText("education", event.target.value)} /></label>

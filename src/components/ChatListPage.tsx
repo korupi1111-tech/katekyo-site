@@ -1,5 +1,5 @@
 import { CalendarClock, ChevronLeft, MessageCircle, Plus, RefreshCw, Send } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getCurrentAccount, type AccountAccess } from "../lib/account";
 import { getChatMessages, getMyChatConversations, getPublicTeacherContacts, sendChatMessage, startChatWithTeacher, subscribeToChatMessages, type ChatConversation, type ChatMessage, type PublicTeacherContact } from "../lib/siteChat";
 import { ReservationRequestPanel } from "./ReservationRequestPanel";
@@ -12,7 +12,7 @@ const formatMessageTime = (value: string | null) => value ? new Intl.DateTimeFor
 const formatMessageDate = (value: string) => new Intl.DateTimeFormat("ja-JP", { year: "numeric", month: "long", day: "numeric" }).format(new Date(value));
 const counterpart = (conversation: ChatConversation, account: AccountAccess) => account.role === "teacher" ? conversation.student_display_name : conversation.teacher_display_name;
 
-export function ChatListPage({ onBack }: { onBack: () => void }) {
+export function ChatListPage({ onBack, startWithTeacherProfileId, onStartedFromProfile }: { onBack: () => void; startWithTeacherProfileId?: string | null; onStartedFromProfile?: () => void }) {
   const [account, setAccount] = useState<AccountAccess | null | undefined>(undefined);
   const [conversations, setConversations] = useState<ChatConversation[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -24,6 +24,7 @@ export function ChatListPage({ onBack }: { onBack: () => void }) {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const autoStartedFor = useRef<string | null>(null);
 
   const loadConversations = useCallback(async () => {
     const data = await getMyChatConversations();
@@ -71,6 +72,11 @@ export function ChatListPage({ onBack }: { onBack: () => void }) {
     } catch (error) { setStatus(error instanceof Error ? error.message : "会話を開始できませんでした。"); }
     finally { setSending(false); }
   };
+  useEffect(() => {
+    if (!account || account.role !== "student" || !startWithTeacherProfileId || autoStartedFor.current === startWithTeacherProfileId) return;
+    autoStartedFor.current = startWithTeacherProfileId;
+    void startConversation(startWithTeacherProfileId).finally(() => onStartedFromProfile?.());
+  }, [account, onStartedFromProfile, startWithTeacherProfileId]);
   const send = async () => {
     if (!selected) return;
     setSending(true); setStatus("");

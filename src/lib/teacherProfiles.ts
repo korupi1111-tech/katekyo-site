@@ -50,6 +50,7 @@ export type TeacherProfileRow = {
   public_slug: string;
   display_name: string;
   catchphrase: string;
+  avatar_path: string | null;
   is_published: boolean;
   education: string | null;
   teaching_experience: string | null;
@@ -182,4 +183,23 @@ export async function saveMyTeacherProfile(input: TeacherProfileInput) {
 
   if (error) throw error;
   return data as TeacherProfileRow;
+}
+
+export async function uploadMyTeacherAvatar(file: File) {
+  const client = requireClient();
+  if (!file.type.startsWith("image/")) throw new Error("画像ファイルを選択してください。");
+  if (file.size > 5 * 1024 * 1024) throw new Error("画像は5MB以下にしてください。");
+  const { data: authData, error: authError } = await client.auth.getUser();
+  if (authError) throw authError;
+  if (!authData.user) throw new Error("画像を保存するにはログインが必要です。");
+  const extension = file.name.split(".").pop()?.replace(/[^a-zA-Z0-9]/g, "") || "jpg";
+  const path = `${authData.user.id}/avatar-${Date.now()}.${extension}`;
+  const { error } = await client.storage.from("profile-images").upload(path, file, { contentType: file.type, upsert: false, cacheControl: "3600" });
+  if (error) throw error;
+  return path;
+}
+
+export function getTeacherAvatarUrl(path: string | null | undefined) {
+  if (!path || !supabase) return null;
+  return supabase.storage.from("profile-images").getPublicUrl(path).data.publicUrl;
 }
