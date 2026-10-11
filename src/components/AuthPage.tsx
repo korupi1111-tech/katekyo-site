@@ -1,11 +1,11 @@
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { getCurrentAccount, resendConfirmation, verifySignupEmailCode } from "../lib/account";
+import { getCurrentAccount, resendConfirmation, sendPasswordResetCode, updateMyPassword, verifyPasswordResetCode, verifySignupEmailCode } from "../lib/account";
 import "../auth.css";
 
 type Props = { teacher: boolean; onAuthenticated: (page: "student-dashboard" | "teacher-dashboard") => void };
 type Mode = "register" | "login";
-type Screen = "account" | "verify-email";
+type Screen = "account" | "verify-email" | "password-recovery-email" | "password-recovery-code" | "password-recovery-new";
 
 const cooldownSeconds = 60;
 const accountRetryCount = 4;
@@ -22,12 +22,15 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
   const [legalName, setLegalName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [code, setCode] = useState("");
   const [terms, setTerms] = useState(false);
   const [privacy, setPrivacy] = useState(false);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [resendWait, setResendWait] = useState(0);
+  const [loginFailed, setLoginFailed] = useState(false);
   const title = teacher ? "講師ログイン・登録" : "生徒・保護者ログイン・登録";
   const role = teacher ? "teacher" : "student";
 
@@ -64,7 +67,7 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
             setMessage("メールアドレスの認証がまだ完了していません。既に届いているコードを入力するか、必要な場合だけ再送してください。");
             return;
           }
-          throw error;
+          setLoginFailed(true); throw error;
         }
         const account = await getCurrentAccount();
         if (!account) throw new Error("アカウント情報を確認できませんでした。もう一度ログインしてください。");
@@ -125,6 +128,55 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
     } finally { setBusy(false); }
   };
 
+  const requestPasswordReset = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!email) { setMessage("登録済みのメールアドレスを入力してください。"); return; }
+    setBusy(true); setMessage("");
+    try {
+      await sendPasswordResetCode(normalizeEmail(email));
+      setCode(""); setResendWait(cooldownSeconds); setScreen("password-recovery-code");
+      setMessage("パスワード再設定用の6桁コードをメールで送信しました。");
+    } catch (error) { setMessage(error instanceof Error ? error.message : "認証コードを送信できませんでした。"); }
+    finally { setBusy(false); }
+  };
+
+  const resendPasswordReset = async () => {
+    if (resendWait || !email) return;
+    setBusy(true); setMessage("");
+    try { await sendPasswordResetCode(normalizeEmail(email)); setCode(""); setResendWait(cooldownSeconds); setMessage("認証コードを再送しました。最新のメールを確認してください。"); }
+    catch (error) { setMessage(error instanceof Error ? error.message : "再送に失敗しました。"); }
+    finally { setBusy(false); }
+  };
+
+  const verifyPasswordReset = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!/^\d{6}$/.test(code)) { setMessage("メールで届いた6桁の認証コードを入力してください。"); return; }
+    setBusy(true); setMessage("");
+    try { await verifyPasswordResetCode(normalizeEmail(email), code); setScreen("password-recovery-new"); setMessage("メール認証が完了しました。新しいパスワードを設定してください。"); }
+    catch (error) { setMessage(verificationErrorMessage(error)); }
+    finally { setBusy(false); }
+  };
+
+  const resetPassword = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (newPassword.length < 8) { setMessage("パスワードは8文字以上で設定してください。"); return; }
+    if (newPassword !== passwordConfirmation) { setMessage("確認用パスワードが一致しません。"); return; }
+    setBusy(true); setMessage("");
+    try {
+      await updateMyPassword(newPassword);
+      const account = await getConfirmedAccount();
+      if (!account) throw new Error("アカウント情報を確認できませんでした。");
+      onAuthenticated(account.role === "teacher" ? "teacher-dashboard" : "student-dashboard");
+    } catch (error) { setMessage(error instanceof Error ? error.message : "パスワードを更新できませんでした。"); }
+    finally { setBusy(false); }
+  };
+
+  if (screen === "password-recovery-email") return <main className="auth withTopbar"><span>PASSWORD RESET</span><h1>パスワードを再設定</h1><p className="authDescription">登録したメールアドレスへ6桁の認証コードを送ります。</p><form onSubmit={requestPasswordReset}><label>メールアドレス<input required type="email" value={email} onChange={event => setEmail(event.target.value)} autoComplete="email" /></label><button disabled={busy} type="submit">{busy ? "送信中…" : "認証コードを送る"}</button></form><button className="authTextButton" type="button" disabled={busy} onClick={() => { setScreen("account"); setMessage(""); }}>ログイン画面に戻る</button>{message && <p className="authMessage" role="status">{message}</p>}</main>;
+
+  if (screen === "password-recovery-code") return <main className="auth withTopbar"><span>PASSWORD RESET</span><h1>認証コードを入力</h1><p className="authDescription">{email} 宛に届いた6桁の認証コードを入力してください。</p><form onSubmit={verifyPasswordReset}><label>認証コード<input className="authCodeInput" required inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={event => setCode(event.target.value.replace(/\D/g, ""))} placeholder="123456" /></label><button disabled={busy} type="submit">{busy ? "確認中…" : "認証して次へ"}</button></form><button className="outline" type="button" disabled={busy || resendWait > 0} onClick={resendPasswordReset}>{resendWait ? `認証コードを再送する（${resendWait}秒）` : "認証コードを再送する"}</button><button className="authTextButton" type="button" disabled={busy} onClick={() => { setScreen("account"); setCode(""); setMessage(""); }}>ログイン画面に戻る</button>{message && <p className="authMessage" role="status">{message}</p>}</main>;
+
+  if (screen === "password-recovery-new") return <main className="auth withTopbar"><span>PASSWORD RESET</span><h1>新しいパスワードを設定</h1><p className="authDescription">認証済みです。8文字以上の新しいパスワードを入力してください。</p><form onSubmit={resetPassword}><label>新しいパスワード<input required type="password" minLength={8} autoComplete="new-password" value={newPassword} onChange={event => setNewPassword(event.target.value)} /></label><label>新しいパスワード（確認）<input required type="password" minLength={8} autoComplete="new-password" value={passwordConfirmation} onChange={event => setPasswordConfirmation(event.target.value)} /></label><button disabled={busy} type="submit">{busy ? "更新中…" : "パスワードを更新してマイページへ"}</button></form>{message && <p className="authMessage" role="status">{message}</p>}</main>;
+
   if (screen === "verify-email") return <main className="auth withTopbar"><span>{teacher ? "FOR TEACHERS" : "FOR STUDENTS & FAMILIES"}</span><h1>メール認証</h1><p className="authDescription">{email} 宛に届いた6桁の認証コードを入力してください。メール内のリンクを開く必要はありません。</p>
     <form onSubmit={verifyEmail}>
       <label>メールアドレス<input required type="email" value={email} onChange={event => setEmail(event.target.value)} autoComplete="email" /></label>
@@ -145,6 +197,7 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
       {mode === "register" && teacher && <><label className="authCheck"><input type="checkbox" checked={terms} onChange={event => setTerms(event.target.checked)} /> 利用規約に同意する</label><label className="authCheck"><input type="checkbox" checked={privacy} onChange={event => setPrivacy(event.target.checked)} /> プライバシーポリシーに同意する</label></>}
       <button disabled={busy} type="submit">{busy ? "処理中…" : mode === "login" ? "ログイン" : "無料で新規登録"}</button>
     </form>
+    {mode === "login" && loginFailed && <button className="authTextButton" type="button" disabled={busy} onClick={() => { setScreen("password-recovery-email"); setMessage(""); }}>パスワードを忘れた方はこちら</button>}
     {message && <p className="authMessage" role="status">{message}</p>}
   </main>;
 }

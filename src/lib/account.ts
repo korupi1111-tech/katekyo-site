@@ -75,3 +75,23 @@ export async function verifySignupEmailCode(email: string, token: string): Promi
   });
   if (error) throw error;
 }
+
+/** パスワード再設定用のメールOTPを送る。メール本文は {{ .Token }} を使う。 */
+export async function sendPasswordResetCode(email: string): Promise<void> {
+  if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。");
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
+  if (error) throw error;
+}
+
+/** 再設定メール用OTPを検証し、Supabaseが発行する再設定セッションを開始する。 */
+export async function verifyPasswordResetCode(email: string, token: string): Promise<void> {
+  if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。");
+  const { error } = await supabase.auth.verifyOtp({ email, token, type: "recovery" });
+  if (error) throw error;
+}
+
+export async function updateMyPassword(password: string): Promise<void> {
+  if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。");
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) throw error;
+}
