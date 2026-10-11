@@ -5,12 +5,14 @@ export type CalendarLesson = {
   date: string;
   title: string;
   time: string;
+  status: "requested" | "accepted" | "completed";
 };
 
 type ReservationRow = {
   id: string;
   starts_at: string;
   subject: string | null;
+  status: "requested" | "accepted" | "completed";
 };
 
 function formatDate(isoDate: string) {
@@ -33,7 +35,7 @@ function formatTime(isoDate: string) {
   }).format(new Date(isoDate));
 }
 
-/** Returns only this signed-in user's accepted or completed reservations. */
+/** Returns only this signed-in user's pending and confirmed reservations. */
 export async function getMyLessonCalendarEvents(): Promise<CalendarLesson[]> {
   if (!supabase) return [];
   const { data: authData, error: authError } = await supabase.auth.getUser();
@@ -41,9 +43,9 @@ export async function getMyLessonCalendarEvents(): Promise<CalendarLesson[]> {
 
   const { data, error } = await supabase
     .from("lesson_reservations")
-    .select("id, starts_at, subject")
+    .select("id, starts_at, subject, status")
     .or(`teacher_user_id.eq.${authData.user.id},student_user_id.eq.${authData.user.id}`)
-    .in("status", ["accepted", "completed"])
+    .in("status", ["requested", "accepted", "completed"])
     .order("starts_at", { ascending: true });
 
   if (error) throw error;
@@ -52,5 +54,6 @@ export async function getMyLessonCalendarEvents(): Promise<CalendarLesson[]> {
     date: formatDate(reservation.starts_at),
     time: formatTime(reservation.starts_at),
     title: reservation.subject?.trim() || "授業予定",
+    status: reservation.status,
   }));
 }

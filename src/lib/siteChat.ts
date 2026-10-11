@@ -16,9 +16,10 @@ export type ChatConversation = {
 export type ChatMessage = {
   id: string;
   conversation_id: string;
-  sender_user_id: string;
+  sender_user_id: string | null;
   body: string;
   created_at: string;
+  message_type: "user" | "system";
 };
 
 export type PublicTeacherContact = {

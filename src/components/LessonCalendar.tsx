@@ -7,6 +7,7 @@ export type LessonCalendarEvent = {
   date: string;
   title: string;
   time?: string;
+  status?: "requested" | "accepted" | "completed";
 };
 
 type Props = {
@@ -47,9 +48,11 @@ export function LessonCalendar({ events = [], emptyMessage = "この月の授業
         const date = index + 1;
         const key = dateKey(year, month, date);
         const dayEvents = eventMap[key] ?? [];
-        return <div className={`calendarDay${key === todayKey ? " today" : ""}`} key={key}><time dateTime={key}>{date}</time>{dayEvents.length > 0 && <span className="calendarEventDot" title={`${dayEvents.length}件の授業予定`}>●</span>}</div>;
+        const hasPending = dayEvents.some(event => event.status === "requested");
+        const hasConfirmed = dayEvents.some(event => event.status === "accepted" || event.status === "completed" || !event.status);
+        return <div className={`calendarDay${key === todayKey ? " today" : ""}`} key={key}><time dateTime={key}>{date}</time>{dayEvents.length > 0 && <span className="calendarEventMarks" title={`${dayEvents.length}件の授業予定`}>{hasPending && <i className="calendarEventDot pending">●</i>}{hasConfirmed && <i className="calendarEventDot confirmed">●</i>}</span>}</div>;
       })}
     </div>
-    {visibleEvents.length > 0 ? <ul className="calendarEventList">{visibleEvents.map(event => <li key={event.id}><time dateTime={event.date}>{event.date.slice(5).replace("-", "/")}{event.time ? ` ${event.time}` : ""}</time><span>{event.title}</span></li>)}</ul> : <p className="calendarEmpty">{emptyMessage}</p>}
+    {visibleEvents.length > 0 ? <ul className="calendarEventList">{visibleEvents.map(event => <li className={event.status === "requested" ? "pending" : "confirmed"} key={event.id}><time dateTime={event.date}>{event.date.slice(5).replace("-", "/")}{event.time ? ` ${event.time}` : ""}</time><span>{event.title}</span><small>{event.status === "requested" ? "承認待ち" : "確定"}</small></li>)}</ul> : <p className="calendarEmpty">{emptyMessage}</p>}
   </section>;
 }

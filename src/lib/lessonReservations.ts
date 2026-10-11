@@ -1,0 +1,68 @@
+import { supabase } from "./supabase";
+import type { RealtimeChannel } from "@supabase/supabase-js";
+
+export type LessonReservationStatus = "requested" | "accepted" | "declined" | "cancelled" | "completed";
+
+export type LessonReservation = {
+  id: string;
+  conversation_id: string | null;
+  teacher_user_id: string;
+  student_user_id: string;
+  starts_at: string;
+  ends_at: string;
+  status: LessonReservationStatus;
+  subject: string | null;
+  created_at: string;
+};
+
+function requireClient() {
+  if (!supabase) throw new Error("Supabaseの接続情報が設定されていません。");
+  return supabase;
+}
+
+export async function getMyLessonReservations() {
+  const client = requireClient();
+  const { data, error } = await client
+    .from("lesson_reservations")
+    .select("id, conversation_id, teacher_user_id, student_user_id, starts_at, ends_at, status, subject, created_at")
+    .order("starts_at", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as LessonReservation[];
+}
+
+export async function requestLessonReservation(conversationId: string, startsAt: string, durationMinutes: number) {
+  const client = requireClient();
+  const { data, error } = await client.rpc("request_lesson_reservation", {
+    p_conversation_id: conversationId,
+    p_starts_at: startsAt,
+    p_duration_minutes: durationMinutes,
+  });
+  if (error) throw error;
+  return data as string;
+}
+
+export async function respondLessonReservation(reservationId: string, accept: boolean) {
+  const client = requireClient();
+  const { error } = await client.rpc("respond_lesson_reservation", {
+    p_reservation_id: reservationId,
+    p_accept: accept,
+  });
+  if (error) throw error;
+}
+
+export function formatReservationSchedule(startsAt: string, endsAt: string) {
+  const date = new Date(startsAt);
+  const end = new Date(endsAt);
+  const day = new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", month: "numeric", day: "numeric", weekday: "short" }).format(date);
+  const time = new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", hour: "2-digit", minute: "2-digit", hour12: false }).format(date);
+  const duration = Math.round((end.getTime() - date.getTime()) / 60000);
+  return `${day} ${time}〜（${duration}分）`;
+}
+
+export function subscribeToMyLessonReservations(onChanged: () => void): RealtimeChannel | null {
+  if (!supabase) return null;
+  return supabase
+    .channel("my-lesson-reservations")
+    .on("postgres_changes", { event: "*", schema: "public", table: "lesson_reservations" }, onChanged)
+    .subscribe();
+}
