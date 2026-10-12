@@ -50,6 +50,22 @@ export async function respondLessonReservation(reservationId: string, accept: bo
   if (error) throw error;
 }
 
+export async function cancelLessonReservation(reservationId: string, reason?: string) {
+  const { error } = await requireClient().rpc("cancel_lesson_reservation", { p_reservation_id: reservationId, p_reason: reason?.trim() || null });
+  if (error) throw error;
+}
+
+export async function changeLessonReservation(reservationId: string, startsAt: string, durationMinutes: number) {
+  const { data, error } = await requireClient().rpc("change_lesson_reservation", { p_reservation_id: reservationId, p_starts_at: startsAt, p_duration_minutes: durationMinutes });
+  if (error) throw error;
+  return data as string;
+}
+
+export async function completeLessonReservation(reservationId: string) {
+  const { error } = await requireClient().rpc("complete_lesson_reservation", { p_reservation_id: reservationId });
+  if (error) throw error;
+}
+
 export function formatReservationSchedule(startsAt: string, endsAt: string) {
   const date = new Date(startsAt);
   const end = new Date(endsAt);

@@ -1,14 +1,15 @@
 import { CalendarClock, ChevronDown, X } from "lucide-react";
 import { useMemo, useState } from "react";
-import { requestLessonReservation } from "../lib/lessonReservations";
+import { changeLessonReservation, requestLessonReservation, type LessonReservation } from "../lib/lessonReservations";
 import type { ChatConversation } from "../lib/siteChat";
 import "../reservation.css";
 
 type Props = {
-  conversation: ChatConversation;
+  conversation?: ChatConversation;
   teacherName: string;
   onClose: () => void;
   onRequested: () => Promise<void> | void;
+  reservationToChange?: LessonReservation;
 };
 
 const pad = (value: number) => String(value).padStart(2, "0");
@@ -25,7 +26,7 @@ function dateOptions() {
   });
 }
 
-export function ReservationRequestPanel({ conversation, teacherName, onClose, onRequested }: Props) {
+export function ReservationRequestPanel({ conversation, teacherName, onClose, onRequested, reservationToChange }: Props) {
   const dates = useMemo(dateOptions, []);
   const [date, setDate] = useState(dates[0]?.value ?? "");
   const [hour, setHour] = useState("18");
@@ -39,9 +40,11 @@ export function ReservationRequestPanel({ conversation, teacherName, onClose, on
     setStatus("");
     try {
       const startsAt = new Date(`${date}T${hour}:${minute}:00+09:00`).toISOString();
-      await requestLessonReservation(conversation.id, startsAt, Number(duration));
+      if (reservationToChange) await changeLessonReservation(reservationToChange.id, startsAt, Number(duration));
+      else if (conversation) await requestLessonReservation(conversation.id, startsAt, Number(duration));
+      else throw new Error("予約に必要な会話情報を確認できませんでした。");
       await onRequested();
-      setStatus("予約を申請しました。先生の承認をお待ちください。");
+      setStatus(reservationToChange ? "予約変更を申請しました。講師の承認をお待ちください。" : "予約を申請しました。先生の承認をお待ちください。");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "予約を申請できませんでした。");
     } finally {
@@ -50,7 +53,7 @@ export function ReservationRequestPanel({ conversation, teacherName, onClose, on
   };
 
   return <section className="reservationPanel" aria-label="授業予約を申請">
-    <header><div><span><CalendarClock /> RESERVATION</span><h2>{teacherName}に予約を申請</h2><p>日時は講師の承認後に確定します。</p></div><button type="button" className="reservationClose" onClick={onClose} aria-label="予約画面を閉じる"><X /></button></header>
+    <header><div><span><CalendarClock /> RESERVATION</span><h2>{reservationToChange ? `${teacherName}との予約を変更` : `${teacherName}に予約を申請`}</h2><p>日時は講師の承認後に確定します。</p></div><button type="button" className="reservationClose" onClick={onClose} aria-label="予約画面を閉じる"><X /></button></header>
     <div className="reservationWheelHint"><ChevronDown /> 下へなぞって選ぶホイール形式です</div>
     <div className="reservationWheels">
       <label>日付<select value={date} onChange={event => setDate(event.target.value)}>{dates.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
@@ -59,7 +62,7 @@ export function ReservationRequestPanel({ conversation, teacherName, onClose, on
       <label>授業時間<select value={duration} onChange={event => setDuration(event.target.value)}>{[30, 45, 60, 90, 120, 150, 180].map(value => <option key={value} value={value}>{value}分</option>)}</select></label>
     </div>
     <p className="reservationSummary">{dates.find(option => option.value === date)?.label}　{hour}:{minute} から {duration}分</p>
-    <button type="button" className="reservationSubmit" onClick={() => void submit()} disabled={sending}>{sending ? "申請中…" : "この日時で申請する"}</button>
+    <button type="button" className="reservationSubmit" onClick={() => void submit()} disabled={sending}>{sending ? "申請中…" : reservationToChange ? "この日時で変更申請する" : "この日時で申請する"}</button>
     {status && <p className="reservationStatus" role="status">{status}</p>}
   </section>;
 }
