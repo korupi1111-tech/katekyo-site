@@ -4,6 +4,7 @@ import { ProfileModalShell, PublicProfileCard, type ProfileTemplateData } from "
 import { getCurrentAccount } from "../lib/account";
 import { getTeacherAvatarUrl } from "../lib/teacherProfiles";
 import { isTeacherFavorite, toggleTeacherFavorite } from "../lib/teacherFavorites";
+import { PublicTeacherAvailability } from "./PublicTeacherAvailability";
 import { contactMethodOptions, lessonStyleOptions, lessonTypeOptions, levelOptionsForSubject, qualificationLabelOptions, subjectMatches, subjectOptions, teachingTypeOptions, topicOptionsForSubject } from "../lib/teacherLabels";
 import "../advanced-search.css";
 
@@ -85,7 +86,7 @@ function DirectoryTeacherDetail({ teacher, onClose, onStartChat }: { teacher: Di
     try { const next = await toggleTeacherFavorite(teacher.teacher_profile_id, favorite); setFavorite(next); setStatus(next ? "お気に入りに追加しました。" : "お気に入りから外しました。"); }
     catch (error) { setStatus(error instanceof Error ? error.message : "お気に入りを更新できませんでした。"); }
   };
-  return <ProfileModalShell profile={profile} close={onClose} reviewsText={status || "口コミは確認済みの評価が蓄積され次第、公開します。"} onFavorite={student && teacher.teacher_profile_id ? changeFavorite : undefined} favoriteLabel={favorite ? "★ お気に入りから外す" : "☆ お気に入りに追加"} onContact={student && teacher.teacher_profile_id ? () => onStartChat(teacher.teacher_profile_id!) : undefined}/>;
+  return <ProfileModalShell profile={profile} close={onClose} reviewsText={status || "口コミは確認済みの評価が蓄積され次第、公開します。"} onFavorite={student && teacher.teacher_profile_id ? changeFavorite : undefined} favoriteLabel={favorite ? "★ お気に入りから外す" : "☆ お気に入りに追加"} onContact={student && teacher.teacher_profile_id ? () => onStartChat(teacher.teacher_profile_id!) : undefined} availability={teacher.teacher_profile_id ? <PublicTeacherAvailability teacherProfileId={teacher.teacher_profile_id} /> : undefined}/>;
 }
 
 function includesAny(values: string[], selected: string[]) {

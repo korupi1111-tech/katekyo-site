@@ -7,6 +7,7 @@ import { TeacherProfileEditor } from "./TeacherProfileEditor";
 import { MyLessonCalendar } from "./MyLessonCalendar";
 import { ReservationInbox } from "./ReservationInbox";
 import { FavoriteTeachers } from "./FavoriteTeachers";
+import { TeacherAvailabilityEditor } from "./TeacherAvailability";
 
 type DashboardProps = { onNavigate: (page: "family-auth" | "teacher-auth" | "chat-list") => void };
 
@@ -41,7 +42,7 @@ function StudentProfileEditor() {
 }
 
 export function TeacherDashboard({ onNavigate }: DashboardProps) {
-  return <AccountGate expectedRole="teacher" onNavigate={onNavigate}>{account => <main className="dashboardPage withTopbar"><header className="dashboardHero teacherDashboardHero"><img src="/owner.jpg" alt="プロフィール画像"/><div><span>TEACHER DASHBOARD</span><h1>{account.displayName}</h1><p>講師登録・公開プロフィールを管理します。</p></div></header><AccountStatus account={account} teacher /><section className="accountFeature chatShortcut"><div><span>MESSAGES</span><h2>チャット一覧</h2><p>生徒との会話を一覧で確認できます。</p></div><button onClick={() => onNavigate("chat-list")}>チャット一覧を開く</button></section><ReservationInbox role="teacher" /><MyLessonCalendar />{account.teacherFeaturesEnabled ? <><section className="accountFeature"><h2>公開プロフィールを編集できます</h2><p>メール認証後は、プロフィールと検索用ラベルを保存・公開できます。本人確認済みの表示は、運営による確認後に反映されます。</p></section><TeacherProfileEditor /></> : <section className="accountFeature locked"><h2>メール認証後にプロフィールを編集できます</h2><p>講師ログインに使うメールアドレスを認証すると、プロフィールと検索用ラベルを保存・公開できます。</p></section>}<section className="accountActions"><button onClick={() => signOut(onNavigate, "teacher-auth")}>ログアウト</button><button disabled title="退会は本人確認を伴うサーバー処理として後続実装します。">退会</button></section></main>}</AccountGate>;
+  return <AccountGate expectedRole="teacher" onNavigate={onNavigate}>{account => <main className="dashboardPage withTopbar"><header className="dashboardHero teacherDashboardHero"><img src="/owner.jpg" alt="プロフィール画像"/><div><span>TEACHER DASHBOARD</span><h1>{account.displayName}</h1><p>講師登録・公開プロフィールを管理します。</p></div></header><AccountStatus account={account} teacher /><section className="accountFeature chatShortcut"><div><span>MESSAGES</span><h2>チャット一覧</h2><p>生徒との会話を一覧で確認できます。</p></div><button onClick={() => onNavigate("chat-list")}>チャット一覧を開く</button></section><ReservationInbox role="teacher" /><MyLessonCalendar />{account.teacherFeaturesEnabled ? <><section className="accountFeature"><h2>公開プロフィールを編集できます</h2><p>メール認証後は、プロフィールと検索用ラベルを保存・公開できます。本人確認済みの表示は、運営による確認後に反映されます。</p></section><TeacherAvailabilityEditor /><TeacherProfileEditor /></> : <section className="accountFeature locked"><h2>メール認証後にプロフィールを編集できます</h2><p>講師ログインに使うメールアドレスを認証すると、プロフィールと検索用ラベルを保存・公開できます。</p></section>}<section className="accountActions"><button onClick={() => signOut(onNavigate, "teacher-auth")}>ログアウト</button><button disabled title="退会は本人確認を伴うサーバー処理として後続実装します。">退会</button></section></main>}</AccountGate>;
 }
 
 export function StudentDashboard({ onNavigate }: DashboardProps) {

@@ -67,7 +67,7 @@ export function ProfileDetailContent({ profile: sourceProfile }: { profile: Prof
 }
 
 /* Shared outer shell too: both profile details close, scroll, and position identically. */
-export function ProfileModalShell({ profile, close, reviewsText, onContact, onFavorite, favoriteLabel }: { profile: ProfileTemplateData; close: () => void; reviewsText: string; onContact?: () => void; onFavorite?: () => void; favoriteLabel?: string }) {
+export function ProfileModalShell({ profile, close, reviewsText, onContact, onFavorite, favoriteLabel, availability }: { profile: ProfileTemplateData; close: () => void; reviewsText: string; onContact?: () => void; onFavorite?: () => void; favoriteLabel?: string; availability?: ReactNode }) {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") close(); };
     window.addEventListener("keydown", onKeyDown);
@@ -75,5 +75,5 @@ export function ProfileModalShell({ profile, close, reviewsText, onContact, onFa
     return () => { window.removeEventListener("keydown", onKeyDown); document.body.style.overflow = ""; };
   }, [close]);
 
-  return <div className="overlay" onClick={close}><article className="modal ownerProfileDialog" onClick={event => event.stopPropagation()}><button className="close" type="button" onClick={close} aria-label="閉じる"><X/></button><ProfileDetailContent profile={profile}/><section className="ownerReviews"><h3>口コミ</h3><p>{reviewsText}</p></section><div className="ownerProfileActions">{onFavorite && <button className="ownerFavoriteButton" type="button" onClick={onFavorite}>{favoriteLabel ?? "☆ お気に入りに追加"}</button>}<button className="ownerInquiry" type="button" onClick={onContact}>この先生に問い合わせる</button></div></article></div>;
+  return <div className="overlay" onClick={close}><article className="modal ownerProfileDialog" onClick={event => event.stopPropagation()}><button className="close" type="button" onClick={close} aria-label="閉じる"><X/></button><ProfileDetailContent profile={profile}/>{availability}<section className="ownerReviews"><h3>口コミ</h3><p>{reviewsText}</p></section><div className="ownerProfileActions">{onFavorite && <button className="ownerFavoriteButton" type="button" onClick={onFavorite}>{favoriteLabel ?? "☆ お気に入りに追加"}</button>}<button className="ownerInquiry" type="button" onClick={onContact}>この先生に問い合わせる</button></div></article></div>;
 }
