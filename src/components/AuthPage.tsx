@@ -56,7 +56,7 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!supabase) { setMessage("Supabaseの接続設定が見つかりません。開発サーバーを再起動してからお試しください。"); return; }
-    if (mode === "register" && teacher && (!terms || !privacy)) { setMessage("利用規約とプライバシーポリシーへの同意が必要です。"); return; }
+    if (mode === "register" && (!terms || !privacy)) { setMessage("利用規約とプライバシーポリシーへの同意が必要です。"); return; }
     setBusy(true); setMessage("");
     try {
       if (mode === "login") {
@@ -83,8 +83,8 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
             role,
             display_name: displayName,
             legal_name: teacher ? legalName : undefined,
-            terms_accepted: teacher,
-            privacy_accepted: teacher,
+            terms_accepted: true,
+            privacy_accepted: true,
           },
         },
       });
@@ -195,7 +195,7 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
       {mode === "register" && <><label>表示名<input required value={displayName} onChange={event => setDisplayName(event.target.value)} autoComplete="nickname" /></label>{teacher && <label>氏名または講師名<input required value={legalName} onChange={event => setLegalName(event.target.value)} autoComplete="name" /></label>}</>}
       <label>メールアドレス<input required type="email" value={email} onChange={event => setEmail(event.target.value)} autoComplete="email" /></label>
       <label>パスワード<input required type="password" minLength={8} value={password} onChange={event => setPassword(event.target.value)} autoComplete={mode === "login" ? "current-password" : "new-password"} /><small>8文字以上で設定してください。</small></label>
-      {mode === "register" && teacher && <><label className="authCheck"><input type="checkbox" checked={terms} onChange={event => setTerms(event.target.checked)} /> 利用規約に同意する</label><label className="authCheck"><input type="checkbox" checked={privacy} onChange={event => setPrivacy(event.target.checked)} /> プライバシーポリシーに同意する</label></>}
+      {mode === "register" && <><label className="authCheck"><input type="checkbox" checked={terms} onChange={event => setTerms(event.target.checked)} /> 利用規約に同意する</label><label className="authCheck"><input type="checkbox" checked={privacy} onChange={event => setPrivacy(event.target.checked)} /> プライバシーポリシーに同意する</label></>}
       <button disabled={busy} type="submit">{busy ? "処理中…" : mode === "login" ? "ログイン" : "無料で新規登録"}</button>
     </form>
     {mode === "login" && loginFailed && <button className="authTextButton" type="button" disabled={busy} onClick={() => { setScreen("password-recovery-email"); setMessage(""); }}>パスワードを忘れた方はこちら</button>}
