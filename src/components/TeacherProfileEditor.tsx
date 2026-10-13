@@ -1,7 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { getMyTeacherProfile, getTeacherAvatarUrl, saveMyTeacherProfile, uploadMyTeacherAvatar, type TeacherProfileInput, type TeacherProfileRow } from "../lib/teacherProfiles";
 import { supabase } from "../lib/supabase";
-import { contactMethodOptions, lessonStyleOptions, lessonTypeOptions, levelOptions, qualificationLabelOptions, qualificationOptions, subjectOptions, teachingTypeOptions, topicOptions } from "../lib/teacherLabels";
+import { contactMethodOptions, lessonStyleOptions, lessonTypeOptions, levelOptionsForSubject, normalizeCombinedContactMethod, qualificationLabelOptions, qualificationOptions, subjectOptions, subjectTypeOptions, topicOptionsForSubject } from "../lib/teacherLabels";
 
 type ProfileListKey = "qualifications" | "strengths" | "limitations" | "targetStudents" | "teachingTypes" | "qualificationLabels" | "subjects" | "topics" | "levels" | "lessonTypes" | "contactMethods" | "lessonStyles" | "otherSubjects" | "extraSubjects" | "recommendedFor" | "notRecommendedFor";
 type EditorState = Omit<TeacherProfileInput, "priceYen" | ProfileListKey> & Required<Pick<TeacherProfileInput, ProfileListKey>> & { priceYen: string };
@@ -16,22 +16,22 @@ const initialProfile: EditorState = {
   mockExamResult: "2026年度第1回河合塾全統記述模試 英語147点",
   gender: "男性",
   lessonFormat: "単発授業・学習相談",
-  contactMethod: "メールでの相談",
+  contactMethod: "メッセージ・メールでの相談",
   recruitmentStatus: "受験のため原則停止中",
-  recruitmentDetail: "どうしてもという方のみメッセージにてご連絡ください。",
+  recruitmentDetail: "どうしてもという方のみメッセージ・メールにてご連絡ください。",
   priceYen: "0",
-  mainSubject: "英語",
+  mainSubject: "英語資格",
   strengths: ["長文読解", "ライティング"],
   limitations: ["TOEIC対策", "文法指導"],
   targetStudents: ["英検2級〜1級", "感覚で英文を読む方", "長文読解で伸び悩んでいる方"],
   teachingPolicy: "生徒のレベルより少し難度の高い長文を精読し、意味を正確に捉えた全訳を重視します。",
-  teachingTypes: ["感覚型"],
+  teachingTypes: ["資格試験対策", "読解・演習"],
   qualificationLabels: ["英語資格", "英検", "TOEIC"],
-  subjects: ["高校英語"],
-  topics: ["長文読解"],
-  levels: ["英検2級", "英検準1級"],
+  subjects: ["英語資格", "高校英語"],
+  topics: ["英検対策"],
+  levels: ["英検"],
   lessonTypes: ["単発授業", "学習相談"],
-  contactMethods: ["メール"],
+  contactMethods: ["メッセージ・メール"],
   lessonStyles: ["精読重視"],
   supportsInPerson: false,
   prefecture: "",
@@ -40,7 +40,7 @@ const initialProfile: EditorState = {
   initialFree: false,
   otherSubjects: [],
   extraSubjects: [],
-  lessonFormatDetail: "単発授業がメインとなり、基本はメールでの相談となります。",
+  lessonFormatDetail: "単発授業がメインとなり、基本はメッセージ・メールでの相談となります。",
   recommendedFor: ["読めているがしっかり訳せない方", "英検2級〜1級を目指している方"],
   notRecommendedFor: ["英語初学者", "文法を基礎から学びたい人", "TOEIC対策をしたい人"],
   homeworkPolicy: "単語を毎日5分ほど、週に2回の長文（少し難しめ）",
@@ -57,6 +57,19 @@ function toggleLabel(values: string[], value: string) {
   return values.includes(value) ? values.filter(item => item !== value) : [...values, value];
 }
 
+function normalizeContactMethods(values: string[]) {
+  return [...new Set(values.map(normalizeCombinedContactMethod))];
+}
+
+function normalizeSubjects(values: string[]) {
+  return [...new Set(values.map(value => value === "社会" ? "小学校社会" : value).filter(value => subjectOptions.includes(value)))];
+}
+
+function normalizeGoals(values: string[], subject: string) {
+  const allowedGoals = levelOptionsForSubject(subject);
+  return [...new Set(values.map(value => value.startsWith("英検") ? "英検" : value === "基礎から" ? "基礎固め" : value === "学校の授業補習" ? "授業復習" : value === "難関大学受験" ? "大学受験" : value).filter(value => allowedGoals.includes(value)))];
+}
+
 function LabelPicker({ label, help, values, selected, onChange, limit }: { label: string; help: string; values: string[]; selected: string[]; onChange: (next: string[]) => void; limit?: number }) {
   return <fieldset className="profileLabelPicker"><legend>{label}</legend><p>{help}</p><div>{values.map(value => <label key={value}><input checked={selected.includes(value)} onChange={() => {
     if (!selected.includes(value) && limit && selected.length >= limit) return;
@@ -65,6 +78,7 @@ function LabelPicker({ label, help, values, selected, onChange, limit }: { label
 }
 
 function toEditorState(profile: TeacherProfileRow): EditorState {
+  const mainSubject = profile.main_subject === "社会" ? "小学校社会" : profile.main_subject;
   return {
     publicSlug: profile.public_slug,
     displayName: profile.display_name,
@@ -76,22 +90,22 @@ function toEditorState(profile: TeacherProfileRow): EditorState {
     mockExamResult: profile.mock_exam_result,
     gender: profile.gender,
     lessonFormat: profile.lesson_format,
-    contactMethod: profile.contact_method,
+    contactMethod: profile.contact_method ? normalizeCombinedContactMethod(profile.contact_method) : null,
     recruitmentStatus: profile.recruitment_status,
     recruitmentDetail: profile.recruitment_detail,
     priceYen: profile.price_yen?.toString() ?? "",
-    mainSubject: profile.main_subject,
+    mainSubject,
     strengths: profile.strengths,
     limitations: profile.limitations,
     targetStudents: profile.target_students,
     teachingPolicy: profile.teaching_policy,
     teachingTypes: profile.teaching_types,
     qualificationLabels: profile.qualification_labels,
-    subjects: profile.subjects,
+    subjects: normalizeSubjects(profile.subjects),
     topics: profile.topics,
-    levels: profile.levels,
+    levels: normalizeGoals(profile.levels, mainSubject ?? ""),
     lessonTypes: profile.lesson_types,
-    contactMethods: profile.contact_methods,
+    contactMethods: normalizeContactMethods(profile.contact_methods),
     lessonStyles: profile.lesson_styles,
     supportsInPerson: profile.supports_in_person,
     prefecture: profile.prefecture ?? "",
@@ -150,7 +164,7 @@ export function TeacherProfileEditor() {
   const save = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (profile.isPublished && profile.subjects.length === 0) {
-      setStatus("公開するには、検索に使う「担当科目」を1つ以上選んでください。");
+      setStatus("公開するには、検索に使う「講師の得意な科目」を1つ以上選んでください。");
       return;
     }
     setSaving(true);
@@ -168,6 +182,9 @@ export function TeacherProfileEditor() {
 
   const selectedQualifications = profile.qualifications.filter(value => qualificationOptions.includes(value));
   const customQualifications = profile.qualifications.filter(value => !qualificationOptions.includes(value));
+  const availableTopics = topicOptionsForSubject(profile.mainSubject ?? "");
+  const availableGoals = levelOptionsForSubject(profile.mainSubject ?? "");
+  const updateMainSubject = (mainSubject: string) => setProfile(current => ({ ...current, mainSubject, topics: current.topics.filter(topic => topicOptionsForSubject(mainSubject).includes(topic)), levels: current.levels.filter(level => levelOptionsForSubject(mainSubject).includes(level)) }));
   const updateQualifications = (values: string[]) => setProfile(current => ({ ...current, qualifications: [...values, ...current.qualifications.filter(value => !qualificationOptions.includes(value))] }));
 
   return <section className="teacherProfileEditor"><header><span>PROFILE EDITOR</span><h2>講師プロフィールを編集</h2><p>{status}</p></header><form onSubmit={save}><div className="profileEditorGrid">
@@ -182,22 +199,22 @@ export function TeacherProfileEditor() {
     <label>料金（円）<input type="number" min="0" value={profile.priceYen} onChange={event => updateText("priceYen", event.target.value)} /></label>
     <label>募集状況<select value={profile.recruitmentStatus ?? ""} onChange={event => updateText("recruitmentStatus", event.target.value)}><option value="">選択してください</option><option>受付中</option><option>残り1枠</option><option>募集停止中</option></select></label>
     <label className="wide">募集状況詳細<textarea value={profile.recruitmentDetail ?? ""} onChange={event => updateText("recruitmentDetail", event.target.value)} /></label>
-    <label>メイン科目<input list="teacher-main-subjects" value={profile.mainSubject ?? ""} onChange={event => updateText("mainSubject", event.target.value)} /><datalist id="teacher-main-subjects">{subjectOptions.map(value => <option value={value} key={value}/>)}</datalist></label>
+    <label>主な得意科目<input list="teacher-main-subjects" value={profile.mainSubject ?? ""} onChange={event => updateMainSubject(event.target.value)} /><datalist id="teacher-main-subjects">{subjectOptions.map(value => <option value={value} key={value}/>)}</datalist></label>
     <label>得意分野<input value={joinList(profile.strengths)} onChange={event => updateList("strengths", event.target.value)} /></label>
     <label>不得意分野<input value={joinList(profile.limitations)} onChange={event => updateList("limitations", event.target.value)} /></label>
     <label className="wide">対象生徒<textarea value={joinList(profile.targetStudents)} onChange={event => updateList("targetStudents", event.target.value)} /></label>
     <label className="wide">指導方針<textarea value={profile.teachingPolicy ?? ""} onChange={event => updateText("teachingPolicy", event.target.value)} /><small>例：「長文をしっかり翻訳できるようになるまでやります」は文章で説明し、検索用ラベルは下で「長文読解」を選びます。</small></label>
-    <section className="profileLabelSection wide" aria-labelledby="search-labels-title"><header><span>SEARCH LABELS</span><h3 id="search-labels-title">検索に使うラベル</h3><p>選んだラベルは保存後、公開中の講師検索で絞り込みに使われます。英数国理社に当てはまらない内容は「その他」を選べます。</p></header>
-      <LabelPicker label="担当科目" help="複数選択できます。" values={subjectOptions} selected={profile.subjects} onChange={subjects => update({ subjects })} />
-      <LabelPicker label="得意な内容" help="例：長文を丁寧に訳せるようにする指導は「長文読解」を選びます。" values={topicOptions} selected={profile.topics} onChange={topics => update({ topics })} />
-      <LabelPicker label="対象レベル・試験" help="対応できる目標やレベルを選びます。" values={levelOptions} selected={profile.levels} onChange={levels => update({ levels })} />
+    <section className="profileLabelSection wide" aria-labelledby="search-labels-title"><header><span>SEARCH LABELS</span><h3 id="search-labels-title">検索に使うラベル</h3><p>選んだラベルは保存後、公開中の講師検索で絞り込みに使われます。一覧にない内容は「その他」を選べます。</p></header>
+      <LabelPicker label="講師の得意な科目" help="複数選択できます。" values={subjectOptions} selected={profile.subjects} onChange={subjects => update({ subjects })} />
+      <LabelPicker label="講師の得意な指導方法" help="例：長文を丁寧に訳せるようにする指導は「長文読解」を選びます。" values={availableTopics} selected={profile.topics} onChange={topics => update({ topics })} />
+      <LabelPicker label="目標" help="対応できる目標を選びます。英検は級ではなく「英検」を選びます。" values={availableGoals} selected={profile.levels} onChange={levels => update({ levels })} />
       <LabelPicker label="資格の検索ラベル" help="自己申告の検索用分類です。例：英検準1級なら「英語資格」「英検」、TOEICなら「英語資格」「TOEIC」を選びます。確認済み表示とは別です。" values={qualificationLabelOptions} selected={profile.qualificationLabels} onChange={qualificationLabels => update({ qualificationLabels })} />
       <LabelPicker label="資格・認定の内容" help="保有する資格や認定を選びます。" values={qualificationOptions} selected={selectedQualifications} onChange={updateQualifications} />
       <label className="profileFreeLabel">その他の資格・認定<input value={joinList(customQualifications)} onChange={event => setProfile(current => ({ ...current, qualifications: [...current.qualifications.filter(value => qualificationOptions.includes(value)), ...splitList(event.target.value)] }))} /><small>一覧にない資格名・点数・補足はこちらへ入力できます。</small></label>
       <LabelPicker label="授業形式" help="提供する形式を選びます。" values={lessonTypeOptions} selected={profile.lessonTypes} onChange={lessonTypes => update({ lessonTypes })} />
-      <LabelPicker label="対応方法" help="オンライン・対面など、利用できる方法を選びます。" values={contactMethodOptions} selected={profile.contactMethods} onChange={contactMethods => update({ contactMethods, supportsInPerson: contactMethods.includes("対面") })} />
+      <LabelPicker label="授業・相談の方法" help="メッセージとメールは一つの方法として扱います。" values={contactMethodOptions} selected={profile.contactMethods} onChange={contactMethods => update({ contactMethods, supportsInPerson: contactMethods.includes("対面") })} />
       {profile.supportsInPerson && <div className="profileLocationFields"><label>都道府県<input value={profile.prefecture ?? ""} onChange={event => updateText("prefecture", event.target.value)} /></label><label>市区町村<input value={profile.city ?? ""} onChange={event => updateText("city", event.target.value)} /></label></div>}
-      <LabelPicker label="指導タイプ" help="主な型を最大2つ選びます。" values={teachingTypeOptions} selected={profile.teachingTypes} onChange={teachingTypes => update({ teachingTypes })} limit={2} />
+      <LabelPicker label="講師の得意科目のタイプ" help="主なタイプを最大2つ選びます。" values={subjectTypeOptions} selected={profile.teachingTypes} onChange={teachingTypes => update({ teachingTypes })} limit={2} />
       <LabelPicker label="授業の進め方" help="複数選択できます。" values={lessonStyleOptions} selected={profile.lessonStyles} onChange={lessonStyles => update({ lessonStyles })} />
       <div className="profileBooleanLabels"><label><input checked={profile.freeConsultation} onChange={event => update({ freeConsultation: event.target.checked })} type="checkbox" />無料相談あり</label><label><input checked={profile.initialFree} onChange={event => update({ initialFree: event.target.checked })} type="checkbox" />初回無料あり</label></div>
     </section>
