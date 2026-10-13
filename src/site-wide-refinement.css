@@ -234,7 +234,7 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
 .featuredTeacherSection .ownerQualificationRow b, .featuredTeacherSection .ownerScore b { color: #f0d48a; }
 .featuredTeacherSection .ownerHighestRank { color: #e4eeee; font-size: 14px; }
 .featuredTeacherSection .ownerHighestRank .rankBadge { width: 54px; height: 54px; }
-.featuredTeacherSection .ownerCompactMeta { position: relative; grid-column: 1 / -1; grid-row: 2; align-self: stretch; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 7px 22px; padding: 13px 0 42px; border-top: 1px solid rgba(228,238,238,.26); border-left: 0; color: #ecf3f3; }
+.featuredTeacherSection .ownerCompactMeta { position: relative; grid-column: 1 / -1; grid-row: 2; align-self: stretch; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 7px 22px; padding: 13px 0 0; border-top: 1px solid rgba(228,238,238,.26); border-left: 0; color: #ecf3f3; }
 .featuredTeacherSection .ownerCompactMeta p, .featuredTeacherSection .ownerCompactMeta > div { color: inherit; }
 .featuredTeacherSection .ownerCompactMeta > div { grid-column: 1 / -1; }
 .featuredTeacherSection .ownerCompactMeta b { color: #e7cc83; }
