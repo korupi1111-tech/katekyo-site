@@ -20,8 +20,9 @@ export function ArticleTeaser({ onNavigate }: ArticleTeaserProps) {
 }
 
 const articleList = [
-  { id: 1, title: "私が「感覚の英語」を身につけた方法", lead: "英語を「勉強」としてだけでなく、日常の楽しみとして続けてきた経験について。", minutes: 5 },
-  { id: 2, title: "「感覚の英語」の限界と、私がぶつかった壁", lead: "読める・聞けるのに、正確に書けない。感覚的な英語力の限界に向き合った経験について。", minutes: 4 },
+  { id: 1, title: "私が「感覚の英語」を身につけた方法", lead: "英語を「勉強」としてだけでなく、日常の楽しみとして続けてきた経験について。", minutes: 5, image: "/journal-sensory-english.png", imageAlt: "映画と英語の本が並ぶ、夕暮れの学習机のイラスト" },
+  { id: 2, title: "「感覚の英語」の限界と、私がぶつかった壁", lead: "読める・聞けるのに、正確に書けない。感覚的な英語力の限界に向き合った経験について。", minutes: 4, image: "/journal-sensory-limits.png", imageAlt: "英語のノートや本を整理する学習机のイラスト" },
+  { id: 3, title: "なぜ私は勉強をほとんどしていないのに、中学生で英検準1級に合格できたのか", lead: "長文全訳を続けたことで、感覚だけでは届かなかった文法・語彙・構文理解をつなげた経験について。", minutes: 5, image: "/journal-full-translation.png", imageAlt: "本とノートを広げて長文全訳に取り組む学習机のイラスト" },
 ] as const;
 
 function FirstArticle({ onNext }: { onNext: () => void }) {
@@ -70,10 +71,39 @@ function SecondArticle() {
   </section>;
 }
 
+function ThirdArticle() {
+  return <section>
+    <p>前回の記事では、私がどのようにして「感覚の英語」を身につけたのかをお話ししました。今回は、その状態からなぜ中学生で英検準1級に合格できたのかについてお話ししたいと思います。</p>
+    <p>正直に言うと、私は小学校高学年から中学生にかけて、いわゆる英語の勉強をほとんどしていませんでした。単語帳も使わず、文法問題集も解かず、授業も真面目に聞いていたとは言えません。</p>
+    <p>それでも英語力が伸びた理由は、大きく3つあると思っています。</p>
+    <h3>1. 幼少期からの膨大な英語経験</h3>
+    <p>1つ目は、幼少期から積み重ねてきた英語経験です。もちろんネイティブと比べれば圧倒的に少ないでしょう。しかし、同年代の日本人と比較すると、英語のインプット量は非常に多かったと思います。</p>
+    <p>英会話スクール、インターナショナルスクール、洋アニメ、海外映画。そうした環境の中で英語に触れ続けた結果、英語は「勉強して覚えたもの」というより、「当たり前に知っている言語の一部」になっていました。</p>
+    <p>日本語を数年使わなくても完全には忘れないように、英語もある程度、自分の中の言語ストックとして定着していたのだと思います。</p>
+    <h3>2. 年齢とともに基礎知識が増えたこと</h3>
+    <p>2つ目は、単純に年齢を重ねたことです。小学生の頃には理解できなかった内容も、中学生になると理解できるようになります。</p>
+    <p>英語力そのものだけでなく、日本語の語彙力や一般常識、社会に関する知識も増えていきます。すると以前は意味のわからなかった英文も、「こういうことを言っていたのか」と自然に理解できるようになります。英語力だけが成長したのではなく、人間としての知識量そのものが増えたことも大きかったと思います。</p>
+    <h3>3. 週1回、1年間続けた「長文全訳」</h3>
+    <p>そして最大の要因はこれです。私は週に1回、約1年間にわたって英検準1級や1級レベルの長文を全訳していました。</p>
+    <p>ここでいう全訳とは、「わからないからすぐ答えを見る」というものではありません。単語だけは調べても良い。しかし文章の意味や構造は、自分の力で最後まで考え抜く。そうやって長文を最初から最後まで訳し切る作業です。</p>
+    <p>これは本当に疲れます。終わった日は他に何もやりたくなくなるくらい疲れます。ですが、その疲労こそが重要だったと今では思います。</p>
+    <h3>「少し難しい」が一番成長する</h3>
+    <p>大切なのは、自分がギリギリ解けないレベルの文章を選ぶことです。簡単すぎる文章では成長できません。逆に難しすぎると何も身につきません。少し背伸びをしないと理解できない。そのくらいのレベルがちょうど良いのです。</p>
+    <p>私はこの作業を続けたことで、頭の中でバラバラだった文法知識が徐々につながっていきました。なぜそう訳すのか。なぜその語順になるのか。そうした知識が長文の中で自然に整理されていったのです。</p>
+    <h3>長文全訳は「総合トレーニング」</h3>
+    <p>私は長文全訳の良さは、長文読解力だけを鍛えられることではないと思っています。むしろ、文法、語彙、読解、構文理解、英文解釈など、英語に必要なほとんどの能力を同時に鍛えられることが最大の強みです。</p>
+    <p>英作文だけを解いていても、自分が既に持っている知識の範囲でしか英文を作れません。しかし長文は、自分が知らない表現や構文と強制的に向き合うことになります。だからこそ文法知識も固まるのです。</p>
+    <h3>最後に</h3>
+    <p>この方法は、感覚派の人だけに有効な勉強法ではありません。どんな人であっても、「自分の実力より少し上の長文を、本気で全訳する」という作業は大きな力になると思います。</p>
+    <p>もちろん非常に疲れます。一人では続かない人もいるでしょう。その場合は、塾の先生や家庭教師など、誰かに見てもらいながら取り組むのも良いと思います。週に1回でも構いません。本気で考え抜く長文全訳の時間を作るだけで、英語に対する見え方は大きく変わります。</p>
+    <p>少なくとも私は、この積み重ねが中学生で英検準1級に合格できた最大の理由だったと思っています。</p>
+  </section>;
+}
+
 export function ArticlePage() {
-  const [selectedId, setSelectedId] = useState<1 | 2>(1);
+  const [selectedId, setSelectedId] = useState<1 | 2 | 3>(1);
   const article = articleList.find(item => item.id === selectedId)!;
-  const selectArticle = (id: 1 | 2) => { setSelectedId(id); window.scrollTo(0, 0); };
+  const selectArticle = (id: 1 | 2 | 3) => { setSelectedId(id); window.scrollTo(0, 0); };
   return <main className="articlePage withTopbar">
     <header className="articleHero"><span>TEACHER JOURNAL</span><h1>講師コラム</h1><p>講師の学び方や指導への考え方を、本人の言葉で紹介します。</p></header>
     <div className="articleLayout">
@@ -82,8 +112,8 @@ export function ArticlePage() {
         {articleList.map(item => <button type="button" className={selectedId === item.id ? "active" : ""} key={item.id} onClick={() => selectArticle(item.id)}><span>SERIES　|　第{item.id}回</span><strong>{item.title}</strong><small>{seriesName}</small></button>)}
       </aside>
       <article className="articleBody">
-        <header><div className="articleCategory"><BookOpen size={16} /> 講師紹介　|　英語</div><p className="articleSeriesName">SERIES　|　{seriesName}　／　第{selectedId}回</p><h2>{article.title}</h2><p className="articleLead">{article.lead}</p><div className="articleAuthor"><span>KT</span><p><b>こうたろう先生</b><small><Clock3 size={14} /> 読了目安 {article.minutes}分</small></p></div></header>
-        {selectedId === 1 ? <FirstArticle onNext={() => selectArticle(2)} /> : <SecondArticle />}
+        <header><div className="articleCategory"><BookOpen size={16} /> 講師紹介　|　英語</div><p className="articleSeriesName">SERIES　|　{seriesName}　／　第{selectedId}回</p><h2>{article.title}</h2><p className="articleLead">{article.lead}</p><div className="articleAuthor"><span>KT</span><p><b>こうたろう先生</b><small><Clock3 size={14} /> 読了目安 {article.minutes}分</small></p></div><img className="articleIllustration" src={article.image} alt={article.imageAlt} /></header>
+        {selectedId === 1 ? <FirstArticle onNext={() => selectArticle(2)} /> : selectedId === 2 ? <><SecondArticle /><div className="articleBodyNext"><button type="button" className="articleNext" onClick={() => selectArticle(3)}>第3回を読む　<ArrowRight size={18} /></button></div></> : <ThirdArticle />}
       </article>
     </div>
   </main>;
