@@ -54,11 +54,12 @@ export async function getCurrentAccount(): Promise<AccountAccess | null> {
   return data ? toAccountAccess(user, data as AccountRow) : null;
 }
 
-export async function resendConfirmation(email: string): Promise<void> {
+export async function resendConfirmation(email: string, captchaToken: string): Promise<void> {
   if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。");
   const { error } = await supabase.auth.resend({
     type: "signup",
     email,
+    options: { captchaToken },
   });
   if (error) throw error;
 }
@@ -77,9 +78,9 @@ export async function verifySignupEmailCode(email: string, token: string): Promi
 }
 
 /** パスワード再設定用のメールOTPを送る。メール本文は {{ .Token }} を使う。 */
-export async function sendPasswordResetCode(email: string): Promise<void> {
+export async function sendPasswordResetCode(email: string, captchaToken: string): Promise<void> {
   if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。");
-  const { error } = await supabase.auth.resetPasswordForEmail(email);
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { captchaToken });
   if (error) throw error;
 }
 
@@ -100,9 +101,9 @@ export async function updateMyPassword(password: string): Promise<void> {
  * ログイン失敗回数とロックアウトをサーバーで管理するログイン処理。
  * 直接の signInWithPassword は使わず、成功時のセッションだけを受け取る。
  */
-export async function signInWithPasswordLocked(email: string, password: string): Promise<void> {
+export async function signInWithPasswordLocked(email: string, password: string, captchaToken: string): Promise<void> {
   if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。");
-  const { data, error } = await supabase.functions.invoke("password-login", { body: { email, password } });
+  const { data, error } = await supabase.functions.invoke("password-login", { body: { email, password, captchaToken } });
   if (error) {
     const context = (error as { context?: { json?: () => Promise<{ error?: string }> } }).context;
     const body = context?.json ? await context.json().catch(() => null) : null;

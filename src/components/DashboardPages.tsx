@@ -8,6 +8,7 @@ import { MyLessonCalendar } from "./MyLessonCalendar";
 import { ReservationInbox } from "./ReservationInbox";
 import { FavoriteTeachers } from "./FavoriteTeachers";
 import { TeacherAvailabilityEditor } from "./TeacherAvailability";
+import { Turnstile } from "./Turnstile";
 
 type DashboardProps = { onNavigate: (page: "family-auth" | "teacher-auth" | "chat-list") => void };
 
@@ -23,10 +24,12 @@ function AccountGate({ expectedRole, onNavigate, children }: DashboardProps & { 
 function AccountStatus({ account, teacher }: { account: AccountAccess; teacher?: boolean }) {
   const [message, setMessage] = useState("");
   const [wait, setWait] = useState(0);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaVersion, setCaptchaVersion] = useState(0);
   useEffect(() => { if (!wait) return; const id = window.setInterval(() => setWait(value => Math.max(0, value - 1)), 1000); return () => window.clearInterval(id); }, [wait]);
-  const resend = async () => { if (!supabase || wait) return; const { data } = await supabase.auth.getUser(); if (!data.user?.email) return; try { await resendConfirmation(data.user.email); setWait(60); setMessage("認証コードを再送しました。"); } catch { setMessage("再送できませんでした。時間をおいてお試しください。"); } };
+  const resend = async () => { if (!supabase || wait || !captchaToken) return; const { data } = await supabase.auth.getUser(); if (!data.user?.email) return; try { await resendConfirmation(data.user.email, captchaToken); setCaptchaToken(null); setCaptchaVersion(value => value + 1); setWait(60); setMessage("認証コードを再送しました。"); } catch { setMessage("再送できませんでした。時間をおいてお試しください。"); } };
   const complete = account.emailVerified;
-  return <section className={`accountNotice ${complete ? "ok" : ""}`}><h2>{complete ? teacher ? "プロフィール編集を利用できます" : "認証は完了しています" : teacher ? "メールアドレスの確認が必要です" : "メールアドレスの確認が必要です"}</h2><dl><div><dt>メールアドレス</dt><dd>{account.emailVerified ? "確認済み" : "確認待ち"}</dd></div>{teacher && <div><dt>電話番号</dt><dd>{account.phoneVerified ? "確認済み" : "認証待ち（予約などの高信頼機能は準備中）"}</dd></div>}<div><dt>アカウント状態</dt><dd>{account.accountStatus === "active" ? "有効" : account.accountStatus === "pending_phone" ? "電話番号認証待ち" : "メール認証待ち"}</dd></div></dl>{!account.emailVerified && <button onClick={resend} disabled={wait > 0}>{wait ? `認証コードを再送する（${wait}秒）` : "認証コードを再送する"}</button>}{message && <p>{message}</p>}</section>;
+  return <section className={`accountNotice ${complete ? "ok" : ""}`}><h2>{complete ? teacher ? "プロフィール編集を利用できます" : "認証は完了しています" : teacher ? "メールアドレスの確認が必要です" : "メールアドレスの確認が必要です"}</h2><dl><div><dt>メールアドレス</dt><dd>{account.emailVerified ? "確認済み" : "確認待ち"}</dd></div>{teacher && <div><dt>電話番号</dt><dd>{account.phoneVerified ? "確認済み" : "認証待ち（予約などの高信頼機能は準備中）"}</dd></div>}<div><dt>アカウント状態</dt><dd>{account.accountStatus === "active" ? "有効" : account.accountStatus === "pending_phone" ? "電話番号認証待ち" : "メール認証待ち"}</dd></div></dl>{!account.emailVerified && <><Turnstile key={captchaVersion} onToken={setCaptchaToken} /><button onClick={resend} disabled={wait > 0 || !captchaToken}>{wait ? `認証コードを再送する（${wait}秒）` : "認証コードを再送する"}</button></>}{message && <p>{message}</p>}</section>;
 }
 
 function signOut(onNavigate: DashboardProps["onNavigate"], page: "family-auth" | "teacher-auth") { void supabase?.auth.signOut().finally(() => onNavigate(page)); }

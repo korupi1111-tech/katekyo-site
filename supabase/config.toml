@@ -1,6 +1,9 @@
-# The inquiry form is intentionally public. Abuse controls live in the function
-# (input validation, honeypot, and per-email rate limiting).
+# These endpoints are public by design, but enforce allowed origins, Turnstile,
+# and server-side IP/email rate limits in their functions.
 [functions.send-inquiry]
+verify_jwt = false
+
+[functions.password-login]
 verify_jwt = false
 
 [auth.email]

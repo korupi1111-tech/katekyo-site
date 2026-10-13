@@ -187,16 +187,17 @@ export async function saveMyTeacherProfile(input: TeacherProfileInput) {
 
 export async function uploadMyTeacherAvatar(file: File) {
   const client = requireClient();
-  if (!file.type.startsWith("image/")) throw new Error("画像ファイルを選択してください。");
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) throw new Error("PNG・JPEG・WebP形式の画像を選択してください。");
   if (file.size > 5 * 1024 * 1024) throw new Error("画像は5MB以下にしてください。");
   const { data: authData, error: authError } = await client.auth.getUser();
   if (authError) throw authError;
   if (!authData.user) throw new Error("画像を保存するにはログインが必要です。");
-  const extension = file.name.split(".").pop()?.replace(/[^a-zA-Z0-9]/g, "") || "jpg";
-  const path = `${authData.user.id}/avatar-${Date.now()}.${extension}`;
-  const { error } = await client.storage.from("profile-images").upload(path, file, { contentType: file.type, upsert: false, cacheControl: "3600" });
+  const formData = new FormData();
+  formData.set("file", file, file.name);
+  const { data, error } = await client.functions.invoke("upload-profile-avatar", { body: formData });
   if (error) throw error;
-  return path;
+  if (!data?.path || typeof data.path !== "string") throw new Error("画像の保存結果を確認できませんでした。");
+  return data.path;
 }
 
 export function getTeacherAvatarUrl(path: string | null | undefined) {
