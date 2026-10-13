@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, BookOpenText, Clock3 } from "lucide-react";
+import { ArrowRight, BookOpen, Clock3 } from "lucide-react";
 import { useState } from "react";
 import "../articles.css";
 
@@ -12,7 +12,7 @@ export function ArticleTeaser({ onNavigate }: ArticleTeaserProps) {
       <button type="button" onClick={() => onNavigate("articles")}>コラムをすべて読む <ArrowRight size={17} /></button>
     </div>
     <button type="button" className="articleTeaserCard" onClick={() => onNavigate("articles")}>
-      <div className="articleTeaserMark" aria-hidden="true"><BookOpenText /><b>04</b><small>ARTICLES</small></div>
+      <div className="articleTeaserMark"><img src="/article-collection-icon.jpg" alt="記事集を表すARTICLESアイコン"/></div>
       <div><small>講師直筆シリーズ　|　{seriesName}</small><h3>英語学習の実体験を、講師本人の言葉で。</h3><p>感覚で英語を身につけた経験、壁にぶつかった時期、長文全訳や英検対策までを記事として公開しています。</p></div>
       <span>記事集を見る <ArrowRight size={18} /></span>
     </button>
