@@ -23,6 +23,7 @@ const articleList = [
   { id: 1, title: "私が「感覚の英語」を身につけた方法", lead: "英語を「勉強」としてだけでなく、日常の楽しみとして続けてきた経験について。", minutes: 5, image: "/journal-sensory-english.png", imageAlt: "映画と英語の本が並ぶ、夕暮れの学習机のイラスト" },
   { id: 2, title: "「感覚の英語」の限界と、私がぶつかった壁", lead: "読める・聞けるのに、正確に書けない。感覚的な英語力の限界に向き合った経験について。", minutes: 4, image: "/journal-sensory-limits.png", imageAlt: "英語のノートや本を整理する学習机のイラスト" },
   { id: 3, title: "なぜ私は勉強をほとんどしていないのに、中学生で英検準1級に合格できたのか", lead: "長文全訳を続けたことで、感覚だけでは届かなかった文法・語彙・構文理解をつなげた経験について。", minutes: 5, image: "/journal-full-translation.png", imageAlt: "本とノートを広げて長文全訳に取り組む学習机のイラスト" },
+  { id: 4, title: "私なりの英検攻略法", lead: "単語だけに偏らず、長文・ライティング・リスニングを含めて英検に向き合うための、私自身の考え方。", minutes: 6, image: "/journal-eiken-strategy.png", imageAlt: "英検対策のための本、ノート、ヘッドホンが並ぶ学習机のイラスト" },
 ] as const;
 
 function FirstArticle({ onNext }: { onNext: () => void }) {
@@ -51,7 +52,7 @@ function FirstArticle({ onNext }: { onNext: () => void }) {
   </section>;
 }
 
-function SecondArticle() {
+function SecondArticle({ onNext }: { onNext: () => void }) {
   return <section>
     <p>ただ、誤解しないでいただきたいのは、私は小学生で英検2級を取得したとはいえ、それが当時の実力を正確に表していたとは思っていないということです。</p>
     <p>英検は現在、CSEスコアという方式で採点を行っており、単純な正答数だけで評価される試験ではありません。技能ごとにスコアが与えられ、合計スコアによって合否が決まります。</p>
@@ -68,10 +69,11 @@ function SecondArticle() {
     <h3>高校生になって見つけた、次の一歩</h3>
     <p>つまり私は、「読める、聞ける。でも正確に書けない。」という壁にぶつかりました。</p>
     <p>そして高校生になる頃、ようやく私はその壁を越える方法を見つけることになります。感覚だけで英語を学んできた私が、どのようにして文法や英作文の弱点を克服し、TOEIC910点レベルまで到達したのか。その話は、次の記事でお伝えしたいと思います。</p>
+    <button type="button" className="articleNext" onClick={onNext}>第3回を読む　<ArrowRight size={18} /></button>
   </section>;
 }
 
-function ThirdArticle() {
+function ThirdArticle({ onNext }: { onNext: () => void }) {
   return <section>
     <p>前回の記事では、私がどのようにして「感覚の英語」を身につけたのかをお話ししました。今回は、その状態からなぜ中学生で英検準1級に合格できたのかについてお話ししたいと思います。</p>
     <p>正直に言うと、私は小学校高学年から中学生にかけて、いわゆる英語の勉強をほとんどしていませんでした。単語帳も使わず、文法問題集も解かず、授業も真面目に聞いていたとは言えません。</p>
@@ -97,13 +99,45 @@ function ThirdArticle() {
     <p>この方法は、感覚派の人だけに有効な勉強法ではありません。どんな人であっても、「自分の実力より少し上の長文を、本気で全訳する」という作業は大きな力になると思います。</p>
     <p>もちろん非常に疲れます。一人では続かない人もいるでしょう。その場合は、塾の先生や家庭教師など、誰かに見てもらいながら取り組むのも良いと思います。週に1回でも構いません。本気で考え抜く長文全訳の時間を作るだけで、英語に対する見え方は大きく変わります。</p>
     <p>少なくとも私は、この積み重ねが中学生で英検準1級に合格できた最大の理由だったと思っています。</p>
+    <button type="button" className="articleNext" onClick={onNext}>第4回を読む　<ArrowRight size={18} /></button>
+  </section>;
+}
+
+function FourthArticle() {
+  return <section>
+    <p>今回は、私が考える英検攻略法についてお話ししたいと思います。</p>
+    <p>まず最初に知っておいてほしいのは、英検は単純に総得点だけを競う試験ではない、ということです。</p>
+    <p>英検ではCSEスコアという方式が採用されており、問題数だけでなく統計的な処理も用いて合否判定が行われています。技能ごとにスコアが算出されるため、「何問で何点」と単純に計算できる試験ではありません。</p>
+    <p>そのため、ここから先はあくまで私個人の体感になります。私が受験していて感じたのは、単語問題で落とした点数ほどには結果が下がらず、長文・リスニング・ライティングで取った点数は予想以上に結果へ反映される、ということでした。</p>
+    <p>小学生の頃に英検2級を受験した時も、単語問題は壊滅的でした。単語帳を一切やっていなかったため、語彙問題では7問程度しか正解できないこともありました。それでも長文読解とリスニングで得点し、なんとか合格することができました。</p>
+    <p>もちろん、「だから単語はいらない」という話ではありません。英語は単語がなければ読めません。ただ、英検を受験する人の中には、「単語だけやっておけばいい」と考える人もいます。私はそれは違うと思っています。むしろ重要なのは、ライティングや長文でできる限り点を取りにいくことです。</p>
+    <h3>英語力を伸ばす上で重要なのは「密度」</h3>
+    <p>読解力を伸ばす方法は非常にシンプルです。読む回数を増やすことです。しかし、ただ問題を解くだけでは意味がありません。</p>
+    <p>自分のレベルより簡単すぎる長文を読む。答え合わせだけして終わる。わからなくてもどんどん次へ進む。こうした勉強は意外と伸びません。重要なのは「密度」です。</p>
+    <p>例えば単語がわからなかったとしても、すぐに全訳を見るのではなく、まずは自力で文章を訳してみる。どうしてもわからない単語だけ調べる。その上でもう一度考える。この過程に大きな意味があります。</p>
+    <p>そうすることで、「この単語はこういう場面で使われるのか」という実践的な理解ができます。単語帳で見ただけの知識より、遥かに記憶に残ります。</p>
+    <h3>私がおすすめする単語学習</h3>
+    <p>とはいえ、この方法は効率的に単語数を増やす勉強法ではありません。そこで私がおすすめしたいのが、『文で覚える英単熟語』のような例文中心の単語帳です。</p>
+    <a className="articleProduct" href="https://www.amazon.co.jp/dp/4010932791" target="_blank" rel="noreferrer"><img src="https://bookstore.obunsha.co.jp/cdn/shop/products/093279_1080x.jpg?v=1656379631" alt="英検準1級 テーマ別 文で覚える単熟語 4訂版の表紙" /><span><small>私がおすすめする例文中心の単語帳</small><b>英検準1級 テーマ別 文で覚える単熟語 4訂版</b><em>Amazonの商品ページを見る　<ArrowRight size={16} /></em></span></a>
+    <p>私自身、このタイプの単語帳を1か月ほど続けた結果、人生で初めて英検準1級の語彙問題で二桁正解を取ることができました。結局その回は不合格でしたが（笑）、単語力の伸びははっきり感じました。</p>
+    <p>例文で学ぶと、単語・文法・読解を同時に学べます。また実際の使われ方とセットで覚えるため、記憶への定着率も高いと感じています。ただし、続けるのは意外と大変です。疲れたり飽きたりもするので、塾や家庭教師などで学習管理をしてもらうのも良いと思います。</p>
+    <h3>「解く」よりも「訳す」</h3>
+    <p>私は、ただ問題を解いて解説を聞くだけでは、あまり力はつかないと思っています。もちろん解説は大切です。しかし、それ以上に大切なのは、自分で英文を訳す時間です。</p>
+    <p>実際に英文と格闘する。構造を考える。主語と動詞を探す。なぜそう訳すのかを考える。この密度は、ただ答えを見る勉強とは比較になりません。</p>
+    <p>毎日やる必要はありません。週1回でも十分です。しかし、本気で考えながら長文を訳す時間を作ると、英語の見え方は大きく変わると思います。</p>
+    <h3>リスニングについて</h3>
+    <p>私はリスニングで苦労した経験があまりありません。そのため、これは私の友人の話になります。</p>
+    <p>その友人は文法をしっかり勉強してきたタイプなのですが、短期間でリスニング力を大きく伸ばしていました。その時に取り組んでいたのが、シャドーイングです。毎日30分程度続けるだけでもかなり効果を感じたと言っていました。</p>
+    <p>私は本格的に取り組んだことがないため断言はできませんが、リスニングに悩んでいる方は試してみる価値があると思います。</p>
+    <h3>次回予告</h3>
+    <p>英検の中でも特に差がつきやすいのがライティングです。そして私自身、感覚派だったからこそライティングにはかなり苦しみました。次の記事では、「感覚派の私がどうやってライティングと向き合ったのか」についてお話しします。</p>
   </section>;
 }
 
 export function ArticlePage() {
-  const [selectedId, setSelectedId] = useState<1 | 2 | 3>(1);
+  const [selectedId, setSelectedId] = useState<1 | 2 | 3 | 4>(1);
   const article = articleList.find(item => item.id === selectedId)!;
-  const selectArticle = (id: 1 | 2 | 3) => { setSelectedId(id); window.scrollTo(0, 0); };
+  const selectArticle = (id: 1 | 2 | 3 | 4) => { setSelectedId(id); window.scrollTo(0, 0); };
   return <main className="articlePage withTopbar">
     <header className="articleHero"><span>TEACHER JOURNAL</span><h1>講師コラム</h1><p>講師の学び方や指導への考え方を、本人の言葉で紹介します。</p></header>
     <div className="articleLayout">
@@ -113,7 +147,7 @@ export function ArticlePage() {
       </aside>
       <article className="articleBody">
         <header><div className="articleCategory"><BookOpen size={16} /> 講師紹介　|　英語</div><p className="articleSeriesName">SERIES　|　{seriesName}　／　第{selectedId}回</p><h2>{article.title}</h2><p className="articleLead">{article.lead}</p><div className="articleAuthor"><span>KT</span><p><b>こうたろう先生</b><small><Clock3 size={14} /> 読了目安 {article.minutes}分</small></p></div><img className="articleIllustration" src={article.image} alt={article.imageAlt} /></header>
-        {selectedId === 1 ? <FirstArticle onNext={() => selectArticle(2)} /> : selectedId === 2 ? <><SecondArticle /><div className="articleBodyNext"><button type="button" className="articleNext" onClick={() => selectArticle(3)}>第3回を読む　<ArrowRight size={18} /></button></div></> : <ThirdArticle />}
+        {selectedId === 1 ? <FirstArticle onNext={() => selectArticle(2)} /> : selectedId === 2 ? <SecondArticle onNext={() => selectArticle(3)} /> : selectedId === 3 ? <ThirdArticle onNext={() => selectArticle(4)} /> : <FourthArticle />}
       </article>
     </div>
   </main>;
