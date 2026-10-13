@@ -26,6 +26,7 @@
 .articleBody { border: 1px solid #dbe5e1; border-radius: 16px; background: #fff; overflow: hidden; box-shadow: 0 15px 44px rgba(19, 64, 55, .06); }
 .articleBody > header { padding: 48px 54px 34px; border-bottom: 1px solid #e5ece9; }
 .articleCategory { display: inline-flex; align-items: center; gap: 7px; color: #0b806c; font-size: 13px; font-weight: 800; }
+.articleSeriesName { margin: 18px 0 0; color: #8a6b2f; font-size: 13px; font-weight: 800; line-height: 1.65; }
 .articleBody h2 { margin: 17px 0 14px; color: #173e36; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(32px, 4vw, 48px); line-height: 1.35; letter-spacing: .015em; }
 .articleLead { margin: 0; color: #5d716b; line-height: 1.8; }
 .articleAuthor { display: flex; align-items: center; gap: 12px; margin-top: 25px; }

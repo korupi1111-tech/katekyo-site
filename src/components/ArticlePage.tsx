@@ -2,6 +2,7 @@ import { ArrowRight, BookOpen, Clock3 } from "lucide-react";
 import "../articles.css";
 
 type ArticleTeaserProps = { onNavigate: (page: "articles") => void };
+const seriesName = "関係代名詞が何かもわからない私が準1級を取れた理由";
 
 export function ArticleTeaser({ onNavigate }: ArticleTeaserProps) {
   return <section className="articleTeaser section">
@@ -11,7 +12,7 @@ export function ArticleTeaser({ onNavigate }: ArticleTeaserProps) {
     </div>
     <button type="button" className="articleTeaserCard" onClick={() => onNavigate("articles")}>
       <div className="articleTeaserMark"><BookOpen /></div>
-      <div><small>講師紹介　|　英語</small><h3>私が英語を身につけた方法</h3><p>座学だけに頼らず、映画やアニメを通じて英語に触れ続けてきた講師自身の経験を紹介します。</p></div>
+      <div><small>SERIES　|　{seriesName}</small><h3>私が英語を身につけた方法</h3><p>座学だけに頼らず、映画やアニメを通じて英語に触れ続けてきた講師自身の経験を紹介します。</p></div>
       <span>読む <ArrowRight size={18} /></span>
     </button>
   </section>;
@@ -23,10 +24,10 @@ export function ArticlePage() {
     <div className="articleLayout">
       <aside className="articleIndex" aria-label="記事一覧">
         <div><small>ARTICLES</small><b>記事一覧</b></div>
-        <button type="button" className="active"><span>講師紹介</span><strong>私が英語を身につけた方法</strong><small>英語 / こうたろう先生</small></button>
+        <button type="button" className="active"><span>SERIES</span><strong>{seriesName}</strong><small>第1回　私が英語を身につけた方法</small></button>
       </aside>
       <article className="articleBody">
-        <header><div className="articleCategory"><BookOpen size={16} /> 講師紹介　|　英語</div><h2>私が英語を身につけた方法</h2><p className="articleLead">英語を「勉強」としてだけでなく、日常の楽しみとして続けてきた経験について。</p><div className="articleAuthor"><span>KT</span><p><b>こうたろう先生</b><small><Clock3 size={14} /> 読了目安 4分</small></p></div></header>
+        <header><div className="articleCategory"><BookOpen size={16} /> 講師紹介　|　英語</div><p className="articleSeriesName">SERIES　|　{seriesName}</p><h2>私が英語を身につけた方法</h2><p className="articleLead">英語を「勉強」としてだけでなく、日常の楽しみとして続けてきた経験について。</p><div className="articleAuthor"><span>KT</span><p><b>こうたろう先生</b><small><Clock3 size={14} /> 読了目安 4分</small></p></div></header>
         <section>
           <p>現在高校3年生の私は、英語を「勉強して身につけた」というより、幼い頃から英語に触れ続ける中で自然と身につけてきました。</p>
           <p>幼稚園の頃から英会話スクールに通い、家庭では洋アニメや海外映画を日常的に楽しんでいました。特に映画鑑賞が好きで、小学生の頃には字幕なしで海外映画を観られるようになっていました。</p>
