@@ -97,6 +97,13 @@ export async function updateMyPassword(password: string): Promise<void> {
   if (error) throw error;
 }
 
+export async function withdrawMyAccount(): Promise<void> {
+  if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。");
+  const { error } = await supabase.functions.invoke("withdraw-account", { body: { confirmation: "退会" } });
+  if (error) throw error;
+  await supabase.auth.signOut();
+}
+
 /**
  * ログイン失敗回数とロックアウトをサーバーで管理するログイン処理。
  * 直接の signInWithPassword は使わず、成功時のセッションだけを受け取る。

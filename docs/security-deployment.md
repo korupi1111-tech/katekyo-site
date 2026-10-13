@@ -46,11 +46,11 @@ ALLOWED_ORIGINS=https://<本番ドメイン>,https://<必要なPreviewドメイ�
 
 ## 5. 適用するもの
 
-1. SQL Editorで`supabase/migrations/202610130021_harden_public_endpoints_and_avatars.sql`の内容を実行する。
+1. SQL Editorで`supabase/migrations/202610130021_harden_public_endpoints_and_avatars.sql`、続けて`supabase/migrations/202610130022_add_account_withdrawal.sql`の内容を実行する。
 2. 次のFunctionをデプロイする。
 
 ```powershell
-npx supabase@latest functions deploy password-login send-inquiry upload-profile-avatar --project-ref dajgwnijcvdthjnfsolt --use-api
+npx supabase@latest functions deploy password-login send-inquiry upload-profile-avatar withdraw-account --project-ref dajgwnijcvdthjnfsolt --use-api
 ```
 
 3. Vercelを再デプロイする。
@@ -62,6 +62,7 @@ npx supabase@latest functions deploy password-login send-inquiry upload-profile-
 - 異なるオリジンからEdge Functionへブラウザ送信できない。
 - プロフィール画像を変更後、Storageの本人フォルダに古い画像が残らない。
 - Storage APIを直接呼んでも、`profile-images`への匿名・認証済みブラウザからの書き込みが拒否される。
+- 退会後、公開プロフィール・画像・チャットが即時に見えなくなり、ログアウトされる。
 
 ## 保持期間
 
