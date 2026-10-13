@@ -1,0 +1,38 @@
+.articleTeaser { background: #fbfcfb; }
+.articleSectionHead { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 26px; }
+.articleSectionHead span, .articleHero > span { color: #0a806e; font-size: 12px; font-weight: 900; letter-spacing: .16em; }
+.articleSectionHead h2 { margin: 8px 0 0; color: #163e37; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(30px, 3vw, 42px); }
+.articleSectionHead button { display: inline-flex; align-items: center; gap: 8px; border: 0; color: #0b695b; background: none; font-weight: 800; }
+.articleTeaserCard { display: grid; grid-template-columns: 82px 1fr auto; align-items: center; gap: 25px; width: 100%; padding: 30px; border: 1px solid #d8e4df; border-radius: 16px; background: #fff; text-align: left; box-shadow: 0 12px 34px rgba(19, 64, 55, .06); }
+.articleTeaserCard:hover { border-color: #73ad9e; box-shadow: 0 16px 40px rgba(19, 64, 55, .12); }
+.articleTeaserMark { display: grid; width: 82px; height: 82px; place-items: center; border-radius: 12px; color: #9a762f; background: linear-gradient(135deg, #faf1d9, #eaddb8); }
+.articleTeaserCard small { color: #69817a; font-size: 12px; font-weight: 800; letter-spacing: .05em; }
+.articleTeaserCard h3 { margin: 8px 0; color: #193b35; font-size: 24px; }
+.articleTeaserCard p { margin: 0; color: #586d67; line-height: 1.75; }
+.articleTeaserCard > span { display: inline-flex; align-items: center; gap: 7px; color: #0a806e; font-weight: 800; }
+.articlePage { min-height: 78vh; background: #f6f9f8; padding-bottom: 96px; }
+.articleHero { padding: 86px max(28px, calc((100vw - 1160px) / 2)) 46px; color: #163e37; background: linear-gradient(115deg, #e8f2ee, #fafcfa 67%, #f5eddc); }
+.articleHero h1 { margin: 10px 0; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(40px, 5vw, 62px); letter-spacing: .02em; }
+.articleHero p { margin: 0; color: #536b64; font-size: 17px; }
+.articleLayout { display: grid; grid-template-columns: 265px minmax(0, 760px); gap: 38px; max-width: 1160px; margin: 42px auto 0; padding: 0 28px; align-items: start; }
+.articleIndex { position: sticky; top: 96px; border: 1px solid #dae4e0; border-radius: 14px; overflow: hidden; background: #fff; }
+.articleIndex > div { padding: 19px 20px; border-bottom: 1px solid #e3ebe8; }
+.articleIndex > div small { display: block; color: #779087; font-size: 10px; font-weight: 900; letter-spacing: .14em; }
+.articleIndex > div b { display: block; margin-top: 4px; color: #26483f; }
+.articleIndex button { display: grid; width: 100%; gap: 6px; padding: 18px 20px; border: 0; border-left: 3px solid #0d7e6d; background: #edf7f3; color: #193f37; text-align: left; }
+.articleIndex button span { color: #0d7e6d; font-size: 12px; font-weight: 800; }
+.articleIndex button strong { line-height: 1.5; }
+.articleIndex button small { color: #6d817a; }
+.articleBody { border: 1px solid #dbe5e1; border-radius: 16px; background: #fff; overflow: hidden; box-shadow: 0 15px 44px rgba(19, 64, 55, .06); }
+.articleBody > header { padding: 48px 54px 34px; border-bottom: 1px solid #e5ece9; }
+.articleCategory { display: inline-flex; align-items: center; gap: 7px; color: #0b806c; font-size: 13px; font-weight: 800; }
+.articleBody h2 { margin: 17px 0 14px; color: #173e36; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(32px, 4vw, 48px); line-height: 1.35; letter-spacing: .015em; }
+.articleLead { margin: 0; color: #5d716b; line-height: 1.8; }
+.articleAuthor { display: flex; align-items: center; gap: 12px; margin-top: 25px; }
+.articleAuthor > span { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 50%; color: #fff; background: #1a7163; font-family: Georgia, serif; font-weight: 700; }
+.articleAuthor p { display: grid; gap: 3px; margin: 0; color: #274940; }
+.articleAuthor small { display: inline-flex; align-items: center; gap: 5px; color: #6f817b; }
+.articleBody > section { padding: 38px 54px 62px; }
+.articleBody > section > p { margin: 0 0 25px; color: #304942; font-size: 16px; line-height: 2.05; }
+.articleBody h3 { margin: 46px 0 18px; padding-left: 16px; border-left: 3px solid #bf9550; color: #173e36; font-size: 21px; }
+@media (max-width: 760px) { .articleTeaserCard { grid-template-columns: 58px 1fr; gap: 16px; padding: 20px; } .articleTeaserMark { width: 58px; height: 58px; } .articleTeaserCard h3 { font-size: 19px; } .articleTeaserCard > span { grid-column: 2; } .articleSectionHead { align-items: center; } .articleSectionHead button { font-size: 13px; } .articleHero { padding: 58px 22px 36px; } .articleLayout { display: block; margin-top: 24px; padding: 0 14px; } .articleIndex { position: static; margin-bottom: 18px; } .articleBody > header { padding: 30px 24px 26px; } .articleBody > section { padding: 28px 24px 42px; } .articleBody > section > p { font-size: 15px; line-height: 1.95; } .articleBody h3 { margin-top: 35px; font-size: 19px; } }
