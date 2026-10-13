@@ -1,0 +1,12 @@
+.rankingClosedPage { min-height: calc(100vh - 76px); display: grid; place-items: center; padding: 56px 28px 100px; background: linear-gradient(145deg, #edf6f2, #fbfaf5 58%, #f3ecdc); }
+.rankingClosedCard { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, .83fr); width: min(1040px, 100%); overflow: hidden; border: 1px solid #d3e2dc; border-radius: 20px; background: rgba(255, 255, 255, .92); box-shadow: 0 24px 70px rgba(28, 70, 59, .12); }
+.rankingClosedCopy { padding: clamp(36px, 6vw, 72px); }
+.rankingClosedCopy > span { color: #0b806c; font-size: 12px; font-weight: 900; letter-spacing: .15em; }
+.rankingClosedCopy h1 { margin: 16px 0 18px; color: #173e36; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(40px, 5vw, 62px); line-height: 1.18; }
+.rankingClosedCopy h1 em { color: #a57b34; font-style: normal; }
+.rankingClosedCopy p { max-width: 500px; color: #526a63; font-size: 16px; line-height: 1.9; }
+.rankingClosedCopy button { margin-top: 22px; border: 0; border-radius: 8px; background: #0d6e5f; color: #fff; padding: 14px 21px; font-weight: 800; }
+.rankingClosedCopy button:hover { background: #084f45; }
+.rankingClosedImage { min-height: 380px; background: #f8f6ed; }
+.rankingClosedImage img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+@media (max-width: 720px) { .rankingClosedPage { padding: 28px 14px 82px; } .rankingClosedCard { grid-template-columns: 1fr; } .rankingClosedCopy { padding: 36px 27px 31px; } .rankingClosedImage { min-height: 300px; } }
