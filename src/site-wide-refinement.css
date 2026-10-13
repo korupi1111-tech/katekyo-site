@@ -234,7 +234,7 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
 .featuredTeacherSection .ownerQualificationRow b, .featuredTeacherSection .ownerScore b { color: #f0d48a; }
 .featuredTeacherSection .ownerHighestRank { color: #e4eeee; font-size: 14px; }
 .featuredTeacherSection .ownerHighestRank .rankBadge { width: 54px; height: 54px; }
-.featuredTeacherSection .ownerCompactMeta { grid-column: 1 / -1; grid-row: 2; align-self: stretch; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 7px 22px; padding: 13px 0 0; border-top: 1px solid rgba(228,238,238,.26); border-left: 0; color: #ecf3f3; }
+.featuredTeacherSection .ownerCompactMeta { position: relative; grid-column: 1 / -1; grid-row: 2; align-self: stretch; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 7px 22px; padding: 13px 0 42px; border-top: 1px solid rgba(228,238,238,.26); border-left: 0; color: #ecf3f3; }
 .featuredTeacherSection .ownerCompactMeta p, .featuredTeacherSection .ownerCompactMeta > div { color: inherit; }
 .featuredTeacherSection .ownerCompactMeta > div { grid-column: 1 / -1; }
 .featuredTeacherSection .ownerCompactMeta b { color: #e7cc83; }
@@ -243,7 +243,7 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
 .featuredTeacherSection .ownerPriceStack span { color: #e8f0ef; }
 .featuredTeacherSection .ownerFavorite { position: absolute; top: 17px; right: 20px; display: grid; place-items: center; width: 31px; height: 31px; border: 1px solid rgba(233,245,242,.62); border-radius: 50%; color: #f3d885; font-size: 21px; line-height: 1; }
 .featuredTeacherSection .ownerCompactMeta > div { grid-template-columns: repeat(4, max-content) minmax(0, 1fr); }
-.featuredTeacherSection .ownerArticleLink { position: relative; z-index: 2; display: inline-flex; align-items: center; justify-content: center; justify-self: stretch; gap: 4px; min-height: 30px; border: 1px solid #80c9b9; border-radius: 5px 0 0 5px; background: #0c806d; color: #fff; padding: 7px 10px; font-size: 11px; font-weight: 900; line-height: 1; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,.14); }
+.featuredTeacherSection .ownerArticleLink { position: absolute; right: 0; bottom: 0; z-index: 2; display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-height: 30px; border: 1px solid #80c9b9; border-radius: 5px 0 0 5px; background: #0c806d; color: #fff; padding: 7px 10px; font-size: 11px; font-weight: 900; line-height: 1; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,.14); }
 .featuredTeacherSection .ownerArticleLink:hover { background: #075f52; }
 .featuredTeacherSection .ownerPublicResults { margin: 0; padding: 18px 28px 15px; border-top-color: #d7e3df; border-bottom-color: #d7e3df; background: #fff; }
 .featuredTeacherSection .ownerPublicResults h3 { color: #174956; font-size: 14px; letter-spacing: .12em; }
@@ -301,7 +301,7 @@ footer h2, footer h3 { font-family: Georgia, "Yu Mincho", serif; }
   .featuredTeacherSection .ownerPriceStack strong { font-size: 22px; }
   .featuredTeacherSection .ownerPriceStack span { font-size: 9px; }
   .featuredTeacherSection .ownerFavorite { top: 13px; right: 12px; width: 27px; height: 27px; font-size: 18px; }
-  .featuredTeacherSection .ownerArticleLink { grid-column: 2; justify-self: end; min-height: 0; border-radius: 5px; padding: 6px 7px; font-size: 9px; }
+  .featuredTeacherSection .ownerArticleLink { right: 0; bottom: 0; min-height: 0; border-radius: 5px 0 0 5px; padding: 6px 7px; font-size: 9px; }
   .featuredTeacherSection .ownerPublicResults { padding-right: 15px; padding-left: 15px; }
   .featuredTeacherSection .ownerPublicAreas { padding-right: 15px; padding-left: 15px; }
   .featuredTeacherSection .ownerPublicDetail { padding-right: 15px; padding-left: 15px; }

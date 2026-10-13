@@ -6,7 +6,7 @@
 .articleSectionHead button { display: inline-flex; align-items: center; gap: 8px; border: 0; color: #0b695b; background: none; font-weight: 800; }
 .articleTeaserCard { display: grid; grid-template-columns: 106px 1fr auto; align-items: center; gap: 25px; width: 100%; padding: 30px; border: 1px solid #d8e4df; border-radius: 16px; background: #fff; text-align: left; box-shadow: 0 12px 34px rgba(19, 64, 55, .06); }
 .articleTeaserCard:hover { border-color: #73ad9e; box-shadow: 0 16px 40px rgba(19, 64, 55, .12); }
-.articleTeaserMark { width: 98px; height: 98px; overflow: hidden; border: 1px solid #d3b062; border-radius: 12px; background: #fffdf8; box-shadow: 0 5px 14px rgba(129, 91, 22, .12); }
+.articleTeaserMark { width: 98px; height: 98px; }
 .articleTeaserMark img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .articleTeaserCard small { color: #69817a; font-size: 12px; font-weight: 800; letter-spacing: .05em; }
 .articleTeaserCard h3 { margin: 8px 0; color: #193b35; font-size: 24px; }
