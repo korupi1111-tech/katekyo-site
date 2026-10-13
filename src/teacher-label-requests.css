@@ -1,0 +1,44 @@
+.profileLabelPicker > div.labelRequestField {
+  flex-basis: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, .9fr);
+  align-items: end;
+  gap: 10px 16px;
+  margin-top: 4px;
+  padding: 11px 12px;
+  border: 1px dashed #b6d4ca;
+  border-radius: 7px;
+  background: #f4faf7;
+}
+
+.profileLabelPicker .labelRequestField label {
+  display: grid !important;
+  gap: 5px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  color: #36514a !important;
+}
+
+.profileLabelPicker .labelRequestField input {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+  border: 1px solid #b8d2c9;
+  border-radius: 5px;
+  padding: 9px 10px !important;
+  background: #fff;
+  accent-color: #087e6b;
+}
+
+.profileLabelPicker .labelRequestField small {
+  margin: 0;
+  color: #657b73;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .profileLabelPicker > div.labelRequestField { grid-template-columns: 1fr; }
+}
