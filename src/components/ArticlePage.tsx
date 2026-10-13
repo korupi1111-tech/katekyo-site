@@ -134,7 +134,14 @@ function FourthArticle() {
   </section>;
 }
 
-export function ArticlePage() {
+function ArticleOwnerProfile({ onOpenProfile }: { onOpenProfile: () => void }) {
+  return <aside className="articleOwnerProfile">
+    <img src="/owner.jpg" alt="こうたろう先生のプロフィール写真" />
+    <div><span>ABOUT THE SITE OWNER</span><h3>このサイト主について</h3><p>幼少期から英語に触れ、小学生3年生で英検2級、中学生で英検準1級を取得。現在は高校3年生で、TOEIC910点。自身の経験をもとに、一人ひとりに合ったサポートをできたらと考えています。</p><button type="button" onClick={onOpenProfile}>英語学習・英検対策の無料ご相談はこちら <ArrowRight size={17} /></button></div>
+  </aside>;
+}
+
+export function ArticlePage({ onOpenProfile }: { onOpenProfile: () => void }) {
   const [selectedId, setSelectedId] = useState<1 | 2 | 3 | 4>(1);
   const article = articleList.find(item => item.id === selectedId)!;
   const selectArticle = (id: 1 | 2 | 3 | 4) => { setSelectedId(id); window.scrollTo(0, 0); };
@@ -148,6 +155,7 @@ export function ArticlePage() {
       <article className="articleBody">
         <header><div className="articleCategory"><BookOpen size={16} /> 講師紹介　|　英語</div><p className="articleSeriesName">SERIES　|　{seriesName}　／　第{selectedId}回</p><h2>{article.title}</h2><p className="articleLead">{article.lead}</p><div className="articleAuthor"><span>KT</span><p><b>こうたろう先生</b><small><Clock3 size={14} /> 読了目安 {article.minutes}分</small></p></div><img className="articleIllustration" src={article.image} alt={article.imageAlt} /></header>
         {selectedId === 1 ? <FirstArticle onNext={() => selectArticle(2)} /> : selectedId === 2 ? <SecondArticle onNext={() => selectArticle(3)} /> : selectedId === 3 ? <ThirdArticle onNext={() => selectArticle(4)} /> : <FourthArticle />}
+        <ArticleOwnerProfile onOpenProfile={onOpenProfile} />
       </article>
     </div>
   </main>;
