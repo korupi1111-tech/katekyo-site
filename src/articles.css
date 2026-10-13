@@ -19,7 +19,9 @@
 .articleIndex > div { padding: 19px 20px; border-bottom: 1px solid #e3ebe8; }
 .articleIndex > div small { display: block; color: #779087; font-size: 10px; font-weight: 900; letter-spacing: .14em; }
 .articleIndex > div b { display: block; margin-top: 4px; color: #26483f; }
-.articleIndex button { display: grid; width: 100%; gap: 6px; padding: 18px 20px; border: 0; border-left: 3px solid #0d7e6d; background: #edf7f3; color: #193f37; text-align: left; }
+.articleIndex button { display: grid; width: 100%; gap: 6px; padding: 18px 20px; border: 0; border-left: 3px solid transparent; border-bottom: 1px solid #edf1ef; background: #fff; color: #193f37; text-align: left; }
+.articleIndex button.active { border-left-color: #0d7e6d; background: #edf7f3; }
+.articleIndex button:hover { background: #f5faf8; }
 .articleIndex button span { color: #0d7e6d; font-size: 12px; font-weight: 800; }
 .articleIndex button strong { line-height: 1.5; }
 .articleIndex button small { color: #6d817a; }
@@ -36,4 +38,6 @@
 .articleBody > section { padding: 38px 54px 62px; }
 .articleBody > section > p { margin: 0 0 25px; color: #304942; font-size: 16px; line-height: 2.05; }
 .articleBody h3 { margin: 46px 0 18px; padding-left: 16px; border-left: 3px solid #bf9550; color: #173e36; font-size: 21px; }
+.articleNext { display: inline-flex; align-items: center; gap: 9px; margin-top: 15px; border: 0; border-radius: 8px; background: #0d6e5f; color: #fff; padding: 14px 18px; font-weight: 800; }
+.articleNext:hover { background: #084f45; }
 @media (max-width: 760px) { .articleTeaserCard { grid-template-columns: 58px 1fr; gap: 16px; padding: 20px; } .articleTeaserMark { width: 58px; height: 58px; } .articleTeaserCard h3 { font-size: 19px; } .articleTeaserCard > span { grid-column: 2; } .articleSectionHead { align-items: center; } .articleSectionHead button { font-size: 13px; } .articleHero { padding: 58px 22px 36px; } .articleLayout { display: block; margin-top: 24px; padding: 0 14px; } .articleIndex { position: static; margin-bottom: 18px; } .articleBody > header { padding: 30px 24px 26px; } .articleBody > section { padding: 28px 24px 42px; } .articleBody > section > p { font-size: 15px; line-height: 1.95; } .articleBody h3 { margin-top: 35px; font-size: 19px; } }
