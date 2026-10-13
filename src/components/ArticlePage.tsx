@@ -153,7 +153,7 @@ export function ArticlePage({ onOpenProfile }: { onOpenProfile: () => void }) {
         {articleList.map(item => <button type="button" className={selectedId === item.id ? "active" : ""} key={item.id} onClick={() => selectArticle(item.id)}><span>SERIES　|　第{item.id}回</span><strong>{item.title}</strong><small>{seriesName}</small></button>)}
       </aside>
       <article className="articleBody">
-        <header><div className="articleCategory"><BookOpen size={16} /> 講師紹介　|　英語</div><p className="articleSeriesName">SERIES　|　{seriesName}　／　第{selectedId}回</p><h2>{article.title}</h2><p className="articleLead">{article.lead}</p><div className="articleAuthor"><span>KT</span><p><b>こうたろう先生</b><small><Clock3 size={14} /> 読了目安 {article.minutes}分</small></p></div><img className="articleIllustration" src={article.image} alt={article.imageAlt} /></header>
+        <header><div className="articleCategory"><BookOpen size={16} /> 講師紹介　|　英語</div><p className="articleSeriesName">SERIES　|　{seriesName}　／　第{selectedId}回</p><h2>{article.title}</h2><p className="articleLead">{article.lead}</p><div className="articleAuthor"><img src="/owner.jpg" alt="こうたろう先生のアイコン"/><p><b>こうたろう先生 <span className="articleOwnerRole">👑 SITE OWNER</span></b><small><Clock3 size={14} /> 読了目安 {article.minutes}分</small></p></div><img className="articleIllustration" src={article.image} alt={article.imageAlt} /></header>
         {selectedId === 1 ? <FirstArticle onNext={() => selectArticle(2)} /> : selectedId === 2 ? <SecondArticle onNext={() => selectArticle(3)} /> : selectedId === 3 ? <ThirdArticle onNext={() => selectArticle(4)} /> : <FourthArticle />}
         <ArticleOwnerProfile onOpenProfile={onOpenProfile} />
       </article>

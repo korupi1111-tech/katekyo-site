@@ -36,8 +36,9 @@
 .articleBody h2 { margin: 17px 0 14px; color: #173e36; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(32px, 4vw, 48px); line-height: 1.35; letter-spacing: .015em; }
 .articleLead { margin: 0; color: #5d716b; line-height: 1.8; }
 .articleAuthor { display: flex; align-items: center; gap: 12px; margin-top: 25px; }
-.articleAuthor > span { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 50%; color: #fff; background: #1a7163; font-family: Georgia, serif; font-weight: 700; }
+.articleAuthor > img { width: 42px; height: 42px; border: 2px solid #e4c87f; border-radius: 50%; object-fit: cover; box-shadow: 0 3px 8px rgba(57, 70, 51, .14); }
 .articleAuthor p { display: grid; gap: 3px; margin: 0; color: #274940; }
+.articleOwnerRole { margin-left: 8px; color: #8a6b2f; font-size: 11px; letter-spacing: .06em; white-space: nowrap; }
 .articleAuthor small { display: inline-flex; align-items: center; gap: 5px; color: #6f817b; }
 .articleIllustration { display: block; width: 100%; aspect-ratio: 16 / 7; margin-top: 32px; border-radius: 10px; object-fit: cover; object-position: center; }
 .articleBody > section { padding: 38px 54px 62px; }
