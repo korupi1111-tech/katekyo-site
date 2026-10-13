@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, Clock3 } from "lucide-react";
+import { ArrowRight, BookOpen, BookOpenText, Clock3 } from "lucide-react";
 import { useState } from "react";
 import "../articles.css";
 
@@ -8,13 +8,13 @@ const seriesName = "関係代名詞が何かもわからない私が準1級を�
 export function ArticleTeaser({ onNavigate }: ArticleTeaserProps) {
   return <section className="articleTeaser section">
     <div className="articleSectionHead">
-      <div><span>TEACHER JOURNAL</span><h2>講師コラム</h2></div>
-      <button type="button" onClick={() => onNavigate("articles")}>記事一覧を見る <ArrowRight size={17} /></button>
+      <div><span>TEACHER-WRITTEN ARTICLES</span><h2>講師直筆のコラム集</h2><p>講師自身の学び方・指導の考え方を、本人の言葉でまとめています。</p></div>
+      <button type="button" onClick={() => onNavigate("articles")}>コラムをすべて読む <ArrowRight size={17} /></button>
     </div>
     <button type="button" className="articleTeaserCard" onClick={() => onNavigate("articles")}>
-      <div className="articleTeaserMark"><BookOpen /></div>
-      <div><small>SERIES　|　{seriesName}</small><h3>私が「感覚の英語」を身につけた方法</h3><p>座学だけに頼らず、映画やアニメを通じて英語に触れ続けてきた講師自身の経験を紹介します。</p></div>
-      <span>読む <ArrowRight size={18} /></span>
+      <div className="articleTeaserMark" aria-hidden="true"><BookOpenText /><b>04</b><small>ARTICLES</small></div>
+      <div><small>講師直筆シリーズ　|　{seriesName}</small><h3>英語学習の実体験を、講師本人の言葉で。</h3><p>感覚で英語を身につけた経験、壁にぶつかった時期、長文全訳や英検対策までを記事として公開しています。</p></div>
+      <span>記事集を見る <ArrowRight size={18} /></span>
     </button>
   </section>;
 }
@@ -146,7 +146,7 @@ export function ArticlePage({ onOpenProfile }: { onOpenProfile: () => void }) {
   const article = articleList.find(item => item.id === selectedId)!;
   const selectArticle = (id: 1 | 2 | 3 | 4) => { setSelectedId(id); window.scrollTo(0, 0); };
   return <main className="articlePage withTopbar">
-    <header className="articleHero"><span>TEACHER JOURNAL</span><h1>講師コラム</h1><p>講師の学び方や指導への考え方を、本人の言葉で紹介します。</p></header>
+    <header className="articleHero"><span>TEACHER-WRITTEN ARTICLES</span><h1>講師直筆のコラム集</h1><p>講師が自分の学び方や指導への考え方を、本人の言葉で綴った記事集です。</p></header>
     <div className="articleLayout">
       <aside className="articleIndex" aria-label="記事一覧">
         <div><small>ARTICLES</small><b>記事一覧</b></div>
