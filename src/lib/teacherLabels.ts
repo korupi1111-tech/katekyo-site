@@ -7,6 +7,10 @@ export const subjectOptions = [
   "地理", "歴史", "公民", "情報", "小論文", "その他",
 ];
 
+// 検索画面だけは、利用者が選びやすい大分類に絞る。
+// 講師プロフィールで入力・保存する上記の細かなラベルは変更しない。
+export const directorySearchSubjectOptions = ["小学校全科目", "英語", "数学", "国語", "理科", "社会", "情報", "小論文", "その他"];
+
 const elementaryEnglishTopics = ["授業復習", "英語に親しむ", "リスニング", "スピーキング", "定期テスト対策", "その他"];
 const middleEnglishTopics = ["授業復習", "定期テスト対策", "英文法", "長文読解", "英作文・ライティング", "高校受験", "その他"];
 const highSchoolEnglishTopics = ["授業復習", "定期テスト対策", "長文読解", "英作文・ライティング", "共通テスト対策", "大学受験", "その他"];
@@ -75,5 +79,17 @@ export function subjectMatches(selectedSubject: string, teacherSubjects: string[
   if (elementarySubjects.includes(selectedSubject)) return teacherSubjects.includes(selectedSubject) || teacherSubjects.includes("小学校全科目");
   if (selectedSubject === "英語") return teacherSubjects.some(subject => [...elementaryEnglishSubjects, ...middleEnglishSubjects, ...highSchoolEnglishSubjects, ...generalEnglishSubjects].includes(subject));
   if ([...elementaryEnglishSubjects, ...middleEnglishSubjects, ...highSchoolEnglishSubjects].includes(selectedSubject)) return teacherSubjects.includes(selectedSubject) || teacherSubjects.includes("英語");
+  return teacherSubjects.includes(selectedSubject);
+}
+
+/** 検索用の大分類と、講師プロフィールに保存された細分類を対応させる。 */
+export function directorySearchSubjectMatches(selectedSubject: string, teacherSubjects: string[]) {
+  if (!selectedSubject) return true;
+  if (selectedSubject === "小学校全科目") return teacherSubjects.some(subject => elementarySubjects.includes(subject));
+  if (selectedSubject === "英語") return teacherSubjects.some(subject => [...elementaryEnglishSubjects, ...middleEnglishSubjects, ...highSchoolEnglishSubjects, ...generalEnglishSubjects, ...englishCertificationSubjects].includes(subject));
+  if (selectedSubject === "数学") return teacherSubjects.some(subject => mathSubjects.includes(subject) || subject === "数学");
+  if (selectedSubject === "国語") return teacherSubjects.some(subject => japaneseSubjects.includes(subject) || subject === "国語");
+  if (selectedSubject === "理科") return teacherSubjects.some(subject => scienceSubjects.includes(subject) || subject === "理科");
+  if (selectedSubject === "社会") return teacherSubjects.some(subject => socialSubjects.includes(subject) || subject === "社会");
   return teacherSubjects.includes(selectedSubject);
 }

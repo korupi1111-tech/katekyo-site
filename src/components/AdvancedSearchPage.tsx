@@ -5,13 +5,11 @@ import { getCurrentAccount } from "../lib/account";
 import { getTeacherAvatarUrl } from "../lib/teacherProfiles";
 import { isTeacherFavorite, toggleTeacherFavorite } from "../lib/teacherFavorites";
 import { PublicTeacherAvailability } from "./PublicTeacherAvailability";
-import { contactMethodOptions, lessonStyleOptions, lessonTypeOptions, levelOptionsForSubject, normalizeCombinedContactMethod, qualificationLabelOptions, subjectMatches, subjectOptions, subjectTypeOptions, topicOptionsForSubject } from "../lib/teacherLabels";
+import { contactMethodOptions, directorySearchSubjectMatches, directorySearchSubjectOptions, lessonStyleOptions, lessonTypeOptions, normalizeCombinedContactMethod, qualificationLabelOptions, subjectTypeOptions } from "../lib/teacherLabels";
 import "../advanced-search.css";
 
 type SearchFilters = {
   subject: string;
-  topics: string[];
-  levels: string[];
   lessonTypes: string[];
   contactMethods: string[];
   prefecture: string;
@@ -28,12 +26,12 @@ type SearchFilters = {
 };
 
 const initialFilters = (): SearchFilters => ({
-  subject: "高校英語", topics: [], levels: [], lessonTypes: [], contactMethods: [], prefecture: "", city: "", recruitmentStatuses: [], minPrice: "", maxPrice: "", freeConsultation: false, initialFree: false,
+  subject: "", lessonTypes: [], contactMethods: [], prefecture: "", city: "", recruitmentStatuses: [], minPrice: "", maxPrice: "", freeConsultation: false, initialFree: false,
   teachingTypes: [], lessonStyles: [], qualificationLabels: [], supportOptions: [],
 });
 
 function cloneFilters(filters: SearchFilters): SearchFilters {
-  return { ...filters, topics: [...filters.topics], levels: [...filters.levels], lessonTypes: [...filters.lessonTypes], contactMethods: [...filters.contactMethods], recruitmentStatuses: [...filters.recruitmentStatuses], teachingTypes: [...filters.teachingTypes], lessonStyles: [...filters.lessonStyles], qualificationLabels: [...filters.qualificationLabels], supportOptions: [...filters.supportOptions] };
+  return { ...filters, lessonTypes: [...filters.lessonTypes], contactMethods: [...filters.contactMethods], recruitmentStatuses: [...filters.recruitmentStatuses], teachingTypes: [...filters.teachingTypes], lessonStyles: [...filters.lessonStyles], qualificationLabels: [...filters.qualificationLabels], supportOptions: [...filters.supportOptions] };
 }
 
 function toggleValue(values: string[], value: string) {
@@ -95,9 +93,7 @@ function matchesFilters(teacher: DirectoryTeacher, filters: SearchFilters) {
   const requestedStatuses = filters.recruitmentStatuses.flatMap(status => status === "受付中" ? ["受付中"] : status === "条件付き" ? ["残り1枠"] : ["募集停止中"]);
   const availableContactMethods = [...(teacher.supports_in_person ? ["対面"] : []), ...teacher.contact_methods.map(normalizeCombinedContactMethod)];
 
-  return subjectMatches(filters.subject, teacher.subjects)
-    && includesAny(teacher.topics, filters.topics)
-    && includesAny(teacher.levels, filters.levels)
+  return directorySearchSubjectMatches(filters.subject, teacher.subjects)
     && includesAny(teacher.lesson_types, filters.lessonTypes)
     && includesAny(availableContactMethods, filters.contactMethods)
     && (!filters.prefecture || teacher.prefecture === filters.prefecture)
@@ -132,8 +128,9 @@ export function AdvancedSearchPage({ onStartChat }: { onStartChat: (teacherProfi
   const [appliedFilters, setAppliedFilters] = useState<SearchFilters>(initialFilters);
   const [more, setMore] = useState(false);
   const [applied, setApplied] = useState(false);
-  const topics = useMemo(() => topicOptionsForSubject(filters.subject), [filters.subject]);
-  const levels = useMemo(() => levelOptionsForSubject(filters.subject), [filters.subject]);
+  const priceSliderMaximum = 10000;
+  const selectedMinimum = filters.minPrice ? Number(filters.minPrice) : 0;
+  const selectedMaximum = filters.maxPrice ? Number(filters.maxPrice) : priceSliderMaximum;
   const prefectures = useMemo(() => [...new Set(teachers.map(teacher => teacher.prefecture).filter((value): value is string => Boolean(value)))].sort(), [teachers]);
   const cities = useMemo(() => [...new Set(teachers.filter(teacher => !filters.prefecture || teacher.prefecture === filters.prefecture).map(teacher => teacher.city).filter((value): value is string => Boolean(value)))].sort(), [teachers, filters.prefecture]);
   const update = (partial: Partial<SearchFilters>) => setFilters(current => ({ ...current, ...partial }));
@@ -154,14 +151,12 @@ export function AdvancedSearchPage({ onStartChat }: { onStartChat: (teacherProfi
     <section className="searchPanel" aria-label="講師検索条件">
       <div className="searchPanelHeading"><h2>基本条件</h2><button className="searchReset" onClick={clearFilters} type="button">条件をクリア</button></div>
       <div className="searchFieldGrid">
-        <label><b>講師の得意な科目</b><select value={filters.subject} onChange={event => update({ subject: event.target.value, topics: [], levels: [] })}>{subjectOptions.map(subject => <option key={subject}>{subject}</option>)}</select></label>
-        <fieldset className="searchWide"><legend>講師の得意な指導方法</legend><Chips values={topics} selected={filters.topics} onChange={topics => update({ topics })} /></fieldset>
-        <fieldset className="searchWide"><legend>目標</legend><Chips values={levels} selected={filters.levels} onChange={levels => update({ levels })} /></fieldset>
+        <label><b>科目</b><select value={filters.subject} onChange={event => update({ subject: event.target.value })}><option value="">指定なし</option>{directorySearchSubjectOptions.map(subject => <option key={subject}>{subject}</option>)}</select></label>
         <fieldset><legend>授業形式</legend><Chips values={lessonTypeOptions} selected={filters.lessonTypes} onChange={lessonTypes => update({ lessonTypes })} /></fieldset>
         <fieldset><legend>授業・相談の方法</legend><Chips values={contactMethodOptions} selected={filters.contactMethods} onChange={contactMethods => update({ contactMethods })} /></fieldset>
         {filters.contactMethods.includes("対面") && <fieldset className="searchWide regionFields"><legend>対応地域</legend><select aria-label="都道府県" value={filters.prefecture} onChange={event => update({ prefecture: event.target.value, city: "" })}><option value="">都道府県を選択</option>{prefectures.map(prefecture => <option key={prefecture}>{prefecture}</option>)}</select><select aria-label="市区町村" value={filters.city} onChange={event => update({ city: event.target.value })} disabled={!filters.prefecture}><option value="">市区町村を選択</option>{cities.map(city => <option key={city}>{city}</option>)}</select></fieldset>}
         <fieldset className="searchWide"><legend>募集状況</legend><div className="searchChecks"><label><input checked={filters.recruitmentStatuses.includes("受付中")} onChange={() => update({ recruitmentStatuses: toggleValue(filters.recruitmentStatuses, "受付中") })} type="checkbox" />募集中の講師のみ</label><label><input checked={filters.recruitmentStatuses.includes("条件付き")} onChange={() => update({ recruitmentStatuses: toggleValue(filters.recruitmentStatuses, "条件付き") })} type="checkbox" />条件付きで受付中の講師を含む</label><label><input checked={filters.recruitmentStatuses.includes("募集停止中")} onChange={() => update({ recruitmentStatuses: toggleValue(filters.recruitmentStatuses, "募集停止中") })} type="checkbox" />募集停止中の講師も表示する</label></div></fieldset>
-        <label><b>料金</b><div className="priceRange"><select aria-label="料金の下限" value={filters.minPrice} onChange={event => update({ minPrice: event.target.value })}><option value="">下限なし</option><option value="0">無料</option><option value="1000">1,000円</option><option value="2000">2,000円</option><option value="3000">3,000円</option></select>から<select aria-label="料金の上限" value={filters.maxPrice} onChange={event => update({ maxPrice: event.target.value })}><option value="">上限なし</option><option value="1000">1,000円</option><option value="2000">2,000円</option><option value="3000">3,000円</option><option value="5000">5,000円</option></select></div></label>
+        <fieldset className="searchWide priceSliderField"><legend>料金（60分）</legend><div className="priceSliderLabels"><span>{selectedMinimum ? `${selectedMinimum.toLocaleString()}円以上` : "下限なし"}</span><b>〜</b><span>{selectedMaximum < priceSliderMaximum ? `${selectedMaximum.toLocaleString()}円以下` : "上限なし"}</span></div><div className="priceSlider" aria-label="料金の範囲"><div className="priceSliderTrack"/><input aria-label="料金の下限" type="range" min="0" max={priceSliderMaximum} step="500" value={selectedMinimum} onChange={event => { const next = Math.min(Number(event.target.value), selectedMaximum); update({ minPrice: next ? String(next) : "" }); }} /><input aria-label="料金の上限" type="range" min="0" max={priceSliderMaximum} step="500" value={selectedMaximum} onChange={event => { const next = Math.max(Number(event.target.value), selectedMinimum); update({ maxPrice: next >= priceSliderMaximum ? "" : String(next) }); }} /></div><div className="priceSliderEnds"><span>無料</span><span>10,000円以上</span></div></fieldset>
         <div className="searchChecks feeChecks"><label><input checked={filters.freeConsultation} onChange={event => update({ freeConsultation: event.target.checked })} type="checkbox" />無料相談あり</label><label><input checked={filters.initialFree} onChange={event => update({ initialFree: event.target.checked })} type="checkbox" />初回無料あり</label></div>
       </div>
       <button className="searchApply" onClick={applyFilters} type="button">この条件で検索する</button>{applied && <p className="searchApplied">選択したラベルを講師データベースの検索条件に適用しました。</p>}
