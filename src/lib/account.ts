@@ -1,7 +1,7 @@
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 
-export type AccountRole = "student" | "teacher";
+export type AccountRole = "student" | "teacher" | "admin";
 export type AccountStatus = "pending_email" | "pending_phone" | "active" | "suspended" | "withdrawn";
 export type StudentPlan = "free" | "payment_pending" | "paid" | "expired" | "cancelled";
 

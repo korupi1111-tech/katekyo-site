@@ -48,6 +48,10 @@ export async function respondLessonReservation(reservationId: string, accept: bo
     p_accept: accept,
   });
   if (error) throw error;
+  if (accept) {
+    const { error: mailError } = await client.functions.invoke("send-reservation-email", { body: { reservationId } });
+    if (mailError) throw new Error("予約は承認されましたが、メールを送信できませんでした。");
+  }
 }
 
 export async function cancelLessonReservation(reservationId: string, reason?: string) {

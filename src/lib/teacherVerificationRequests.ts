@@ -1,0 +1,12 @@
+import { supabase } from "./supabase";
+
+export type VerificationType = "education" | "qualification" | "mock_exam";
+export type VerificationStatus = "pending" | "approved" | "returned" | "rejected";
+export type VerificationSubmission = { id: string; teacher_profile_id: string; teacher_user_id: string; submission_type: VerificationType; item_name: string; note: string | null; file_name: string; mime_type: string; review_status: VerificationStatus; review_reason: string | null; created_at: string; reviewed_at: string | null; teacher_name?: string; education?: string | null; qualifications?: string[]; mock_exam_result?: string | null };
+const client = () => { if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。"); return supabase; };
+
+export async function getMyVerificationSubmissions() { const { data, error } = await client().from("teacher_verification_submissions").select("id, teacher_profile_id, teacher_user_id, submission_type, item_name, note, file_name, mime_type, review_status, review_reason, created_at, reviewed_at").order("created_at", { ascending: false }); if (error) throw error; return (data ?? []) as VerificationSubmission[]; }
+export async function submitVerificationDocument(input: { type: VerificationType; itemName: string; note: string; file: File }) { const body = new FormData(); body.set("submissionType", input.type); body.set("itemName", input.itemName.trim()); body.set("note", input.note.trim()); body.set("file", input.file); const { data, error } = await client().functions.invoke("upload-verification-document", { body }); if (error) throw error; if (!data?.submission) throw new Error("提出結果を確認できませんでした。"); return data.submission as VerificationSubmission; }
+export async function getAdminVerificationSubmissions() { const { data, error } = await client().functions.invoke("admin-verification-submissions", { body: {} }); if (error) throw error; return (data?.submissions ?? []) as VerificationSubmission[]; }
+export async function reviewVerificationSubmission(submissionId: string, action: Exclude<VerificationStatus, "pending">, reason: string) { const { error } = await client().functions.invoke("review-verification-submission", { body: { submissionId, action, reason } }); if (error) throw error; }
+export async function getVerificationDocumentUrl(submissionId: string) { const { data, error } = await client().functions.invoke("get-verification-document-url", { body: { submissionId } }); if (error) throw error; return data as { url: string; mimeType: string }; }
