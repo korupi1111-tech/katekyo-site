@@ -39,11 +39,16 @@ export type DirectoryTeacher = {
   highest_rank: string;
   contact_method: string | null;
   target_label: string | null;
+  target_level: string | null;
+  top_qualifications: string[];
+  other_qualifications: string[];
   strengths: string[];
   limitations: string[];
   teaching_policy: string | null;
   other_subjects: string[];
   extra_subjects: string[];
+  recommended_for: string[];
+  not_recommended_for: string[];
 };
 
 export async function getPublishedDirectoryTeachers() {

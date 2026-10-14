@@ -34,6 +34,7 @@ export function ReservationRequestPanel({ conversation, teacherName, onClose, on
   const [duration, setDuration] = useState("60");
   const [status, setStatus] = useState("");
   const [sending, setSending] = useState(false);
+  const [confirming, setConfirming] = useState(false);
 
   const submit = async () => {
     setSending(true);
@@ -62,7 +63,9 @@ export function ReservationRequestPanel({ conversation, teacherName, onClose, on
       <label>授業時間<select value={duration} onChange={event => setDuration(event.target.value)}>{[30, 45, 60, 90, 120, 150, 180].map(value => <option key={value} value={value}>{value}分</option>)}</select></label>
     </div>
     <p className="reservationSummary">{dates.find(option => option.value === date)?.label}　{hour}:{minute} から {duration}分</p>
-    <button type="button" className="reservationSubmit" onClick={() => void submit()} disabled={sending}>{sending ? "申請中…" : reservationToChange ? "この日時で変更申請する" : "この日時で申請する"}</button>
+    <p className="reservationCallNotice">オンライン授業の通話環境（Zoom、Google Meet、Discord等）は、講師と相談のうえ各自でご準備ください。korupiyoでは通話機能を提供していません。</p>
+    <button type="button" className="reservationSubmit" onClick={() => setConfirming(true)} disabled={sending}>{sending ? "申請中…" : reservationToChange ? "この日時で変更申請する" : "この日時で申請する"}</button>
     {status && <p className="reservationStatus" role="status">{status}</p>}
+    {confirming && <div className="reservationConfirmOverlay" role="dialog" aria-modal="true" aria-label="予約の最終確認"><section><span>FINAL CONFIRMATION</span><h2>この内容で{reservationToChange ? "変更を申請" : "予約を申請"}しますか？</h2><p>{dates.find(option => option.value === date)?.label}　{hour}:{minute} から {duration}分</p><p>講師が承認すると予約が確定します。</p><div><button type="button" onClick={() => setConfirming(false)}>戻る</button><button type="button" className="reservationSubmit" onClick={() => { setConfirming(false); void submit(); }} disabled={sending}>申請する</button></div></section></div>}
   </section>;
 }

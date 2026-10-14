@@ -67,7 +67,7 @@ export function ReservationInbox({ role, onOpenChat }: Props) {
 
   return <section className="accountFeature reservationInbox">
     <div className="reservationInboxHeader"><div><span>LESSON MANAGEMENT</span><h2>{role === "teacher" ? "予約申請・授業管理" : "予約申請・授業予定"}</h2><p>{role === "teacher" ? "申請の承認・見送り、確定後の変更・キャンセル、授業完了を管理できます。" : "承認待ちはオレンジ、確定した授業は緑でカレンダーに表示されます。"}</p></div><button type="button" className="reservationRefresh" onClick={() => { setLoading(true); void load(); }} aria-label="予約を更新"><RefreshCw /></button></div>
-    {loading ? <p className="reservationEmpty">予約を読み込み中です…</p> : visible.length ? <ul className="reservationItems">{visible.map(reservation => {
+    <p className="reservationCallNotice">オンライン授業の通話環境（Zoom、Google Meet、Discord等）は、講師と相談のうえ各自でご準備ください。korupiyoでは通話機能を提供していません。</p>{loading ? <p className="reservationEmpty">予約を読み込み中です…</p> : visible.length ? <ul className="reservationItems">{visible.map(reservation => {
       const conversation = conversations.find(item => item.id === reservation.conversation_id);
       const actionable = reservation.status === "requested" || reservation.status === "accepted";
       const canComplete = role === "teacher" && reservation.status === "accepted" && new Date(reservation.starts_at).getTime() <= Date.now();

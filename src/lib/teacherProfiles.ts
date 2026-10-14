@@ -19,6 +19,8 @@ export type TeacherProfileInput = {
   strengths?: string[];
   limitations?: string[];
   targetStudents?: string[];
+  targetLevel?: string | null;
+  topQualifications?: string[];
   teachingPolicy?: string | null;
   teachingTypes?: string[];
   qualificationLabels?: string[];
@@ -66,6 +68,8 @@ export type TeacherProfileRow = {
   strengths: string[];
   limitations: string[];
   target_students: string[];
+  target_level: string | null;
+  top_qualifications: string[];
   teaching_policy: string | null;
   teaching_types: string[];
   qualification_labels: string[];
@@ -175,6 +179,8 @@ export async function saveMyTeacherProfile(input: TeacherProfileInput) {
     strengths: input.strengths ?? [],
     limitations: input.limitations ?? [],
     target_students: input.targetStudents ?? [],
+    target_level: input.targetLevel ?? null,
+    top_qualifications: input.topQualifications ?? [],
     teaching_policy: input.teachingPolicy ?? null,
     teaching_types: input.teachingTypes ?? [],
     qualification_labels: input.qualificationLabels ?? [],

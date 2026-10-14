@@ -3,13 +3,13 @@ export const subjectOptions = [
   "中学英語", "高校英語", "英語", "英語資格",
   "中学数学", "高校数学",
   "中学国語", "現代文", "古文・漢文",
-  "中学理科", "高校理科",
-  "地理", "歴史", "公民", "情報", "小論文", "その他",
+  "中学理科", "高校理科", "物理", "化学", "生物", "地学",
+  "地理", "日本史", "世界史", "政治・経済", "倫理", "公民", "情報", "小論文", "資格取得・検定", "その他",
 ];
 
 // 検索画面だけは、利用者が選びやすい大分類に絞る。
 // 講師プロフィールで入力・保存する上記の細かなラベルは変更しない。
-export const directorySearchSubjectOptions = ["小学校全科目", "英語", "数学", "国語", "理科", "社会", "情報", "小論文", "その他"];
+export const directorySearchSubjectOptions = ["小学校全科目", "英語", "数学", "国語", "物理", "化学", "生物", "地学", "地理", "日本史", "世界史", "政治・経済", "倫理", "情報", "小論文", "資格取得・検定", "その他"];
 
 const elementaryEnglishTopics = ["授業復習", "英語に親しむ", "リスニング", "スピーキング", "定期テスト対策", "その他"];
 const middleEnglishTopics = ["授業復習", "定期テスト対策", "英文法", "長文読解", "英作文・ライティング", "高校受験", "その他"];
@@ -33,12 +33,11 @@ export const levelOptions = [...new Set([...englishGoals, ...englishCertificatio
 export const qualificationLabelOptions = ["英語資格", "英検", "TOEIC", "TOEFL", "IELTS", "数学資格", "数学検定", "国語資格", "漢字検定", "日本語検定", "理科資格", "社会資格", "教職・教育", "教員免許", "指導経験", "その他"];
 export const qualificationOptions = ["英検5級", "英検4級", "英検3級", "英検準2級", "英検2級", "英検準1級", "英検1級", "TOEIC L&R", "TOEFL iBT", "IELTS", "数学検定", "漢字検定", "日本語検定", "教員免許", "教職課程履修中", "中学受験経験", "指導経験"];
 export const lessonTypeOptions = ["単発授業", "長期指導", "学習相談", "進路相談", "質問対応", "添削", "面接練習"];
-export const contactMethodOptions = ["オンライン通話", "対面", "メッセージ・メール", "添削のみ"];
-export const subjectTypeOptions = ["授業復習・定期テスト", "受験対策", "資格試験対策", "読解・演習", "添削・アウトプット", "学習計画・相談", "その他"];
+export const contactMethodOptions = ["オンライン通話", "対面", "メール", "添削のみ"];
 export const lessonStyleOptions = ["質問重視", "演習重視", "精読重視", "添削重視", "アウトプット重視", "インプット重視", "対話重視", "生徒に合わせて変更"];
 
 export function normalizeCombinedContactMethod(value: string) {
-  return value.includes("メッセージ・メール") ? value : value.replace(/メッセージ|メール/, "メッセージ・メール");
+  return value.replace(/メッセージ・メール|メッセージ|メール/g, "メール");
 }
 
 const elementarySubjects = ["小学校全科目", "小学生英語", "小学校算数", "小学校国語", "小学校理科", "小学校社会"];
@@ -49,8 +48,8 @@ const generalEnglishSubjects = ["英語"];
 const englishCertificationSubjects = ["英語資格"];
 const mathSubjects = ["中学数学", "高校数学"];
 const japaneseSubjects = ["中学国語", "現代文", "古文・漢文", "小論文"];
-const scienceSubjects = ["中学理科", "高校理科"];
-const socialSubjects = ["小学校社会", "地理", "歴史", "公民"];
+const scienceSubjects = ["中学理科", "高校理科", "物理", "化学", "生物", "地学"];
+const socialSubjects = ["小学校社会", "地理", "日本史", "世界史", "政治・経済", "倫理", "公民"];
 
 export function topicOptionsForSubject(subject: string) {
   if (elementaryEnglishSubjects.includes(subject)) return elementaryEnglishTopics;
@@ -89,7 +88,6 @@ export function directorySearchSubjectMatches(selectedSubject: string, teacherSu
   if (selectedSubject === "英語") return teacherSubjects.some(subject => [...elementaryEnglishSubjects, ...middleEnglishSubjects, ...highSchoolEnglishSubjects, ...generalEnglishSubjects, ...englishCertificationSubjects].includes(subject));
   if (selectedSubject === "数学") return teacherSubjects.some(subject => mathSubjects.includes(subject) || subject === "数学");
   if (selectedSubject === "国語") return teacherSubjects.some(subject => japaneseSubjects.includes(subject) || subject === "国語");
-  if (selectedSubject === "理科") return teacherSubjects.some(subject => scienceSubjects.includes(subject) || subject === "理科");
-  if (selectedSubject === "社会") return teacherSubjects.some(subject => socialSubjects.includes(subject) || subject === "社会");
+  if (selectedSubject === "資格取得・検定") return teacherSubjects.some(subject => subject === "資格取得・検定" || subject === "英語資格");
   return teacherSubjects.includes(selectedSubject);
 }

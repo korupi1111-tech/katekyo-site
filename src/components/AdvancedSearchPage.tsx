@@ -5,7 +5,7 @@ import { getCurrentAccount } from "../lib/account";
 import { getTeacherAvatarUrl } from "../lib/teacherProfiles";
 import { isTeacherFavorite, toggleTeacherFavorite } from "../lib/teacherFavorites";
 import { PublicTeacherAvailability } from "./PublicTeacherAvailability";
-import { contactMethodOptions, directorySearchSubjectMatches, directorySearchSubjectOptions, lessonStyleOptions, lessonTypeOptions, normalizeCombinedContactMethod, qualificationLabelOptions, subjectTypeOptions } from "../lib/teacherLabels";
+import { contactMethodOptions, directorySearchSubjectMatches, directorySearchSubjectOptions, lessonStyleOptions, lessonTypeOptions, normalizeCombinedContactMethod, qualificationLabelOptions } from "../lib/teacherLabels";
 import "../advanced-search.css";
 
 type SearchFilters = {
@@ -19,7 +19,6 @@ type SearchFilters = {
   maxPrice: string;
   freeConsultation: boolean;
   initialFree: boolean;
-  teachingTypes: string[];
   lessonStyles: string[];
   qualificationLabels: string[];
   supportOptions: string[];
@@ -27,11 +26,11 @@ type SearchFilters = {
 
 const initialFilters = (): SearchFilters => ({
   subject: "", lessonTypes: [], contactMethods: [], prefecture: "", city: "", recruitmentStatuses: [], minPrice: "", maxPrice: "", freeConsultation: false, initialFree: false,
-  teachingTypes: [], lessonStyles: [], qualificationLabels: [], supportOptions: [],
+  lessonStyles: [], qualificationLabels: [], supportOptions: [],
 });
 
 function cloneFilters(filters: SearchFilters): SearchFilters {
-  return { ...filters, lessonTypes: [...filters.lessonTypes], contactMethods: [...filters.contactMethods], recruitmentStatuses: [...filters.recruitmentStatuses], teachingTypes: [...filters.teachingTypes], lessonStyles: [...filters.lessonStyles], qualificationLabels: [...filters.qualificationLabels], supportOptions: [...filters.supportOptions] };
+  return { ...filters, lessonTypes: [...filters.lessonTypes], contactMethods: [...filters.contactMethods], recruitmentStatuses: [...filters.recruitmentStatuses], lessonStyles: [...filters.lessonStyles], qualificationLabels: [...filters.qualificationLabels], supportOptions: [...filters.supportOptions] };
 }
 
 function toggleValue(values: string[], value: string) {
@@ -55,9 +54,9 @@ function toDirectoryProfile(teacher: DirectoryTeacher): ProfileTemplateData {
     title: teacher.catchphrase, titleAccent: teacher.main_subject, currentRank: teacher.current_rank, highestRank: teacher.highest_rank,
     qualifications: teacher.qualifications, qualificationVerified: teacher.qualification_verified, mockExamResult: teacher.mock_exam_result ?? "実績収集中", mockExamVerified: teacher.mock_exam_verified,
     education: teacher.education ?? "確認中", educationVerified: teacher.education_verified, contactMethod: combinedContactMethod, gender: teacher.gender ?? "非公開", teachingExperience: teacher.teaching_experience ?? "確認中", lessonFormat: teacher.lesson_types.join("・"), recruitmentStatus: teacher.recruitment_status,
-    priceUnit: "60分", priceText: `${teacher.price_yen.toLocaleString()}円`, priceNote: teacher.free_consultation && teacher.initial_free ? "メッセージ・メール相談・初回無料" : teacher.free_consultation ? "メッセージ・メール相談無料開放中！" : teacher.initial_free ? "初回無料" : "初回無料なし", seasonLessons: teacher.verified_lesson_count, totalLessons: teacher.total_lesson_count, matchRate: teacher.profile_match_rate === null ? null : `${teacher.profile_match_rate}%`,
-    mainSubject: teacher.main_subject, strengths, limitations, targetDescription: targetLabel, targetLevel: teacher.levels.join("・"), teachingPolicy: teacher.teaching_policy ?? teacher.summary ?? "現在、指導方針を準備中です。", teachingType: teacher.teaching_types.join("・") || "確認中", otherSubjectsLine: `2科目：${teacher.other_subjects.join("、") || "無し"}`, extraSubjectsLine: `その他の対応している科目：${teacher.extra_subjects.join("、") || "無し"}`,
-    lessonDescription: `${teacher.lesson_types.join("・")}に対応しています。${combinedContactMethod}で、ご希望に合わせて進めます。`, recommendations: [targetLabel, ...teacher.levels.slice(0, 2).map(level => `${level}を目指している方`), `${strengths}を伸ばしたい方`], notRecommendations: teacher.limitations.map(item => `${item}を中心に学びたい方`), paceDescription: teacher.teaching_types.join("・") || "生徒に合わせて調整", homeworkDescription: teacher.lesson_styles.join("・") || "相談して決定",
+    priceUnit: "60分", priceText: `${teacher.price_yen.toLocaleString()}円`, priceNote: teacher.free_consultation && teacher.initial_free ? "メール相談・初回無料" : teacher.free_consultation ? "メール相談無料" : teacher.initial_free ? "初回無料" : "", seasonLessons: teacher.verified_lesson_count, totalLessons: teacher.total_lesson_count, matchRate: teacher.profile_match_rate === null ? null : `${teacher.profile_match_rate}%`, freeConsultation: teacher.free_consultation, initialFree: teacher.initial_free,
+    mainSubject: teacher.main_subject, strengths, limitations, targetDescription: targetLabel, targetLevel: teacher.target_level ?? teacher.levels.join("・"), teachingPolicy: teacher.teaching_policy ?? teacher.summary ?? "現在、指導方針を準備中です。", teachingType: "", topQualifications: teacher.top_qualifications, otherQualifications: teacher.other_qualifications, otherSubjectsLine: `他に教えられる科目：${teacher.other_subjects.join("、") || "無し"}`, extraSubjectsLine: `一応対応している科目：${teacher.extra_subjects.join("、") || "無し"}`,
+    lessonDescription: `${teacher.lesson_types.join("・")}に対応しています。${combinedContactMethod}で、ご希望に合わせて進めます。`, recommendations: teacher.recommended_for.length ? teacher.recommended_for : [targetLabel, ...teacher.levels.slice(0, 2).map(level => `${level}を目指している方`), `${strengths}を伸ばしたい方`], notRecommendations: teacher.not_recommended_for.length ? teacher.not_recommended_for : teacher.limitations.map(item => `${item}を中心に学びたい方`),
     teacherMessage: <><p>{teacher.summary ?? "現在、講師メッセージを準備中です。"}</p><p>{teacher.teaching_policy ?? "生徒の目標に合わせた指導を行います。"}</p></>,
   };
 }
@@ -103,7 +102,6 @@ function matchesFilters(teacher: DirectoryTeacher, filters: SearchFilters) {
     && (maxPrice === null || teacher.price_yen <= maxPrice)
     && (!filters.freeConsultation || teacher.free_consultation)
     && (!filters.initialFree || teacher.initial_free)
-    && includesAny(teacher.teaching_types, filters.teachingTypes)
     && includesAny(teacher.lesson_styles, filters.lessonStyles)
     && includesAny(teacher.qualification_labels, filters.qualificationLabels)
     && supportMatches;
@@ -162,7 +160,7 @@ export function AdvancedSearchPage({ onStartChat }: { onStartChat: (teacherProfi
       <button className="searchApply" onClick={applyFilters} type="button">この条件で検索する</button>{applied && <p className="searchApplied">選択したラベルを講師データベースの検索条件に適用しました。</p>}
     </section>
     <button className="moreSearchToggle" aria-expanded={more} onClick={() => setMore(!more)}>さらに詳しく探す <span>{more ? "−" : "＋"}</span></button>
-    {more && <section className="searchPanel detailedSearch"><h2>詳細条件</h2><div className="searchFieldGrid"><fieldset><legend>講師の得意科目のタイプ <small>最大2つ</small></legend><Chips values={subjectTypeOptions} selected={filters.teachingTypes} onChange={teachingTypes => update({ teachingTypes })} limit={2} /></fieldset><fieldset><legend>授業の進め方</legend><Chips values={lessonStyleOptions} selected={filters.lessonStyles} onChange={lessonStyles => update({ lessonStyles })} /></fieldset><fieldset className="searchWide"><legend>資格・認定 <small>講師の自己申告ラベル</small></legend><Chips values={qualificationLabelOptions} selected={filters.qualificationLabels} onChange={qualificationLabels => update({ qualificationLabels })} /></fieldset><fieldset><legend>授業外サポート</legend><div className="searchChecks">{["質問対応あり", "添削対応あり", "学習管理あり"].map(option => <label key={option}><input checked={filters.supportOptions.includes(option)} onChange={() => update({ supportOptions: toggleValue(filters.supportOptions, option) })} type="checkbox" />{option}</label>)}</div></fieldset></div><button className="searchApply" onClick={applyFilters} type="button">詳細条件を適用する</button></section>}
+    {more && <section className="searchPanel detailedSearch"><h2>詳細条件</h2><div className="searchFieldGrid"><fieldset><legend>授業の進め方</legend><Chips values={lessonStyleOptions} selected={filters.lessonStyles} onChange={lessonStyles => update({ lessonStyles })} /></fieldset><fieldset className="searchWide"><legend>資格・認定 <small>講師の自己申告ラベル</small></legend><Chips values={qualificationLabelOptions} selected={filters.qualificationLabels} onChange={qualificationLabels => update({ qualificationLabels })} /></fieldset><fieldset><legend>授業外サポート</legend><div className="searchChecks">{["質問対応あり", "添削対応あり", "学習管理あり"].map(option => <label key={option}><input checked={filters.supportOptions.includes(option)} onChange={() => update({ supportOptions: toggleValue(filters.supportOptions, option) })} type="checkbox" />{option}</label>)}</div></fieldset></div><button className="searchApply" onClick={applyFilters} type="button">詳細条件を適用する</button></section>}
     <DirectoryResults teachers={teachers} loading={loading} error={error} filters={appliedFilters} onStartChat={onStartChat} />
     <section className="concernSearch"><span>SEARCH BY CONCERN</span><h2>悩みから探す</h2><div>{[["英語", ["長文の点数が安定しない", "感覚で読んでいて、解答根拠を説明できない", "英作文を添削してほしい", "英文法を基礎から学び直したい", "英検対策をしてほしい", "TOEIC対策をしてほしい", "一問だけ質問したい"]], ["数学", ["計算ミスが多い", "公式は覚えているが使い方が分からない", "解説を読んでも理解できない", "証明問題が苦手", "共通テスト対策をしたい", "難関大学の記述対策をしたい", "一問だけ質問したい"]], ["学習全般", ["勉強方法を相談したい", "学習計画を立ててほしい", "進路について相談したい", "志望校を決めたい", "面接練習をしたい", "志望理由書を添削してほしい"]]].map(([title, values]) => <article key={title as string}><h3>{title}</h3><ul>{(values as string[]).map(value => <li key={value}><button>{value}</button></li>)}</ul></article>)}</div></section>
   </main>;
