@@ -9,6 +9,7 @@ import { ReservationInbox } from "./ReservationInbox";
 import { FavoriteTeachers } from "./FavoriteTeachers";
 import { TeacherAvailabilityEditor } from "./TeacherAvailability";
 import { Turnstile } from "./Turnstile";
+import { getMyTeacherMetrics, type TeacherMetrics } from "../lib/teacherProfiles";
 
 type DashboardProps = { onNavigate: (page: "family-auth" | "teacher-auth" | "chat-list") => void };
 
@@ -34,6 +35,12 @@ function AccountStatus({ account, teacher }: { account: AccountAccess; teacher?:
 
 function signOut(onNavigate: DashboardProps["onNavigate"], page: "family-auth" | "teacher-auth") { void supabase?.auth.signOut().finally(() => onNavigate(page)); }
 
+function TeacherDashboardMetrics() {
+  const [metrics, setMetrics] = useState<TeacherMetrics | null>(null);
+  useEffect(() => { let active = true; void getMyTeacherMetrics().then(data => { if (active) setMetrics(data); }).catch(() => undefined); return () => { active = false; }; }, []);
+  return <dl className="teacherDashboardMetrics" aria-label="講師実績"><div><dt>総授業数</dt><dd>{metrics ? `${metrics.totalLessons}回` : "0回"}</dd></div><div><dt>今季授業数</dt><dd>{metrics ? `${metrics.seasonLessons}回` : "0回"}</dd></div><div><dt>プロフィール一致率</dt><dd>{metrics?.profileMatchRate === null || !metrics ? "評価蓄積中" : `${metrics.profileMatchRate}%`}</dd></div></dl>;
+}
+
 function WithdrawalAction({ onNavigate, page }: { onNavigate: DashboardProps["onNavigate"]; page: "family-auth" | "teacher-auth" }) {
   const [open, setOpen] = useState(false); const [confirmation, setConfirmation] = useState(""); const [busy, setBusy] = useState(false); const [message, setMessage] = useState("");
   const submit = async () => { if (confirmation !== "退会") { setMessage("確認欄に「退会」と入力してください。"); return; } setBusy(true); setMessage(""); try { await withdrawMyAccount(); onNavigate(page); } catch (error) { setMessage(error instanceof Error ? error.message : "退会処理に失敗しました。"); } finally { setBusy(false); } };
@@ -51,7 +58,7 @@ function StudentProfileEditor() {
 }
 
 export function TeacherDashboard({ onNavigate }: DashboardProps) {
-  return <AccountGate expectedRole="teacher" onNavigate={onNavigate}>{account => <main className="dashboardPage withTopbar"><header className="dashboardHero teacherDashboardHero"><img src="/owner.jpg" alt="プロフィール画像"/><div><span>TEACHER DASHBOARD</span><h1>{account.displayName}</h1><p>講師登録・公開プロフィールを管理します。</p></div></header><AccountStatus account={account} teacher /><section className="accountFeature chatShortcut"><div><span>MESSAGES</span><h2>チャット一覧</h2><p>生徒との会話を一覧で確認できます。</p></div><button onClick={() => onNavigate("chat-list")}>チャット一覧を開く</button></section><ReservationInbox role="teacher" /><MyLessonCalendar />{account.teacherFeaturesEnabled ? <><section className="accountFeature"><h2>公開プロフィールを編集できます</h2><p>メール認証後は、プロフィールと検索用ラベルを保存・公開できます。本人確認済みの表示は、運営による確認後に反映されます。</p></section><TeacherAvailabilityEditor /><TeacherProfileEditor /></> : <section className="accountFeature locked"><h2>メール認証後にプロフィールを編集できます</h2><p>講師ログインに使うメールアドレスを認証すると、プロフィールと検索用ラベルを保存・公開できます。</p></section>}<section className="accountActions"><button onClick={() => signOut(onNavigate, "teacher-auth")}>ログアウト</button><WithdrawalAction onNavigate={onNavigate} page="teacher-auth" /></section></main>}</AccountGate>;
+  return <AccountGate expectedRole="teacher" onNavigate={onNavigate}>{account => <main className="dashboardPage withTopbar"><header className="dashboardHero teacherDashboardHero"><img src="/owner.jpg" alt="プロフィール画像"/><div><span>TEACHER DASHBOARD</span><h1>{account.displayName}</h1><p>講師登録・公開プロフィールを管理します。</p></div><TeacherDashboardMetrics /></header><AccountStatus account={account} teacher /><section className="accountFeature chatShortcut"><div><span>MESSAGES</span><h2>チャット一覧</h2><p>生徒との会話を一覧で確認できます。</p></div><button onClick={() => onNavigate("chat-list")}>チャット一覧を開く</button></section><ReservationInbox role="teacher" /><MyLessonCalendar />{account.teacherFeaturesEnabled ? <><section className="accountFeature"><h2>公開プロフィールを編集できます</h2><p>メール認証後は、プロフィールと検索用ラベルを保存・公開できます。本人確認済みの表示は、運営による確認後に反映されます。</p></section><TeacherAvailabilityEditor /><TeacherProfileEditor /></> : <section className="accountFeature locked"><h2>メール認証後にプロフィールを編集できます</h2><p>講師ログインに使うメールアドレスを認証すると、プロフィールと検索用ラベルを保存・公開できます。</p></section>}<section className="accountActions"><button onClick={() => signOut(onNavigate, "teacher-auth")}>ログアウト</button><WithdrawalAction onNavigate={onNavigate} page="teacher-auth" /></section></main>}</AccountGate>;
 }
 
 export function StudentDashboard({ onNavigate }: DashboardProps) {

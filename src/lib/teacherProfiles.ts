@@ -90,6 +90,12 @@ export type TeacherProfileRow = {
   teacher_message: string | null;
 };
 
+export type TeacherMetrics = {
+  seasonLessons: number;
+  totalLessons: number;
+  profileMatchRate: number | null;
+};
+
 function requireClient() {
   if (!supabase) throw new Error("Supabaseの接続情報が設定されていません。");
   return supabase;
@@ -122,6 +128,25 @@ export async function getMyTeacherProfile() {
 
   if (error) throw error;
   return data as TeacherProfileRow | null;
+}
+
+/** 講師本人だけが確認できる自動集計の実績値。 */
+export async function getMyTeacherMetrics(): Promise<TeacherMetrics | null> {
+  const profile = await getMyTeacherProfile();
+  if (!profile) return null;
+  const client = requireClient();
+  const { data, error } = await client
+    .from("teacher_metrics")
+    .select("season_lessons, total_lessons, profile_match_rate")
+    .eq("teacher_profile_id", profile.id)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  return {
+    seasonLessons: data.season_lessons ?? 0,
+    totalLessons: data.total_lessons ?? 0,
+    profileMatchRate: data.profile_match_rate === null ? null : Number(data.profile_match_rate),
+  };
 }
 
 export async function saveMyTeacherProfile(input: TeacherProfileInput) {

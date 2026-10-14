@@ -13,44 +13,44 @@ const emptyLabelRequests = (): LabelRequestValues => ({ subjects: "", topics: ""
 const labelRequestGroupNames: Record<LabelRequestGroup, string> = { subjects: "講師の得意な科目", topics: "講師の得意な指導方法", levels: "目標", qualification_labels: "資格の検索ラベル", teaching_types: "講師の得意科目のタイプ" };
 
 const initialProfile: EditorState = {
-  publicSlug: "kotaro",
-  displayName: "こうたろう先生",
-  catchphrase: "感覚派向け英検長文読解",
-  education: "現役高校3年生（大学受験中）",
-  teachingExperience: "0",
-  qualifications: ["英検準1級", "TOEIC L&R 910"],
-  mockExamResult: "2026年度第1回河合塾全統記述模試 英語147点",
-  gender: "男性",
-  lessonFormat: "単発授業・学習相談",
-  contactMethod: "メッセージ・メールでの相談",
-  recruitmentStatus: "受験のため原則停止中",
-  recruitmentDetail: "どうしてもという方のみメッセージ・メールにてご連絡ください。",
-  priceYen: "0",
-  mainSubject: "英語資格",
-  strengths: ["長文読解", "ライティング"],
-  limitations: ["TOEIC対策", "文法指導"],
-  targetStudents: ["英検2級〜1級", "感覚で英文を読む方", "長文読解で伸び悩んでいる方"],
-  teachingPolicy: "生徒のレベルより少し難度の高い長文を精読し、意味を正確に捉えた全訳を重視します。",
-  teachingTypes: ["資格試験対策", "読解・演習"],
-  qualificationLabels: ["英語資格", "英検", "TOEIC"],
-  subjects: ["英語資格", "高校英語"],
-  topics: ["英検対策"],
-  levels: ["英検"],
-  lessonTypes: ["単発授業", "学習相談"],
-  contactMethods: ["メッセージ・メール"],
-  lessonStyles: ["精読重視"],
+  publicSlug: "",
+  displayName: "",
+  catchphrase: "",
+  education: "",
+  teachingExperience: "",
+  qualifications: [],
+  mockExamResult: "",
+  gender: "",
+  lessonFormat: "",
+  contactMethod: "",
+  recruitmentStatus: "",
+  recruitmentDetail: "",
+  priceYen: "",
+  mainSubject: "",
+  strengths: [],
+  limitations: [],
+  targetStudents: [],
+  teachingPolicy: "",
+  teachingTypes: [],
+  qualificationLabels: [],
+  subjects: [],
+  topics: [],
+  levels: [],
+  lessonTypes: [],
+  contactMethods: [],
+  lessonStyles: [],
   supportsInPerson: false,
   prefecture: "",
   city: "",
-  freeConsultation: true,
+  freeConsultation: false,
   initialFree: false,
   otherSubjects: [],
   extraSubjects: [],
-  lessonFormatDetail: "単発授業がメインとなり、基本はメッセージ・メールでの相談となります。",
-  recommendedFor: ["読めているがしっかり訳せない方", "英検2級〜1級を目指している方"],
-  notRecommendedFor: ["英語初学者", "文法を基礎から学びたい人", "TOEIC対策をしたい人"],
-  homeworkPolicy: "単語を毎日5分ほど、週に2回の長文（少し難しめ）",
-  unsupportedContent: "文法中心の英語学習、初学者、TOEIC対策",
+  lessonFormatDetail: "",
+  recommendedFor: [],
+  notRecommendedFor: [],
+  homeworkPolicy: "",
+  unsupportedContent: "",
   teacherMessage: "",
   avatarPath: null,
   isPublished: false,
@@ -153,6 +153,11 @@ export function TeacherProfileEditor() {
       try {
         const savedProfile = await getMyTeacherProfile();
         if (active && savedProfile) setProfile(toEditorState(savedProfile));
+        if (active && !savedProfile) {
+          const givenName = typeof data.user.user_metadata.given_name_kana === "string" ? data.user.user_metadata.given_name_kana : "";
+          const registeredGender = data.user.user_metadata.gender === "男性" || data.user.user_metadata.gender === "女性" ? data.user.user_metadata.gender : "";
+          setProfile(current => ({ ...current, publicSlug: `teacher-${data.user.id.slice(0, 12)}`, displayName: givenName ? `${givenName}先生` : "", gender: registeredGender }));
+        }
         if (active) setStatus(savedProfile ? "保存済みのプロフィールを読み込みました。" : "新しい講師プロフィールを作成できます。");
       } catch (error) {
         if (active) setStatus(error instanceof Error ? error.message : "プロフィールを読み込めませんでした。");
@@ -216,15 +221,13 @@ export function TeacherProfileEditor() {
   const updateQualifications = (values: string[]) => setProfile(current => ({ ...current, qualifications: [...values, ...current.qualifications.filter(value => !qualificationOptions.includes(value))] }));
 
   return <section className="teacherProfileEditor"><header><span>PROFILE EDITOR</span><h2>講師プロフィールを編集</h2><p>{status}</p></header><form onSubmit={save}><div className="profileEditorGrid">
-    <label>表示名<input required value={profile.displayName} onChange={event => updateText("displayName", event.target.value)} /></label>
     <label>プロフィール画像<input type="file" accept="image/png,image/jpeg,image/webp" onChange={event => setAvatarFile(event.target.files?.[0] ?? null)} /><small>PNG・JPEG・WebP、5MB以下。保存時に反映されます。</small>{profile.avatarPath && !avatarFile && <img className="profileAvatarPreview" src={getTeacherAvatarUrl(profile.avatarPath) ?? ""} alt="プロフィール画像のプレビュー" />}{avatarFile && <small>{avatarFile.name}（保存時に反映）</small>}</label>
-    <label>公開URL用ID<input required pattern="[a-z0-9-]{3,80}" value={profile.publicSlug} onChange={event => updateText("publicSlug", event.target.value.toLowerCase())} /><small>半角英小文字・数字・ハイフンのみ</small></label>
     <label className="wide">キャッチコピー<input required value={profile.catchphrase} onChange={event => updateText("catchphrase", event.target.value)} /></label>
     <label>学歴<input value={profile.education ?? ""} onChange={event => updateText("education", event.target.value)} /></label>
     <label>指導歴<input value={profile.teachingExperience ?? ""} onChange={event => updateText("teachingExperience", event.target.value)} /></label>
     <label>模試成績<input value={profile.mockExamResult ?? ""} onChange={event => updateText("mockExamResult", event.target.value)} /></label>
-    <label>性別<input value={profile.gender ?? ""} onChange={event => updateText("gender", event.target.value)} /></label>
-    <label>料金（円）<input type="number" min="0" value={profile.priceYen} onChange={event => updateText("priceYen", event.target.value)} /></label>
+    <label>性別<input readOnly value={profile.gender ?? ""} /><small>アカウント登録時の情報です。</small></label>
+    <label>時給（円）<input type="number" min="0" value={profile.priceYen} onChange={event => updateText("priceYen", event.target.value)} /></label>
     <label>募集状況<select value={profile.recruitmentStatus ?? ""} onChange={event => updateText("recruitmentStatus", event.target.value)}><option value="">選択してください</option><option>受付中</option><option>残り1枠</option><option>募集停止中</option></select></label>
     <label className="wide">募集状況詳細<textarea value={profile.recruitmentDetail ?? ""} onChange={event => updateText("recruitmentDetail", event.target.value)} /></label>
     <label>主な得意科目<input list="teacher-main-subjects" value={profile.mainSubject ?? ""} onChange={event => updateMainSubject(event.target.value)} /><datalist id="teacher-main-subjects">{subjectOptions.map(value => <option value={value} key={value}/>)}</datalist></label>
