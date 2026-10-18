@@ -231,7 +231,35 @@ export async function uploadMyTeacherAvatar(file: File) {
   return data.path;
 }
 
+/**
+ * 元画像を保存せず、中央を正方形に切り抜いた512px程度のWebPだけを送信する。
+ * ブラウザ内で処理するため、端末からSupabaseへ送られるのは加工後のファイルのみ。
+ */
+export async function prepareTeacherAvatar(file: File) {
+  if (!file.type.startsWith("image/")) throw new Error("画像ファイルを選択してください。");
+  if (file.size > 10 * 1024 * 1024) throw new Error("画像は10MB以下にしてください。");
+
+  const bitmap = await createImageBitmap(file);
+  try {
+    const side = Math.min(bitmap.width, bitmap.height);
+    const sourceX = Math.max(0, Math.floor((bitmap.width - side) / 2));
+    const sourceY = Math.max(0, Math.floor((bitmap.height - side) / 2));
+    const canvas = document.createElement("canvas");
+    canvas.width = 512;
+    canvas.height = 512;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("画像を加工できませんでした。");
+    context.drawImage(bitmap, sourceX, sourceY, side, side, 0, 0, 512, 512);
+    const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, "image/webp", 0.9));
+    if (!blob) throw new Error("画像をWebP形式に変換できませんでした。");
+    return new File([blob], "profile-avatar.webp", { type: "image/webp" });
+  } finally {
+    bitmap.close();
+  }
+}
+
 export function getTeacherAvatarUrl(path: string | null | undefined) {
   if (!path || !supabase) return null;
+  if (/^https?:\/\//.test(path)) return path;
   return supabase.storage.from("profile-images").getPublicUrl(path).data.publicUrl;
 }

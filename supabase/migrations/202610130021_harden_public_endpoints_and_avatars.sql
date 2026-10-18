@@ -60,11 +60,11 @@ drop policy if exists "Users can delete their own profile images" on storage.obj
 
 update storage.buckets
 set file_size_limit = 5242880,
-    allowed_mime_types = array['image/jpeg', 'image/png', 'image/webp']
+    allowed_mime_types = array['image/webp']
 where id = 'profile-images';
 
--- Avatar paths must belong to the profile owner. This prevents a client from
--- pointing its public profile at another user's uploaded image.
+-- Avatar URLs must point to an object owned by the profile owner. This prevents
+-- a client from pointing its public profile at another user's uploaded image.
 create or replace function public.validate_teacher_avatar_path()
 returns trigger
 language plpgsql
@@ -72,7 +72,7 @@ set search_path = public
 as $$
 begin
   if new.avatar_path is not null
-     and new.avatar_path !~ ('^' || new.user_id::text || '/avatar-([0-9]{13}|[0-9a-f-]{36})\.(jpg|png|webp)$') then
+     and new.avatar_path !~ ('^(https://[^/]+/storage/v1/object/public/profile-images/)?' || new.user_id::text || '/avatar-([0-9]{13}|[0-9a-f-]{36})\.webp$') then
     raise exception 'Invalid avatar path';
   end if;
   return new;

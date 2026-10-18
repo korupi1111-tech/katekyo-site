@@ -30,8 +30,7 @@ const studyGoals = ["基礎固め", "授業復習", "定期テスト", "中学�
 const informationGoals = ["共通テスト", "その他"];
 export const levelOptions = [...new Set([...englishGoals, ...englishCertificationGoals, ...studyGoals])];
 
-export const qualificationLabelOptions = ["英語資格", "英検", "TOEIC", "TOEFL", "IELTS", "数学資格", "数学検定", "国語資格", "漢字検定", "日本語検定", "理科資格", "社会資格", "教職・教育", "教員免許", "指導経験", "その他"];
-export const qualificationOptions = ["英検5級", "英検4級", "英検3級", "英検準2級", "英検2級", "英検準1級", "英検1級", "TOEIC L&R", "TOEFL iBT", "IELTS", "数学検定", "漢字検定", "日本語検定", "教員免許", "教職課程履修中", "中学受験経験", "指導経験"];
+export const qualificationLabelOptions = ["英検", "TOEIC", "TOEFL", "IELTS", "数検", "漢検", "日本語検定", "教員免許", "指導経験", "その他"];
 export const lessonTypeOptions = ["単発授業", "長期指導", "学習相談", "進路相談", "質問対応", "添削", "面接練習"];
 export const contactMethodOptions = ["オンライン通話", "対面", "メール", "添削のみ"];
 export const lessonStyleOptions = ["質問重視", "演習重視", "精読重視", "添削重視", "アウトプット重視", "インプット重視", "対話重視", "生徒に合わせて変更"];

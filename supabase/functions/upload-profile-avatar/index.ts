@@ -3,8 +3,6 @@ import { adminClient, allowCorsPreflight, clientIp, consumeRateLimit, json, requ
 const bucket = "profile-images";
 
 function imageType(bytes: Uint8Array) {
-  if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return { extension: "jpg", mime: "image/jpeg" };
-  if (bytes.length >= 8 && bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47 && bytes[4] === 0x0d && bytes[5] === 0x0a && bytes[6] === 0x1a && bytes[7] === 0x0a) return { extension: "png", mime: "image/png" };
   if (bytes.length >= 12 && new TextDecoder().decode(bytes.slice(0, 4)) === "RIFF" && new TextDecoder().decode(bytes.slice(8, 12)) === "WEBP") return { extension: "webp", mime: "image/webp" };
   return null;
 }
@@ -37,20 +35,21 @@ Deno.serve(async request => {
   let form: FormData;
   try { form = await request.formData(); } catch { return json(request, { error: "画像ファイルを読み取れませんでした。" }, 400); }
   const file = form.get("file");
-  if (!(file instanceof File) || file.size < 1 || file.size > 5 * 1024 * 1024) return json(request, { error: "PNG・JPEG・WebP形式、5MB以下の画像を選択してください。" }, 400);
+  if (!(file instanceof File) || file.size < 1 || file.size > 2 * 1024 * 1024) return json(request, { error: "加工済みのWebP形式、2MB以下の画像を選択してください。" }, 400);
   const bytes = new Uint8Array(await file.arrayBuffer());
   const detected = imageType(bytes);
-  if (!detected) return json(request, { error: "PNG・JPEG・WebP形式の画像のみアップロードできます。" }, 400);
+  if (!detected) return json(request, { error: "加工済みのWebP形式の画像のみアップロードできます。" }, 400);
 
   const { data: currentProfile, error: currentError } = await admin.from("teacher_profiles").select("avatar_path").eq("user_id", user.id).maybeSingle();
   if (currentError) return json(request, { error: "現在のプロフィールを確認できませんでした。" }, 503);
   const path = `${user.id}/avatar-${crypto.randomUUID()}.${detected.extension}`;
   const { error: uploadError } = await admin.storage.from(bucket).upload(path, bytes, { contentType: detected.mime, cacheControl: "60", upsert: false });
   if (uploadError) return json(request, { error: "画像を保存できませんでした。" }, 503);
+  const publicUrl = `${url}/storage/v1/object/public/${bucket}/${path}`;
 
   // Existing profiles can be switched atomically before old public objects are deleted.
   if (currentProfile) {
-    const { error: updateError } = await admin.from("teacher_profiles").update({ avatar_path: path }).eq("user_id", user.id);
+    const { error: updateError } = await admin.from("teacher_profiles").update({ avatar_path: publicUrl }).eq("user_id", user.id);
     if (updateError) {
       await admin.storage.from(bucket).remove([path]);
       return json(request, { error: "プロフィール画像を更新できませんでした。" }, 503);
@@ -59,5 +58,5 @@ Deno.serve(async request => {
     const oldPaths = (objects ?? []).map(item => `${user.id}/${item.name}`).filter(item => item !== path);
     if (oldPaths.length) await admin.storage.from(bucket).remove(oldPaths);
   }
-  return json(request, { path });
+  return json(request, { path: publicUrl });
 });

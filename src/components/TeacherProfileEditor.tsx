@@ -1,8 +1,8 @@
 import { type FormEvent, useEffect, useState } from "react";
-import { getMyTeacherProfile, getTeacherAvatarUrl, saveMyTeacherProfile, uploadMyTeacherAvatar, type TeacherProfileInput, type TeacherProfileRow } from "../lib/teacherProfiles";
+import { getMyTeacherProfile, getTeacherAvatarUrl, prepareTeacherAvatar, saveMyTeacherProfile, uploadMyTeacherAvatar, type TeacherProfileInput, type TeacherProfileRow } from "../lib/teacherProfiles";
 import { submitTeacherLabelRequests, type LabelRequestGroup } from "../lib/teacherLabelRequests";
 import { supabase } from "../lib/supabase";
-import { contactMethodOptions, lessonStyleOptions, lessonTypeOptions, levelOptionsForSubject, normalizeCombinedContactMethod, qualificationLabelOptions, qualificationOptions, subjectOptions, topicOptionsForSubject } from "../lib/teacherLabels";
+import { contactMethodOptions, lessonStyleOptions, lessonTypeOptions, normalizeCombinedContactMethod, qualificationLabelOptions, subjectOptions, topicOptionsForSubject } from "../lib/teacherLabels";
 import "../teacher-label-requests.css";
 import { TeacherVerificationRequests } from "./TeacherVerificationRequests";
 
@@ -73,11 +73,6 @@ function normalizeSubjects(values: string[]) {
   return [...new Set(values.map(value => value === "社会" ? "小学校社会" : value).filter(value => subjectOptions.includes(value)))];
 }
 
-function normalizeGoals(values: string[], subject: string) {
-  const allowedGoals = levelOptionsForSubject(subject);
-  return [...new Set(values.map(value => value.startsWith("英検") ? "英検" : value === "基礎から" ? "基礎固め" : value === "学校の授業補習" ? "授業復習" : value === "難関大学受験" ? "大学受験" : value).filter(value => allowedGoals.includes(value)))];
-}
-
 function LabelPicker({ label, help, values, selected, onChange, limit, requestValue, onRequestChange }: { label: string; help: string; values: string[]; selected: string[]; onChange: (next: string[]) => void; limit?: number; requestValue?: string; onRequestChange?: (value: string) => void }) {
   return <fieldset className="profileLabelPicker"><legend>{label}</legend><p>{help}</p><div>{values.map(value => <label key={value}><input checked={selected.includes(value)} onChange={() => {
     if (!selected.includes(value) && limit && selected.length >= limit) return;
@@ -112,7 +107,7 @@ function toEditorState(profile: TeacherProfileRow): EditorState {
     qualificationLabels: profile.qualification_labels,
     subjects: normalizeSubjects(profile.subjects),
     topics: profile.topics,
-    levels: normalizeGoals(profile.levels, mainSubject ?? ""),
+    levels: profile.levels,
     lessonTypes: profile.lesson_types,
     contactMethods: normalizeContactMethods(profile.contact_methods),
     lessonStyles: profile.lesson_styles,
@@ -177,7 +172,7 @@ export function TeacherProfileEditor() {
   const update = (values: Partial<EditorState>) => setProfile(current => ({ ...current, ...values }));
   const updateLabelRequest = (group: LabelRequestGroup, value: string) => setLabelRequests(current => ({ ...current, [group]: value }));
   const labelRequestFields: { group: LabelRequestGroup; selected: string[] }[] = [
-    { group: "subjects", selected: profile.subjects }, { group: "topics", selected: profile.topics }, { group: "levels", selected: profile.levels },
+    { group: "subjects", selected: profile.subjects }, { group: "topics", selected: profile.topics },
     { group: "qualification_labels", selected: profile.qualificationLabels },
   ];
 
@@ -220,21 +215,28 @@ export function TeacherProfileEditor() {
     }
   };
 
-  const selectedQualifications = profile.qualifications.filter(value => qualificationOptions.includes(value));
-  const customQualifications = profile.qualifications.filter(value => !qualificationOptions.includes(value));
   const availableTopics = topicOptionsForSubject(profile.mainSubject ?? "");
-  const availableGoals = levelOptionsForSubject(profile.mainSubject ?? "");
-  const updateMainSubject = (mainSubject: string) => setProfile(current => ({ ...current, mainSubject, topics: current.topics.filter(topic => topicOptionsForSubject(mainSubject).includes(topic)), levels: current.levels.filter(level => levelOptionsForSubject(mainSubject).includes(level)) }));
-  const updateQualifications = (values: string[]) => setProfile(current => ({ ...current, qualifications: [...values, ...current.qualifications.filter(value => !qualificationOptions.includes(value))] }));
+  const updateMainSubject = (mainSubject: string) => setProfile(current => ({ ...current, mainSubject, topics: current.topics.filter(topic => topicOptionsForSubject(mainSubject).includes(topic)) }));
   const setDynamicList = (key: "recommendedFor" | "notRecommendedFor" | "qualifications", index: number, value: string) => setProfile(current => {
     const values = [...current[key]]; values[index] = value; return { ...current, [key]: values.filter((item, itemIndex) => item.trim() || itemIndex === index) };
   });
   const addDynamicList = (key: "recommendedFor" | "notRecommendedFor" | "qualifications", limit: number) => setProfile(current => current[key].length >= limit ? current : { ...current, [key]: [...current[key], ""] });
   const removeDynamicList = (key: "recommendedFor" | "notRecommendedFor" | "qualifications", index: number) => setProfile(current => ({ ...current, [key]: current[key].filter((_, itemIndex) => itemIndex !== index) }));
-  const customQualificationValues = customQualifications.length ? customQualifications : [""];
+  const customQualificationValues = profile.qualifications.length ? profile.qualifications : [""];
+
+  const selectAvatar = async (file: File | null) => {
+    if (!file) { setAvatarFile(null); return; }
+    try {
+      setAvatarFile(await prepareTeacherAvatar(file));
+      setStatus("プロフィール画像を正方形・512pxのWebPに加工しました。保存すると反映されます。");
+    } catch (error) {
+      setAvatarFile(null);
+      setStatus(error instanceof Error ? error.message : "画像を加工できませんでした。");
+    }
+  };
 
   return <section className="teacherProfileEditor"><header><span>PROFILE EDITOR</span><h2>講師プロフィールを編集</h2><p>{status}</p></header><form onSubmit={save}><div className="profileEditorGrid">
-    <label>プロフィール画像<input type="file" accept="image/png,image/jpeg,image/webp" onChange={event => setAvatarFile(event.target.files?.[0] ?? null)} /><small>PNG・JPEG・WebP、5MB以下。保存時に反映されます。</small>{profile.avatarPath && !avatarFile && <img className="profileAvatarPreview" src={getTeacherAvatarUrl(profile.avatarPath) ?? ""} alt="プロフィール画像のプレビュー" />}{avatarFile && <small>{avatarFile.name}（保存時に反映）</small>}</label>
+    <label>プロフィール画像<input type="file" accept="image/png,image/jpeg,image/webp" onChange={event => void selectAvatar(event.target.files?.[0] ?? null)} /><small>中央を正方形に切り抜き、512pxのWebPへ変換して保存します。元画像は送信・保存しません。</small>{profile.avatarPath && !avatarFile && <img className="profileAvatarPreview" src={getTeacherAvatarUrl(profile.avatarPath) ?? ""} alt="プロフィール画像のプレビュー" />}{avatarFile && <small>{avatarFile.name}（保存時に反映）</small>}</label>
     <label className="wide">キャッチコピー <small>誰向けで、何を教える講師なのかを一文で書いてください。</small><input required maxLength={20} placeholder="感覚派向け英検長文読解" value={profile.catchphrase} onChange={event => updateText("catchphrase", event.target.value)} /></label>
     <label>学歴 <small>正式名称をお書きください。</small><input required placeholder="東京大学理科三類" value={profile.education ?? ""} onChange={event => updateText("education", event.target.value)} /></label>
     <label>指導歴（年）<select required value={profile.teachingExperience ?? ""} onChange={event => updateText("teachingExperience", event.target.value)}><option value="">選択</option>{Array.from({ length: 101 }, (_, value) => <option key={value} value={String(value)}>{value}</option>)}</select></label>
@@ -252,11 +254,9 @@ export function TeacherProfileEditor() {
     <section className="profileLabelSection wide" aria-labelledby="search-labels-title"><header><span>SEARCH LABELS</span><h3 id="search-labels-title">検索に使うラベル</h3><p>選んだラベルは保存後、公開中の講師検索で絞り込みに使われます。一覧にない内容は「その他」を選べます。</p></header>
       <LabelPicker label="講師の得意な科目" help="複数選択できます。" values={subjectOptions} selected={profile.subjects} onChange={subjects => update({ subjects })} requestValue={labelRequests.subjects} onRequestChange={value => updateLabelRequest("subjects", value)} />
       <LabelPicker label="講師の得意な指導方法" help="例：長文を丁寧に訳せるようにする指導は「長文読解」を選びます。" values={availableTopics} selected={profile.topics} onChange={topics => update({ topics })} requestValue={labelRequests.topics} onRequestChange={value => updateLabelRequest("topics", value)} />
-      <LabelPicker label="目標" help="対応できる目標を選びます。英検は級ではなく「英検」を選びます。" values={availableGoals} selected={profile.levels} onChange={levels => update({ levels })} requestValue={labelRequests.levels} onRequestChange={value => updateLabelRequest("levels", value)} />
-      <LabelPicker label="プロフィールトップに表示する資格" help="最大2つ選べます。" values={profile.qualifications} selected={profile.topQualifications} onChange={topQualifications => update({ topQualifications })} limit={2} />
-      <LabelPicker label="資格の検索ラベル" help="講師詳細に表示されます。複数選択可。自己申告の検索用分類です。" values={qualificationLabelOptions} selected={profile.qualificationLabels} onChange={qualificationLabels => update({ qualificationLabels })} requestValue={labelRequests.qualification_labels} onRequestChange={value => updateLabelRequest("qualification_labels", value)} />
-      <LabelPicker label="資格・認定の内容" help="保有する資格や認定を選びます。" values={qualificationOptions} selected={selectedQualifications} onChange={updateQualifications} />
-      <div className="profileFreeLabel"><b>その他の資格</b><small>講師詳細の「非対応」の下に表示されます。</small>{customQualificationValues.map((value, index) => <div className="profileDynamicInput" key={`qualification-${index}`}><input value={value} placeholder="例：TOEIC L&R 910" onChange={event => { const values = [...customQualificationValues]; values[index] = event.target.value; update({ qualifications: [...selectedQualifications, ...values.filter(Boolean)] }); }} />{customQualificationValues.length > 1 && <button type="button" onClick={() => removeDynamicList("qualifications", selectedQualifications.length + index)}>削除</button>}</div>)}{customQualificationValues.length < 10 && <button type="button" onClick={() => update({ qualifications: [...profile.qualifications, ""] })}>＋ 資格を追加</button>}</div>
+      <div className="profileFreeLabel"><b>プロフィールトップに表示する資格</b><small>自由記述で2個まで。実用英語技能検定は「英検◯級」のように省略してください。</small>{[0, 1].map(index => <div className="profileDynamicInput" key={`top-qualification-${index}`}><input value={profile.topQualifications[index] ?? ""} placeholder={index === 0 ? "例：英検準1級" : "例：TOEIC 910"} onChange={event => { const values = [...profile.topQualifications]; values[index] = event.target.value; update({ topQualifications: values.map(value => value.trim()).filter(Boolean) }); }} /></div>)}</div>
+      <LabelPicker label="資格の検索ラベル" help="英検・数検・漢検など、検定の種類で検索するときに使うラベルです。公開プロフィールの資格欄には直接表示されません。複数選択可。" values={qualificationLabelOptions} selected={profile.qualificationLabels} onChange={qualificationLabels => update({ qualificationLabels })} requestValue={labelRequests.qualification_labels} onRequestChange={value => updateLabelRequest("qualification_labels", value)} />
+      <div className="profileFreeLabel"><b>その他の資格</b><small>講師詳細の「非対応」の下に表示されます。</small>{customQualificationValues.map((value, index) => <div className="profileDynamicInput" key={`qualification-${index}`}><input value={value} placeholder="例：TOEIC L&R 910" onChange={event => { const values = [...customQualificationValues]; values[index] = event.target.value; update({ qualifications: values.filter(Boolean) }); }} />{customQualificationValues.length > 1 && <button type="button" onClick={() => removeDynamicList("qualifications", index)}>削除</button>}</div>)}{customQualificationValues.length < 10 && <button type="button" onClick={() => update({ qualifications: [...profile.qualifications, ""] })}>＋ 資格を追加</button>}</div>
       <LabelPicker label="授業形式" help="提供する形式を選びます。" values={lessonTypeOptions} selected={profile.lessonTypes} onChange={lessonTypes => update({ lessonTypes })} />
       <LabelPicker label="授業・相談の方法" help="メールを含む対応方法を選びます。" values={contactMethodOptions} selected={profile.contactMethods} onChange={contactMethods => update({ contactMethods, supportsInPerson: contactMethods.includes("対面") })} />
       {profile.supportsInPerson && <div className="profileLocationFields"><label>都道府県<input value={profile.prefecture ?? ""} onChange={event => updateText("prefecture", event.target.value)} /></label><label>市区町村<input value={profile.city ?? ""} onChange={event => updateText("city", event.target.value)} /></label></div>}
@@ -264,6 +264,6 @@ export function TeacherProfileEditor() {
       <LabelPicker label="他に教えられる科目" help="主な得意科目以外に教えられる科目を、最大4つ選べます。" values={subjectOptions.filter(value => value !== profile.mainSubject)} selected={profile.otherSubjects} onChange={otherSubjects => update({ otherSubjects })} limit={4} />
       <div className="profileBooleanLabels"><label><input checked={profile.freeConsultation} onChange={event => update({ freeConsultation: event.target.checked })} type="checkbox" />無料相談あり</label><label><input checked={profile.initialFree} onChange={event => update({ initialFree: event.target.checked })} type="checkbox" />初回無料あり</label></div>
     </section>
-    <section className="profileDetailEditor wide"><h3>講師詳細</h3><label>授業形式の詳細<textarea value={profile.lessonFormatDetail ?? ""} onChange={event => updateText("lessonFormatDetail", event.target.value)} /></label><div><b>こんな生徒におすすめです</b><small>自分に合った生徒の特徴をお書きください（最大5つ）。</small>{(profile.recommendedFor.length ? profile.recommendedFor : [""]).map((value, index) => <div className="profileDynamicInput" key={`recommended-${index}`}><input placeholder="読めているがしっかり訳せない方" value={value} onChange={event => setDynamicList("recommendedFor", index, event.target.value)} />{index > 0 && <button type="button" onClick={() => removeDynamicList("recommendedFor", index)}>削除</button>}</div>)}{profile.recommendedFor.length < 5 && <button type="button" onClick={() => addDynamicList("recommendedFor", 5)}>＋ 追加</button>}</div><div><b>こんな生徒にはおすすめしません</b><small>自分の指導方針に合わない生徒の方針をお書きください（最大5つ）。</small>{(profile.notRecommendedFor.length ? profile.notRecommendedFor : [""]).map((value, index) => <div className="profileDynamicInput" key={`not-recommended-${index}`}><input placeholder="英語初学者" value={value} onChange={event => setDynamicList("notRecommendedFor", index, event.target.value)} />{index > 0 && <button type="button" onClick={() => removeDynamicList("notRecommendedFor", index)}>削除</button>}</div>)}{profile.notRecommendedFor.length < 5 && <button type="button" onClick={() => addDynamicList("notRecommendedFor", 5)}>＋ 追加</button>}</div><label>非対応 <small>自由記述・100文字まで</small><textarea maxLength={100} value={profile.unsupportedContent ?? ""} onChange={event => updateText("unsupportedContent", event.target.value)} /></label><label>講師からのメッセージ <small>500文字まで</small><textarea maxLength={500} value={profile.teacherMessage ?? ""} onChange={event => updateText("teacherMessage", event.target.value)} /></label></section>
+    <section className="profileDetailEditor wide"><h3>講師詳細</h3><label>授業形式の詳細<textarea value={profile.lessonFormatDetail ?? ""} onChange={event => updateText("lessonFormatDetail", event.target.value)} /></label><div><b>こんな生徒におすすめです</b><small>自分に合った生徒の特徴をお書きください（最大5つ）。</small>{(profile.recommendedFor.length ? profile.recommendedFor : [""]).map((value, index) => <div className="profileDynamicInput" key={`recommended-${index}`}><input placeholder="読めているがしっかり訳せない方" value={value} onChange={event => setDynamicList("recommendedFor", index, event.target.value)} />{index > 0 && <button type="button" onClick={() => removeDynamicList("recommendedFor", index)}>削除</button>}</div>)}{profile.recommendedFor.length < 5 && <button type="button" onClick={() => addDynamicList("recommendedFor", 5)}>＋ 追加</button>}</div><div><b>こんな生徒にはおすすめしません</b><small>自分の指導方針に合わない生徒の方針をお書きください（最大5つ）。</small>{(profile.notRecommendedFor.length ? profile.notRecommendedFor : [""]).map((value, index) => <div className="profileDynamicInput" key={`not-recommended-${index}`}><input placeholder="英語初学者" value={value} onChange={event => setDynamicList("notRecommendedFor", index, event.target.value)} />{index > 0 && <button type="button" onClick={() => removeDynamicList("notRecommendedFor", index)}>削除</button>}</div>)}{profile.notRecommendedFor.length < 5 && <button type="button" onClick={() => addDynamicList("notRecommendedFor", 5)}>＋ 追加</button>}</div><label>非対応 <small>自由記述・100文字まで</small><textarea maxLength={100} placeholder="TOEIC対策、文法指導" value={profile.unsupportedContent ?? ""} onChange={event => updateText("unsupportedContent", event.target.value)} /></label><label>講師からのメッセージ <small>500文字まで</small><textarea maxLength={500} placeholder="私は幼少期の頃から英語をやってきていて、そのおかげで英語がよくできるようになりました。等のご自分の経験などをお書きください" value={profile.teacherMessage ?? ""} onChange={event => updateText("teacherMessage", event.target.value)} /></label></section>
   </div><div className="profileEditorPublish"><label><input type="checkbox" checked={profile.isPublished} onChange={event => setProfile(current => ({ ...current, isPublished: event.target.checked }))} /> 公開する</label><button type="submit" disabled={loading || saving}>{saving ? "保存中…" : "プロフィールを保存"}</button></div></form><TeacherVerificationRequests /></section>;
 }
