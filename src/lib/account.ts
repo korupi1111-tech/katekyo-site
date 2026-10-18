@@ -110,7 +110,7 @@ export async function getAccountRegistrationAction(email: string): Promise<"regi
 }
 
 /** メール所有者の確認後にだけ、退会猶予中のアカウントを復帰させる。 */
-export async function restoreWithdrawnAccount(input: { displayName: string; legalName: string; givenNameKana: string; gender: string }): Promise<void> {
+export async function restoreWithdrawnAccount(input: { displayName?: string; legalName?: string; givenNameKana?: string; gender?: string } = {}): Promise<void> {
   if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。");
   const { data, error } = await supabase.functions.invoke("restore-withdrawn-account", { body: input });
   if (error) {
@@ -125,7 +125,6 @@ export async function withdrawMyAccount(): Promise<void> {
   if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。");
   const { error } = await supabase.functions.invoke("withdraw-account", { body: { confirmation: "退会" } });
   if (error) throw error;
-  await supabase.auth.signOut();
 }
 
 /**

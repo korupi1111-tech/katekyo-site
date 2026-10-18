@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import "../dashboard.css";
 import "../dashboard-chat.css";
-import { getCurrentAccount, resendConfirmation, withdrawMyAccount, type AccountAccess } from "../lib/account";
+import { getCurrentAccount, resendConfirmation, restoreWithdrawnAccount, withdrawMyAccount, type AccountAccess } from "../lib/account";
 import { supabase } from "../lib/supabase";
 import { TeacherProfileEditor } from "./TeacherProfileEditor";
 import { MyLessonCalendar } from "./MyLessonCalendar";
@@ -14,13 +14,29 @@ import { UserRound } from "lucide-react";
 
 type DashboardProps = { onNavigate: (page: "family-auth" | "teacher-auth" | "chat-list") => void };
 
-function AccountGate({ expectedRole, onNavigate, children }: DashboardProps & { expectedRole: "student" | "teacher"; children: (account: AccountAccess) => ReactNode }) {
+function AccountGate({ expectedRole, onNavigate, children }: DashboardProps & { expectedRole: "student" | "teacher"; children: (account: AccountAccess, refreshAccount: () => Promise<void>) => ReactNode }) {
   const [account, setAccount] = useState<AccountAccess | null | undefined>(undefined);
   const [error, setError] = useState("");
   useEffect(() => { void getCurrentAccount().then(setAccount).catch(error => { setError(error instanceof Error ? error.message : "アカウント情報を確認できませんでした。"); setAccount(null); }); }, []);
   if (account === undefined) return <main className="dashboardPage withTopbar"><p>アカウント情報を確認中です…</p></main>;
   if (!account || account.role !== expectedRole) return <main className="dashboardPage withTopbar"><section className="accountNotice danger"><h1>このページを利用できません</h1><p>{error || "ログインしているアカウントの種類では、このマイページを開けません。"}</p><button onClick={() => onNavigate(expectedRole === "teacher" ? "teacher-auth" : "family-auth")}>{expectedRole === "teacher" ? "講師としてログイン" : "生徒としてログイン"}</button></section></main>;
-  return <>{children(account)}</>;
+  if (account.accountStatus === "withdrawn") return <WithdrawnAccountPage account={account} page={expectedRole === "teacher" ? "teacher-auth" : "family-auth"} onNavigate={onNavigate} onRestored={async () => setAccount(await getCurrentAccount())} />;
+  return <>{children(account, async () => setAccount(await getCurrentAccount()))}</>;
+}
+
+function WithdrawnAccountPage({ account, page, onNavigate, onRestored }: { account: AccountAccess; page: "family-auth" | "teacher-auth"; onNavigate: DashboardProps["onNavigate"]; onRestored: () => Promise<void> }) {
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
+  const restore = async () => {
+    if (!window.confirm("退会を取り消して、このアカウントをもう一度利用しますか？")) return;
+    setBusy(true); setMessage("");
+    try {
+      await restoreWithdrawnAccount();
+      await onRestored();
+    } catch (error) { setMessage(error instanceof Error ? error.message : "アカウントをやり直せませんでした。時間をおいてお試しください。"); }
+    finally { setBusy(false); }
+  };
+  return <main className="dashboardPage withTopbar"><header className="dashboardHero"><div><span>{account.role === "teacher" ? "TEACHER DASHBOARD" : "STUDENT DASHBOARD"}</span><h1>{account.displayName}</h1><p>退会済みのアカウントです。</p></div></header><section className="accountNotice danger withdrawnAccountNotice"><h2>アカウントは退会済みです</h2><p>公開プロフィール・チャットなどは非表示です。退会から3か月以内であれば、下の「やり直す」から同じアカウントを復帰できます。</p><button type="button" className="restoreAccountButton" disabled={busy} onClick={() => void restore()}>{busy ? "復帰中…" : "このアカウントをやり直す"}</button>{message && <p role="status">{message}</p>}</section><section className="accountActions"><button onClick={() => signOut(onNavigate, page)}>ログアウト</button></section></main>;
 }
 
 function AccountStatus({ account, teacher }: { account: AccountAccess; teacher?: boolean }) {
@@ -56,10 +72,10 @@ function TeacherDashboardAvatar() {
     : <span className="dashboardAvatarFallback" aria-label="プロフィール画像は未設定です"><UserRound aria-hidden="true" /></span>;
 }
 
-function WithdrawalAction({ onNavigate, page }: { onNavigate: DashboardProps["onNavigate"]; page: "family-auth" | "teacher-auth" }) {
+function WithdrawalAction({ onWithdrawn }: { onWithdrawn: () => Promise<void> }) {
   const [open, setOpen] = useState(false); const [confirmation, setConfirmation] = useState(""); const [busy, setBusy] = useState(false); const [message, setMessage] = useState("");
-  const submit = async () => { if (confirmation !== "退会") { setMessage("確認欄に「退会」と入力してください。"); return; } setBusy(true); setMessage(""); try { await withdrawMyAccount(); onNavigate(page); } catch (error) { setMessage(error instanceof Error ? error.message : "退会処理に失敗しました。"); } finally { setBusy(false); } };
-  return <div className="accountWithdrawal">{!open ? <button type="button" className="withdrawButton" onClick={() => setOpen(true)}>退会手続き</button> : <><p>退会すると、公開プロフィール・画像・チャットは直ちに非表示になります。アカウント情報は3か月後に削除されます。3か月以内であれば、同じメールアドレスで新規登録し、メール認証を完了すると復帰できます。確認欄に「退会」と入力してください。</p><input value={confirmation} onChange={event => setConfirmation(event.target.value)} placeholder="退会" aria-label="退会確認" /><div><button type="button" className="withdrawButton" disabled={busy} onClick={() => void submit()}>{busy ? "退会処理中…" : "退会する"}</button><button type="button" disabled={busy} onClick={() => { setOpen(false); setConfirmation(""); setMessage(""); }}>戻る</button></div>{message && <p role="status">{message}</p>}</>}</div>;
+  const submit = async () => { if (confirmation !== "退会") { setMessage("確認欄に「退会」と入力してください。"); return; } setBusy(true); setMessage(""); try { await withdrawMyAccount(); await onWithdrawn(); } catch (error) { setMessage(error instanceof Error ? error.message : "退会処理に失敗しました。"); } finally { setBusy(false); } };
+  return <div className="accountWithdrawal">{!open ? <button type="button" className="withdrawButton" onClick={() => setOpen(true)}>退会手続き</button> : <><p>退会すると、公開プロフィール・画像・チャットは直ちに非表示になります。アカウント情報は3か月後に削除されます。退会後も同じログイン情報でマイページを開け、3か月以内なら「やり直す」から復帰できます。確認欄に「退会」と入力してください。</p><input value={confirmation} onChange={event => setConfirmation(event.target.value)} placeholder="退会" aria-label="退会確認" /><div><button type="button" className="withdrawButton" disabled={busy} onClick={() => void submit()}>{busy ? "退会処理中…" : "退会する"}</button><button type="button" disabled={busy} onClick={() => { setOpen(false); setConfirmation(""); setMessage(""); }}>戻る</button></div>{message && <p role="status">{message}</p>}</>}</div>;
 }
 
 function StudentProfileEditor() {
@@ -73,9 +89,9 @@ function StudentProfileEditor() {
 }
 
 export function TeacherDashboard({ onNavigate }: DashboardProps) {
-  return <AccountGate expectedRole="teacher" onNavigate={onNavigate}>{account => <main className="dashboardPage withTopbar"><header className="dashboardHero teacherDashboardHero"><TeacherDashboardAvatar /><div><span>TEACHER DASHBOARD</span><h1>{account.displayName}</h1><p>講師登録・公開プロフィールを管理します。</p></div><TeacherDashboardMetrics /></header><AccountStatus account={account} teacher /><section className="accountFeature chatShortcut"><div><span>MESSAGES</span><h2>チャット一覧</h2><p>生徒との会話を一覧で確認できます。</p></div><button onClick={() => onNavigate("chat-list")}>チャット一覧を開く</button></section><ReservationInbox role="teacher" /><MyLessonCalendar />{account.teacherFeaturesEnabled ? <><section className="accountFeature"><h2>公開プロフィールを編集できます</h2><p>メール認証後は、プロフィールと検索用ラベルを保存・公開できます。本人確認済みの表示は、運営による確認後に反映されます。</p></section><TeacherAvailabilityEditor /><TeacherProfileEditor /></> : <section className="accountFeature locked"><h2>メール認証後にプロフィールを編集できます</h2><p>講師ログインに使うメールアドレスを認証すると、プロフィールと検索用ラベルを保存・公開できます。</p></section>}<section className="accountActions"><button onClick={() => signOut(onNavigate, "teacher-auth")}>ログアウト</button><WithdrawalAction onNavigate={onNavigate} page="teacher-auth" /></section></main>}</AccountGate>;
+  return <AccountGate expectedRole="teacher" onNavigate={onNavigate}>{(account, refreshAccount) => <main className="dashboardPage withTopbar"><header className="dashboardHero teacherDashboardHero"><TeacherDashboardAvatar /><div><span>TEACHER DASHBOARD</span><h1>{account.displayName}</h1><p>講師登録・公開プロフィールを管理します。</p></div><TeacherDashboardMetrics /></header><AccountStatus account={account} teacher /><section className="accountFeature chatShortcut"><div><span>MESSAGES</span><h2>チャット一覧</h2><p>生徒との会話を一覧で確認できます。</p></div><button onClick={() => onNavigate("chat-list")}>チャット一覧を開く</button></section><ReservationInbox role="teacher" /><MyLessonCalendar />{account.teacherFeaturesEnabled ? <><section className="accountFeature"><h2>公開プロフィールを編集できます</h2><p>メール認証後は、プロフィールと検索用ラベルを保存・公開できます。本人確認済みの表示は、運営による確認後に反映されます。</p></section><TeacherAvailabilityEditor /><TeacherProfileEditor /></> : <section className="accountFeature locked"><h2>メール認証後にプロフィールを編集できます</h2><p>講師ログインに使うメールアドレスを認証すると、プロフィールと検索用ラベルを保存・公開できます。</p></section>}<section className="accountActions"><button onClick={() => signOut(onNavigate, "teacher-auth")}>ログアウト</button><WithdrawalAction onWithdrawn={refreshAccount} /></section></main>}</AccountGate>;
 }
 
 export function StudentDashboard({ onNavigate }: DashboardProps) {
-  return <AccountGate expectedRole="student" onNavigate={onNavigate}>{account => <main className="dashboardPage withTopbar"><header className="dashboardHero"><div><span>STUDENT DASHBOARD</span><h1>{account.displayName}</h1><p>プロフィール、認証状態、利用状況を確認できます。</p></div></header><AccountStatus account={account}/>{account.emailVerified && <><section className="accountFeature chatShortcut"><div><span>MESSAGES</span><h2>チャット一覧</h2><p>先生を選び、サイト内で個別にメッセージを送れます。</p></div><button onClick={() => onNavigate("chat-list")}>チャット一覧を開く</button></section><FavoriteTeachers /><ReservationInbox role="student" onOpenChat={() => onNavigate("chat-list")} /><MyLessonCalendar /><section className="accountFeature"><h2>無料会員</h2><p>現在のプラン：無料。プロフィール登録・編集、アカウント設定、認証状態の確認、講師とのサイト内チャットを利用できます。</p><dl><div><dt>電話番号認証</dt><dd>未実装（将来の有料機能解放時に対応）</dd></div><div><dt>有料プラン</dt><dd>未実装</dd></div></dl></section><StudentProfileEditor /></>}<section className="accountActions"><button onClick={() => signOut(onNavigate, "family-auth")}>ログアウト</button><WithdrawalAction onNavigate={onNavigate} page="family-auth" /></section></main>}</AccountGate>;
+  return <AccountGate expectedRole="student" onNavigate={onNavigate}>{(account, refreshAccount) => <main className="dashboardPage withTopbar"><header className="dashboardHero"><div><span>STUDENT DASHBOARD</span><h1>{account.displayName}</h1><p>プロフィール、認証状態、利用状況を確認できます。</p></div></header><AccountStatus account={account}/>{account.emailVerified && <><section className="accountFeature chatShortcut"><div><span>MESSAGES</span><h2>チャット一覧</h2><p>先生を選び、サイト内で個別にメッセージを送れます。</p></div><button onClick={() => onNavigate("chat-list")}>チャット一覧を開く</button></section><FavoriteTeachers /><ReservationInbox role="student" onOpenChat={() => onNavigate("chat-list")} /><MyLessonCalendar /><section className="accountFeature"><h2>無料会員</h2><p>現在のプラン：無料。プロフィール登録・編集、アカウント設定、認証状態の確認、講師とのサイト内チャットを利用できます。</p><dl><div><dt>電話番号認証</dt><dd>未実装（将来の有料機能解放時に対応）</dd></div><div><dt>有料プラン</dt><dd>未実装</dd></div></dl></section><StudentProfileEditor /></>}<section className="accountActions"><button onClick={() => signOut(onNavigate, "family-auth")}>ログアウト</button><WithdrawalAction onWithdrawn={refreshAccount} /></section></main>}</AccountGate>;
 }

@@ -25,6 +25,5 @@ Deno.serve(async request => {
   const { data: objects } = await admin.storage.from("profile-images").list(userId, { limit: 100 });
   const paths = (objects ?? []).map(object => `${userId}/${object.name}`);
   if (paths.length) await admin.storage.from("profile-images").remove(paths);
-  await admin.auth.admin.signOut(userId, "global");
-  return json(request, { message: "退会処理を受け付けました。公開プロフィールと画像は削除され、ログアウトしました。アカウント情報は3か月後に削除されます。" });
+  return json(request, { message: "退会処理を受け付けました。公開プロフィールと画像は削除されました。アカウント情報は3か月後に削除されます。退会後もログインし、「やり直す」から復帰できます。" });
 });
