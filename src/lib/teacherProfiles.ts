@@ -235,15 +235,30 @@ export async function uploadMyTeacherAvatar(file: File) {
  * 元画像を保存せず、中央を正方形に切り抜いた512px程度のWebPだけを送信する。
  * ブラウザ内で処理するため、端末からSupabaseへ送られるのは加工後のファイルのみ。
  */
-export async function prepareTeacherAvatar(file: File) {
+export type TeacherAvatarCrop = {
+  /** 0 = 左端 / 上端、1 = 右端 / 下端 */
+  x: number;
+  y: number;
+  /** 1 は画像の短辺全体、数値を上げるほど拡大 */
+  zoom: number;
+};
+
+/**
+ * 元画像を保存せず、指定した範囲だけを正方形・512pxのWebPへ変換する。
+ * x/y は切り取り範囲の左上を、各軸で動かせる範囲に対する割合として受け取る。
+ */
+export async function cropTeacherAvatar(file: File, crop: TeacherAvatarCrop) {
   if (!file.type.startsWith("image/")) throw new Error("画像ファイルを選択してください。");
   if (file.size > 10 * 1024 * 1024) throw new Error("画像は10MB以下にしてください。");
 
   const bitmap = await createImageBitmap(file);
   try {
-    const side = Math.min(bitmap.width, bitmap.height);
-    const sourceX = Math.max(0, Math.floor((bitmap.width - side) / 2));
-    const sourceY = Math.max(0, Math.floor((bitmap.height - side) / 2));
+    const zoom = Math.min(3, Math.max(1, crop.zoom));
+    const side = Math.min(bitmap.width, bitmap.height) / zoom;
+    const maxX = Math.max(0, bitmap.width - side);
+    const maxY = Math.max(0, bitmap.height - side);
+    const sourceX = Math.round(maxX * Math.min(1, Math.max(0, crop.x)));
+    const sourceY = Math.round(maxY * Math.min(1, Math.max(0, crop.y)));
     const canvas = document.createElement("canvas");
     canvas.width = 512;
     canvas.height = 512;

@@ -4,12 +4,12 @@ export const subjectOptions = [
   "中学数学", "高校数学",
   "中学国語", "現代文", "古文・漢文",
   "中学理科", "高校理科", "物理", "化学", "生物", "地学",
-  "地理", "日本史", "世界史", "政治・経済", "倫理", "公民", "情報", "小論文", "資格取得・検定", "その他",
+  "地理", "日本史", "世界史", "政治・経済", "倫理", "公民", "情報", "小論文", "その他",
 ];
 
 // 検索画面だけは、利用者が選びやすい大分類に絞る。
 // 講師プロフィールで入力・保存する上記の細かなラベルは変更しない。
-export const directorySearchSubjectOptions = ["小学校全科目", "英語", "数学", "国語", "物理", "化学", "生物", "地学", "地理", "日本史", "世界史", "政治・経済", "倫理", "情報", "小論文", "資格取得・検定", "その他"];
+export const directorySearchSubjectOptions = ["小学校全科目", "英語", "数学", "国語", "物理", "化学", "生物", "地学", "地理", "日本史", "世界史", "政治・経済", "倫理", "情報", "小論文", "その他"];
 
 const elementaryEnglishTopics = ["授業復習", "英語に親しむ", "リスニング", "スピーキング", "定期テスト対策", "その他"];
 const middleEnglishTopics = ["授業復習", "定期テスト対策", "英文法", "長文読解", "英作文・ライティング", "高校受験", "その他"];
@@ -87,6 +87,5 @@ export function directorySearchSubjectMatches(selectedSubject: string, teacherSu
   if (selectedSubject === "英語") return teacherSubjects.some(subject => [...elementaryEnglishSubjects, ...middleEnglishSubjects, ...highSchoolEnglishSubjects, ...generalEnglishSubjects, ...englishCertificationSubjects].includes(subject));
   if (selectedSubject === "数学") return teacherSubjects.some(subject => mathSubjects.includes(subject) || subject === "数学");
   if (selectedSubject === "国語") return teacherSubjects.some(subject => japaneseSubjects.includes(subject) || subject === "国語");
-  if (selectedSubject === "資格取得・検定") return teacherSubjects.some(subject => subject === "資格取得・検定" || subject === "英語資格");
   return teacherSubjects.includes(selectedSubject);
 }

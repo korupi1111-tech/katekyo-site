@@ -45,17 +45,19 @@ function Chips({ values, selected, onChange, limit }: { values: string[]; select
 }
 
 function toDirectoryProfile(teacher: DirectoryTeacher): ProfileTemplateData {
-  const targetLabel = teacher.target_label ?? teacher.main_subject;
+  // カードの名前横は「主な対象の範囲」。対象生徒の説明本文とは分けて扱う。
+  const targetLabel = teacher.target_level?.trim() || teacher.main_subject;
   const strengths = teacher.strengths.join("、") || "確認中";
   const limitations = teacher.limitations.join("、") || "確認中";
-  const combinedContactMethod = teacher.contact_method ? normalizeCombinedContactMethod(teacher.contact_method) : "確認中";
+  const selectedContactMethods = teacher.contact_methods.map(normalizeCombinedContactMethod).filter(Boolean);
+  const combinedContactMethod = selectedContactMethods.length ? [...new Set(selectedContactMethods)].join("・") : teacher.contact_method ? normalizeCombinedContactMethod(teacher.contact_method) : "確認中";
   return {
     avatarSrc: getTeacherAvatarUrl(teacher.avatar_path) ?? "/demo-teacher-avatar.svg", avatarAlt: `${teacher.display_name}のプロフィール画像`, identityLabel: teacher.is_demo ? "DEMO TEACHER" : "REGISTERED TEACHER", name: teacher.display_name, targetLabel,
     title: teacher.catchphrase, titleAccent: teacher.main_subject, currentRank: teacher.current_rank, highestRank: teacher.highest_rank,
     qualifications: teacher.qualifications, qualificationVerified: teacher.qualification_verified, mockExamResult: teacher.mock_exam_result ?? "実績収集中", mockExamVerified: teacher.mock_exam_verified,
     education: teacher.education ?? "確認中", educationVerified: teacher.education_verified, contactMethod: combinedContactMethod, gender: teacher.gender ?? "非公開", teachingExperience: teacher.teaching_experience ?? "確認中", lessonFormat: teacher.lesson_types.join("・"), recruitmentStatus: teacher.recruitment_status,
     priceUnit: "60分", priceText: `${teacher.price_yen.toLocaleString()}円`, priceNote: teacher.free_consultation && teacher.initial_free ? "メール相談・初回無料" : teacher.free_consultation ? "メール相談無料" : teacher.initial_free ? "初回無料" : "", seasonLessons: teacher.verified_lesson_count, totalLessons: teacher.total_lesson_count, matchRate: teacher.profile_match_rate === null ? null : `${teacher.profile_match_rate}%`, freeConsultation: teacher.free_consultation, initialFree: teacher.initial_free,
-    mainSubject: teacher.main_subject, strengths, limitations, targetDescription: targetLabel, targetLevel: teacher.target_level ?? teacher.levels.join("・"), teachingPolicy: teacher.teaching_policy ?? teacher.summary ?? "現在、指導方針を準備中です。", teachingType: "", topQualifications: teacher.top_qualifications, otherQualifications: teacher.other_qualifications, otherSubjectsLine: `他に教えられる科目：${teacher.other_subjects.join("、") || "無し"}`, extraSubjectsLine: `一応対応している科目：${teacher.extra_subjects.join("、") || "無し"}`,
+    mainSubject: teacher.main_subject, strengths, limitations, targetDescription: teacher.target_label?.trim() || "対象生徒の説明は準備中です。", targetLevel: teacher.target_level ?? teacher.levels.join("・"), teachingPolicy: teacher.teaching_policy ?? teacher.summary ?? "現在、指導方針を準備中です。", teachingType: "", topQualifications: teacher.top_qualifications.filter(value => value.trim()), otherQualifications: teacher.other_qualifications.filter(value => value.trim()), otherSubjectsLine: `他に教えられる科目：${teacher.other_subjects.join("、") || "無し"}`, extraSubjectsLine: `一応対応している科目：${teacher.extra_subjects.join("、") || "無し"}`,
     lessonDescription: `${teacher.lesson_types.join("・")}に対応しています。${combinedContactMethod}で、ご希望に合わせて進めます。`, recommendations: teacher.recommended_for.length ? teacher.recommended_for : [targetLabel, ...teacher.levels.slice(0, 2).map(level => `${level}を目指している方`), `${strengths}を伸ばしたい方`], notRecommendations: teacher.not_recommended_for.length ? teacher.not_recommended_for : teacher.limitations.map(item => `${item}を中心に学びたい方`),
     teacherMessage: <><p>{teacher.summary ?? "現在、講師メッセージを準備中です。"}</p><p>{teacher.teaching_policy ?? "生徒の目標に合わせた指導を行います。"}</p></>,
   };
