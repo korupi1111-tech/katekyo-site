@@ -190,15 +190,9 @@ export function TeacherProfileEditor() {
   };
   const update = (values: Partial<EditorState>) => setProfile(current => ({ ...current, ...values }));
   const updateLabelRequest = (group: LabelRequestGroup, value: string) => setLabelRequests(current => ({ ...current, [group]: value }));
-  const labelRequestFields: { group: LabelRequestGroup; selected: string[] }[] = [
-    { group: "subjects", selected: profile.subjects }, { group: "topics", selected: profile.topics },
-    { group: "qualification_labels", selected: profile.qualificationLabels },
-  ];
-
-  const save = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const persistProfile = async (nextProfile: EditorState) => {
     const required = [
-      ["priceYen", "時給", profile.priceYen], ["recruitmentStatus", "募集状況", profile.recruitmentStatus], ["mainSubject", "主な得意科目", profile.mainSubject], ["education", "学歴", profile.education], ["teachingExperience", "指導歴", profile.teachingExperience], ["catchphrase", "キャッチコピー", profile.catchphrase], ["targetStudents", "対象生徒", profile.targetStudents.length ? "ok" : ""], ["lessonTypes", "授業形式", profile.lessonTypes.length ? "ok" : ""],
+      ["priceYen", "時給", nextProfile.priceYen], ["recruitmentStatus", "募集状況", nextProfile.recruitmentStatus], ["mainSubject", "主な得意科目", nextProfile.mainSubject], ["education", "学歴", nextProfile.education], ["teachingExperience", "指導歴", nextProfile.teachingExperience], ["catchphrase", "キャッチコピー", nextProfile.catchphrase], ["targetStudents", "対象生徒", nextProfile.targetStudents.length ? "ok" : ""], ["lessonTypes", "授業形式", nextProfile.lessonTypes.length ? "ok" : ""],
     ] as const;
     const missing = required.filter(([, , value]) => !value);
     if (missing.length) {
@@ -206,20 +200,24 @@ export function TeacherProfileEditor() {
       setStatus(`${missing.map(([, label]) => label).join("、")}は必須です。赤い＊の項目を入力してから保存してください。`);
       return;
     }
-    if (profile.isPublished && profile.subjects.length === 0) {
+    if (nextProfile.isPublished && nextProfile.subjects.length === 0) {
       setStatus("公開するには、検索に使う「講師の得意な科目」を1つ以上選んでください。");
       return;
     }
-    const missingLabelRequest = labelRequestFields.find(({ group, selected }) => selected.includes("その他") && !labelRequests[group].trim());
+    const labelRequestFieldsForProfile: { group: LabelRequestGroup; selected: string[] }[] = [
+      { group: "subjects", selected: nextProfile.subjects }, { group: "topics", selected: nextProfile.topics },
+      { group: "qualification_labels", selected: nextProfile.qualificationLabels },
+    ];
+    const missingLabelRequest = labelRequestFieldsForProfile.find(({ group, selected }) => selected.includes("その他") && !labelRequests[group].trim());
     if (missingLabelRequest) {
       setStatus(`${labelRequestGroupNames[missingLabelRequest.group]}で「その他」を選んだ場合は、追加したいラベル名を入力してください。`);
       return;
     }
-    const requestsToSubmit = labelRequestFields.flatMap(({ group, selected }) => selected.includes("その他") && labelRequests[group].trim() ? [{ group, value: group === "qualification_labels" && qualificationOtherScore.trim() ? `${labelRequests[group]}（${qualificationOtherScore.trim()}）` : labelRequests[group] }] : []);
+    const requestsToSubmit = labelRequestFieldsForProfile.flatMap(({ group, selected }) => selected.includes("その他") && labelRequests[group].trim() ? [{ group, value: group === "qualification_labels" && qualificationOtherScore.trim() ? `${labelRequests[group]}（${qualificationOtherScore.trim()}）` : labelRequests[group] }] : []);
     setSaving(true);
     try {
-      const avatarPath = avatarFile ? await uploadMyTeacherAvatar(avatarFile) : profile.avatarPath;
-      const saved = await saveMyTeacherProfile({ ...profile, avatarPath, priceYen: profile.priceYen === "" ? null : Number(profile.priceYen) });
+      const avatarPath = avatarFile ? await uploadMyTeacherAvatar(avatarFile) : nextProfile.avatarPath;
+      const saved = await saveMyTeacherProfile({ ...nextProfile, avatarPath, priceYen: nextProfile.priceYen === "" ? null : Number(nextProfile.priceYen) });
       let requestStatus = "";
       if (requestsToSubmit.length) {
         try {
@@ -231,12 +229,21 @@ export function TeacherProfileEditor() {
         }
       }
       setProfile(toEditorState(saved)); setAvatarFile(null);
-      setStatus((profile.isPublished ? "公開プロフィールを保存し、講師検索用データベースに反映しました。" : "下書きを保存しました。公開するには「公開する」を選択して保存してください。") + requestStatus);
+      setStatus((nextProfile.isPublished ? "公開プロフィールを保存し、講師検索用データベースに反映しました。" : "公開を取り下げ、下書きとして保存しました。") + requestStatus);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "保存に失敗しました。");
     } finally {
       setSaving(false);
     }
+  };
+
+  const save = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await persistProfile(profile);
+  };
+
+  const changePublication = async () => {
+    await persistProfile({ ...profile, isPublished: !profile.isPublished });
   };
 
   const availableTopics = topicOptionsForSubject(profile.mainSubject ?? "");
@@ -302,5 +309,5 @@ export function TeacherProfileEditor() {
       <div className="profileBooleanLabels"><label><input checked={profile.freeConsultation} onChange={event => update({ freeConsultation: event.target.checked })} type="checkbox" />無料相談あり</label><label><input checked={profile.initialFree} onChange={event => update({ initialFree: event.target.checked })} type="checkbox" />初回無料あり</label></div>
     </section>
     <section className="profileDetailEditor wide"><h3>講師詳細</h3><label>授業形式の詳細<textarea value={profile.lessonFormatDetail ?? ""} onChange={event => updateText("lessonFormatDetail", event.target.value)} /></label><div><b>こんな生徒におすすめです</b><small>自分に合った生徒の特徴をお書きください（最大5つ）。</small>{(profile.recommendedFor.length ? profile.recommendedFor : [""]).map((value, index) => <div className="profileDynamicInput" key={`recommended-${index}`}><input placeholder="読めているがしっかり訳せない方" value={value} onChange={event => setDynamicList("recommendedFor", index, event.target.value)} />{index > 0 && <button type="button" onClick={() => removeDynamicList("recommendedFor", index)}>削除</button>}</div>)}{profile.recommendedFor.length < 5 && <button type="button" onClick={() => addDynamicList("recommendedFor", 5)}>＋ 追加</button>}</div><div><b>こんな生徒にはおすすめしません</b><small>自分の指導方針に合わない生徒の方針をお書きください（最大5つ）。</small>{(profile.notRecommendedFor.length ? profile.notRecommendedFor : [""]).map((value, index) => <div className="profileDynamicInput" key={`not-recommended-${index}`}><input placeholder="英語初学者" value={value} onChange={event => setDynamicList("notRecommendedFor", index, event.target.value)} />{index > 0 && <button type="button" onClick={() => removeDynamicList("notRecommendedFor", index)}>削除</button>}</div>)}{profile.notRecommendedFor.length < 5 && <button type="button" onClick={() => addDynamicList("notRecommendedFor", 5)}>＋ 追加</button>}</div><label>非対応 <small>自由記述・100文字まで</small><textarea maxLength={100} placeholder="TOEIC対策、文法指導" value={profile.unsupportedContent ?? ""} onChange={event => updateText("unsupportedContent", event.target.value)} /></label><label>講師からのメッセージ <small>500文字まで</small><textarea maxLength={500} placeholder="私は幼少期の頃から英語をやってきていて、そのおかげで英語がよくできるようになりました。等のご自分の経験などをお書きください" value={profile.teacherMessage ?? ""} onChange={event => updateText("teacherMessage", event.target.value)} /></label></section>
-  </div><div className="profileEditorPublish"><label><input type="checkbox" checked={profile.isPublished} onChange={event => setProfile(current => ({ ...current, isPublished: event.target.checked }))} /> 公開する</label><button type="submit" disabled={loading || saving}>{saving ? "保存中…" : "プロフィールを保存"}</button></div></form><TeacherVerificationRequests /></section>;
+  </div><div className="profileEditorPublish"><div><b>{profile.isPublished ? "現在公開中です" : "現在は非公開です"}</b><small>{profile.isPublished ? "講師検索に表示されています。" : "公開すると、講師検索に表示されます。"}</small></div><div className="profileEditorPublishActions"><button type="button" className="publicationButton" onClick={() => void changePublication()} disabled={loading || saving}>{saving ? "保存中…" : profile.isPublished ? "公開を取り下げる" : "公開する"}</button><button type="submit" disabled={loading || saving}>{saving ? "保存中…" : "プロフィールを保存"}</button></div></div></form><TeacherVerificationRequests /></section>;
 }
