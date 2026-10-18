@@ -52,7 +52,7 @@ export function ReservationInbox({ role, onOpenChat }: Props) {
   const complete = async (reservation: LessonReservation) => {
     if (!window.confirm("この授業を完了として記録しますか？")) return;
     setProcessing(reservation.id); setStatus("");
-    try { await completeLessonReservation(reservation.id); await load(); setStatus("授業を完了として記録し、チャットにも通知しました。"); }
+    try { await completeLessonReservation(reservation.id); await load(); window.dispatchEvent(new Event("lesson-feedback-updated")); setStatus("授業を完了として記録し、チャットとマイページの授業報告書へ通知しました。"); }
     catch (error) { setStatus(error instanceof Error ? error.message : "授業を完了にできませんでした。"); }
     finally { setProcessing(null); }
   };
