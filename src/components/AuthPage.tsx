@@ -1,7 +1,8 @@
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { getCurrentAccount, resendConfirmation, sendPasswordResetCode, signInWithPasswordLocked, updateMyPassword, verifyPasswordResetCode, verifySignupEmailCode } from "../lib/account";
-import { Turnstile, isTurnstileConfigured } from "./Turnstile";
+import { Turnstile } from "./Turnstile";
+import { isTurnstileConfigured } from "../lib/turnstile";
 import "../auth.css";
 
 type Props = { teacher: boolean; onAuthenticated: (page: "student-dashboard" | "teacher-dashboard") => void };

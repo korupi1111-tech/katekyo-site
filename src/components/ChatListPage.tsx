@@ -62,7 +62,7 @@ export function ChatListPage({ onBack, startWithTeacherProfileId, onStartedFromP
   }, [selectedId, loadConversations, loadMessages]);
 
   const selected = useMemo(() => conversations.find(conversation => conversation.id === selectedId) ?? null, [conversations, selectedId]);
-  const startConversation = async (teacherProfileId: string) => {
+  const startConversation = useCallback(async (teacherProfileId: string) => {
     setSending(true); setStatus("");
     try {
       const conversationId = await startChatWithTeacher(teacherProfileId);
@@ -71,12 +71,12 @@ export function ChatListPage({ onBack, startWithTeacherProfileId, onStartedFromP
       setStatus("会話を開始しました。メッセージを送れます。");
     } catch (error) { setStatus(error instanceof Error ? error.message : "会話を開始できませんでした。"); }
     finally { setSending(false); }
-  };
+  }, [loadConversations]);
   useEffect(() => {
     if (!account || account.role !== "student" || !startWithTeacherProfileId || autoStartedFor.current === startWithTeacherProfileId) return;
     autoStartedFor.current = startWithTeacherProfileId;
     void startConversation(startWithTeacherProfileId).finally(() => onStartedFromProfile?.());
-  }, [account, onStartedFromProfile, startWithTeacherProfileId]);
+  }, [account, onStartedFromProfile, startConversation, startWithTeacherProfileId]);
   const send = async () => {
     if (!selected) return;
     setSending(true); setStatus("");

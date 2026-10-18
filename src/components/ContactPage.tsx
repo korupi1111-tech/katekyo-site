@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from "react";
 import { supabase, supabaseConfigurationIssue } from "../lib/supabase";
-import { Turnstile, isTurnstileConfigured } from "./Turnstile";
+import { Turnstile } from "./Turnstile";
+import { isTurnstileConfigured } from "../lib/turnstile";
 import "../contact-page.css";
 
 export function ContactPage() {

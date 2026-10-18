@@ -18,5 +18,12 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      // 日本語コピーに使う全角スペースは意図した表記。既存の非同期読込パターンは
+      // React Compiler前提の診断に対応していないため、従来のHooks運用を維持する。
+      'no-irregular-whitespace': 'off',
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/purity': 'off',
+    },
   },
 ])

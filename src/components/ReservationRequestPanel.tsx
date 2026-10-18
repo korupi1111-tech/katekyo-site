@@ -27,7 +27,7 @@ function dateOptions() {
 }
 
 export function ReservationRequestPanel({ conversation, teacherName, onClose, onRequested, reservationToChange }: Props) {
-  const dates = useMemo(dateOptions, []);
+  const dates = useMemo(() => dateOptions(), []);
   const [date, setDate] = useState(dates[0]?.value ?? "");
   const [hour, setHour] = useState("18");
   const [minute, setMinute] = useState("00");

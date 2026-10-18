@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef } from "react";
+import { turnstileSiteKey } from "../lib/turnstile";
 
 declare global {
   interface Window {
@@ -10,8 +11,6 @@ declare global {
 }
 
 type Props = { onToken: (token: string | null) => void };
-const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined;
-
 /** Cloudflare Turnstile. The site key is public; the secret remains only in Supabase. */
 export function Turnstile({ onToken }: Props) {
   const container = useRef<HTMLDivElement>(null);
@@ -19,6 +18,7 @@ export function Turnstile({ onToken }: Props) {
   const id = useId().replace(/:/g, "");
 
   useEffect(() => {
+    const siteKey = turnstileSiteKey;
     if (!siteKey || !container.current) return;
     let cancelled = false;
     const render = () => {
@@ -50,10 +50,6 @@ export function Turnstile({ onToken }: Props) {
     };
   }, [onToken]);
 
-  if (!siteKey) return <p className="captchaConfiguration" role="alert">ボット対策の設定が完了していません。運営者は環境変数を設定してください。</p>;
+  if (!turnstileSiteKey) return <p className="captchaConfiguration" role="alert">ボット対策の設定が完了していません。運営者は環境変数を設定してください。</p>;
   return <div className="turnstile" id={`turnstile-${id}`} ref={container} aria-label="ボット対策" />;
-}
-
-export function isTurnstileConfigured() {
-  return Boolean(siteKey);
 }

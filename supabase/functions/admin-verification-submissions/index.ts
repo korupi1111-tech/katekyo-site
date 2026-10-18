@@ -9,6 +9,6 @@ Deno.serve(async request => {
   if (!user || account?.role !== "admin") return json(request, { error: "管理者権限が必要です。" }, 403);
   const { data, error } = await admin.from("teacher_verification_submissions").select("id, teacher_profile_id, teacher_user_id, submission_type, item_name, note, file_name, mime_type, review_status, review_reason, created_at, reviewed_at, teacher_profiles(display_name, education, qualifications, mock_exam_result)").order("created_at", { ascending: true });
   if (error) return json(request, { error: "審査一覧を取得できませんでした。" }, 503);
-  const submissions = (data ?? []).map((row: Record<string, unknown>) => { const teacher = row.teacher_profiles as Record<string, unknown> | null; const { teacher_profiles, ...submission } = row; return { ...submission, teacher_name: teacher?.display_name ?? "講師", education: teacher?.education ?? null, qualifications: teacher?.qualifications ?? [], mock_exam_result: teacher?.mock_exam_result ?? null }; });
+  const submissions = (data ?? []).map((row: Record<string, unknown>) => { const teacher = row.teacher_profiles as Record<string, unknown> | null; const submission = Object.fromEntries(Object.entries(row).filter(([key]) => key !== "teacher_profiles")); return { ...submission, teacher_name: teacher?.display_name ?? "講師", education: teacher?.education ?? null, qualifications: teacher?.qualifications ?? [], mock_exam_result: teacher?.mock_exam_result ?? null }; });
   return json(request, { submissions });
 });
