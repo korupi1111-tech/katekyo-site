@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { getCurrentAccount, resendConfirmation, sendPasswordResetCode, signInWithPasswordLocked, updateMyPassword, verifyPasswordResetCode, verifySignupEmailCode } from "../lib/account";
+import { getAccountRegistrationAction, getCurrentAccount, resendConfirmation, restoreWithdrawnAccount, sendPasswordResetCode, signInWithPasswordLocked, updateMyPassword, verifyPasswordResetCode, verifySignupEmailCode } from "../lib/account";
 import { Turnstile } from "./Turnstile";
 import { isTurnstileConfigured } from "../lib/turnstile";
 import "../auth.css";
@@ -36,6 +36,7 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
   const [busy, setBusy] = useState(false);
   const [resendWait, setResendWait] = useState(0);
   const [loginFailed, setLoginFailed] = useState(false);
+  const [restoreRequested, setRestoreRequested] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [captchaVersion, setCaptchaVersion] = useState(0);
   const title = teacher ? "講師ログイン・登録" : "生徒・保護者ログイン・登録";
@@ -95,6 +96,14 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
       }
       const token = requireCaptcha();
       if (!token) return;
+      const registrationAction = await getAccountRegistrationAction(normalizeEmail(email));
+      if (registrationAction === "restore") {
+        await sendPasswordResetCode(normalizeEmail(email), token);
+        setRestoreRequested(true);
+        setCode(""); setResendWait(cooldownSeconds); setScreen("password-recovery-code");
+        setMessage("退会から3か月以内のアカウントです。本人確認のため、メールに届く6桁の認証コードを入力してください。新しいパスワードの設定後に復帰できます。");
+        return;
+      }
       const { data, error } = await supabase.auth.signUp({
         email: normalizeEmail(email),
         password,
@@ -116,6 +125,7 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
         },
       });
       if (error) throw error;
+      setRestoreRequested(false);
       setCaptchaToken(null);
       setCaptchaVersion(value => value + 1);
       setResendWait(cooldownSeconds);
@@ -188,7 +198,7 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
     event.preventDefault();
     if (!/^\d{6}$/.test(code)) { setMessage("メールで届いた6桁の認証コードを入力してください。"); return; }
     setBusy(true); setMessage("");
-    try { await verifyPasswordResetCode(normalizeEmail(email), code); setScreen("password-recovery-new"); setMessage("メール認証が完了しました。新しいパスワードを設定してください。"); }
+    try { await verifyPasswordResetCode(normalizeEmail(email), code); setScreen("password-recovery-new"); setMessage(restoreRequested ? "メール認証が完了しました。新しいパスワードを設定すると、退会済みアカウントを復帰できます。" : "メール認証が完了しました。新しいパスワードを設定してください。"); }
     catch (error) { setMessage(verificationErrorMessage(error)); }
     finally { setBusy(false); }
   };
@@ -200,6 +210,15 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
     setBusy(true); setMessage("");
     try {
       await updateMyPassword(newPassword);
+      if (restoreRequested) {
+        await restoreWithdrawnAccount({
+          displayName: teacher ? `${givenNameKana}先生` : `${familyNameKana} ${givenNameKana}`,
+          legalName: `${familyName.trim()} ${givenName.trim()}`,
+          givenNameKana: givenNameKana.trim(),
+          gender,
+        });
+        setRestoreRequested(false);
+      }
       const account = await getConfirmedAccount();
       if (!account) throw new Error("アカウント情報を確認できませんでした。");
       onAuthenticated(account.role === "teacher" ? "teacher-dashboard" : "student-dashboard");
@@ -207,9 +226,9 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
     finally { setBusy(false); }
   };
 
-  if (screen === "password-recovery-email") return <main className="auth withTopbar"><span>PASSWORD RESET</span><h1>パスワードを再設定</h1><p className="authDescription">登録したメールアドレスへ6桁の認証コードを送ります。</p><form onSubmit={requestPasswordReset}><label>メールアドレス<input required type="email" value={email} onChange={event => setEmail(event.target.value)} autoComplete="email" /></label><Turnstile key={captchaVersion} onToken={setCaptchaToken} /><button disabled={busy || !captchaToken} type="submit">{busy ? "送信中…" : "認証コードを送る"}</button></form><button className="authTextButton" type="button" disabled={busy} onClick={() => { setScreen("account"); setMessage(""); }}>ログイン画面に戻る</button>{message && <p className="authMessage" role="status">{message}</p>}</main>;
+  if (screen === "password-recovery-email") return <main className="auth withTopbar"><span>PASSWORD RESET</span><h1>パスワードを再設定</h1><p className="authDescription">登録したメールアドレスへ6桁の認証コードを送ります。</p><form onSubmit={requestPasswordReset}><label>メールアドレス<input required type="email" value={email} onChange={event => setEmail(event.target.value)} autoComplete="email" /></label><Turnstile key={captchaVersion} onToken={setCaptchaToken} /><button disabled={busy || !captchaToken} type="submit">{busy ? "送信中…" : "認証コードを送る"}</button></form><button className="authTextButton" type="button" disabled={busy} onClick={() => { setScreen("account"); setRestoreRequested(false); setMessage(""); }}>ログイン画面に戻る</button>{message && <p className="authMessage" role="status">{message}</p>}</main>;
 
-  if (screen === "password-recovery-code") return <main className="auth withTopbar"><span>PASSWORD RESET</span><h1>認証コードを入力</h1><p className="authDescription">{email} 宛に届いた6桁の認証コードを入力してください。</p><form onSubmit={verifyPasswordReset}><label>認証コード<input className="authCodeInput" required inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={event => setCode(event.target.value.replace(/\D/g, ""))} placeholder="123456" /></label><button disabled={busy} type="submit">{busy ? "確認中…" : "認証して次へ"}</button></form><Turnstile key={captchaVersion} onToken={setCaptchaToken} /><button className="outline" type="button" disabled={busy || resendWait > 0 || !captchaToken} onClick={resendPasswordReset}>{resendWait ? `認証コードを再送する（${resendWait}秒）` : "認証コードを再送する"}</button><button className="authTextButton" type="button" disabled={busy} onClick={() => { setScreen("account"); setCode(""); setMessage(""); }}>ログイン画面に戻る</button>{message && <p className="authMessage" role="status">{message}</p>}</main>;
+  if (screen === "password-recovery-code") return <main className="auth withTopbar"><span>PASSWORD RESET</span><h1>認証コードを入力</h1><p className="authDescription">{email} 宛に届いた6桁の認証コードを入力してください。</p><form onSubmit={verifyPasswordReset}><label>認証コード<input className="authCodeInput" required inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={event => setCode(event.target.value.replace(/\D/g, ""))} placeholder="123456" /></label><button disabled={busy} type="submit">{busy ? "確認中…" : "認証して次へ"}</button></form><Turnstile key={captchaVersion} onToken={setCaptchaToken} /><button className="outline" type="button" disabled={busy || resendWait > 0 || !captchaToken} onClick={resendPasswordReset}>{resendWait ? `認証コードを再送する（${resendWait}秒）` : "認証コードを再送する"}</button><button className="authTextButton" type="button" disabled={busy} onClick={() => { setScreen("account"); setRestoreRequested(false); setCode(""); setMessage(""); }}>登録・ログイン画面に戻る</button>{message && <p className="authMessage" role="status">{message}</p>}</main>;
 
   if (screen === "password-recovery-new") return <main className="auth withTopbar"><span>PASSWORD RESET</span><h1>新しいパスワードを設定</h1><p className="authDescription">認証済みです。8文字以上の新しいパスワードを入力してください。</p><form onSubmit={resetPassword}><label>新しいパスワード<input required type="password" minLength={8} autoComplete="new-password" value={newPassword} onChange={event => setNewPassword(event.target.value)} /></label><label>新しいパスワード（確認）<input required type="password" minLength={8} autoComplete="new-password" value={passwordConfirmation} onChange={event => setPasswordConfirmation(event.target.value)} /></label><button disabled={busy} type="submit">{busy ? "更新中…" : "パスワードを更新してマイページへ"}</button></form>{message && <p className="authMessage" role="status">{message}</p>}</main>;
 

@@ -97,6 +97,30 @@ export async function updateMyPassword(password: string): Promise<void> {
   if (error) throw error;
 }
 
+/** 新規登録前に、同じメールアドレスの退会猶予中アカウントがあるかを確認する。 */
+export async function getAccountRegistrationAction(email: string): Promise<"register" | "restore"> {
+  if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。");
+  const { data, error } = await supabase.functions.invoke("account-registration-state", { body: { email } });
+  if (error) {
+    const context = (error as { context?: { json?: () => Promise<{ error?: string }> } }).context;
+    const body = context?.json ? await context.json().catch(() => null) : null;
+    throw new Error(body?.error ?? "登録状態を確認できませんでした。時間をおいてお試しください。");
+  }
+  return data?.action === "restore" ? "restore" : "register";
+}
+
+/** メール所有者の確認後にだけ、退会猶予中のアカウントを復帰させる。 */
+export async function restoreWithdrawnAccount(input: { displayName: string; legalName: string; givenNameKana: string; gender: string }): Promise<void> {
+  if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。");
+  const { data, error } = await supabase.functions.invoke("restore-withdrawn-account", { body: input });
+  if (error) {
+    const context = (error as { context?: { json?: () => Promise<{ error?: string }> } }).context;
+    const body = context?.json ? await context.json().catch(() => null) : null;
+    throw new Error(body?.error ?? "アカウントを復帰できませんでした。");
+  }
+  if (!data?.role) throw new Error("アカウントを復帰できませんでした。");
+}
+
 export async function withdrawMyAccount(): Promise<void> {
   if (!supabase) throw new Error("Supabaseの接続設定が見つかりません。");
   const { error } = await supabase.functions.invoke("withdraw-account", { body: { confirmation: "退会" } });

@@ -25,10 +25,12 @@ create index if not exists teacher_weekly_availability_public_idx
 
 alter table public.teacher_weekly_availability enable row level security;
 
+drop policy if exists "Public can read eligible teacher weekly availability" on public.teacher_weekly_availability;
 create policy "Public can read eligible teacher weekly availability"
 on public.teacher_weekly_availability for select to anon, authenticated
 using (exists (select 1 from public.teacher_profiles profile where profile.id = teacher_profile_id and profile.is_published and public.is_public_teacher(profile.user_id)));
 
+drop policy if exists "Teachers can manage their own weekly availability" on public.teacher_weekly_availability;
 create policy "Teachers can manage their own weekly availability"
 on public.teacher_weekly_availability for all to authenticated
 using (exists (select 1 from public.teacher_profiles profile where profile.id = teacher_profile_id and profile.user_id = auth.uid()))

@@ -43,18 +43,22 @@ $$;
 alter table public.teacher_verification_submissions enable row level security;
 alter table public.teacher_verification_review_audit enable row level security;
 
+drop policy if exists "Teachers can read their own verification submissions" on public.teacher_verification_submissions;
 create policy "Teachers can read their own verification submissions"
 on public.teacher_verification_submissions for select to authenticated
 using (teacher_user_id = auth.uid());
 
+drop policy if exists "MFA admins can read verification submissions" on public.teacher_verification_submissions;
 create policy "MFA admins can read verification submissions"
 on public.teacher_verification_submissions for select to authenticated
 using (public.is_mfa_admin());
 
+drop policy if exists "MFA admins can update verification submissions" on public.teacher_verification_submissions;
 create policy "MFA admins can update verification submissions"
 on public.teacher_verification_submissions for update to authenticated
 using (public.is_mfa_admin()) with check (public.is_mfa_admin());
 
+drop policy if exists "MFA admins can read verification audit" on public.teacher_verification_review_audit;
 create policy "MFA admins can read verification audit"
 on public.teacher_verification_review_audit for select to authenticated
 using (public.is_mfa_admin());

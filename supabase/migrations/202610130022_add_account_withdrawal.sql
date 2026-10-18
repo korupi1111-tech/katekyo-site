@@ -15,6 +15,7 @@ alter table public.account_deletion_requests enable row level security;
 alter table public.chat_conversations add column if not exists withdrawn_at timestamptz;
 
 drop policy if exists "Participants can read their chat conversations" on public.chat_conversations;
+drop policy if exists "Active participants can read their chat conversations" on public.chat_conversations;
 create policy "Active participants can read their chat conversations"
 on public.chat_conversations for select to authenticated
 using (withdrawn_at is null and (teacher_user_id = auth.uid() or student_user_id = auth.uid()));
