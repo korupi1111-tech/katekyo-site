@@ -243,7 +243,13 @@ export function TeacherProfileEditor() {
   };
 
   const changePublication = async () => {
-    await persistProfile({ ...profile, isPublished: !profile.isPublished });
+    const willPublish = !profile.isPublished;
+    // 「主な得意科目」を入力済みなら、公開時の検索用主科目として自動で使う。
+    // 同じ内容を二度入力させると、公開だけが止まっている理由が分かりにくいため。
+    const subjects = willPublish && profile.subjects.length === 0 && profile.mainSubject
+      ? [profile.mainSubject]
+      : profile.subjects;
+    await persistProfile({ ...profile, subjects, isPublished: willPublish });
   };
 
   const availableTopics = topicOptionsForSubject(profile.mainSubject ?? "");
@@ -309,5 +315,5 @@ export function TeacherProfileEditor() {
       <div className="profileBooleanLabels"><label><input checked={profile.freeConsultation} onChange={event => update({ freeConsultation: event.target.checked })} type="checkbox" />無料相談あり</label><label><input checked={profile.initialFree} onChange={event => update({ initialFree: event.target.checked })} type="checkbox" />初回無料あり</label></div>
     </section>
     <section className="profileDetailEditor wide"><h3>講師詳細</h3><label>授業形式の詳細<textarea value={profile.lessonFormatDetail ?? ""} onChange={event => updateText("lessonFormatDetail", event.target.value)} /></label><div><b>こんな生徒におすすめです</b><small>自分に合った生徒の特徴をお書きください（最大5つ）。</small>{(profile.recommendedFor.length ? profile.recommendedFor : [""]).map((value, index) => <div className="profileDynamicInput" key={`recommended-${index}`}><input placeholder="読めているがしっかり訳せない方" value={value} onChange={event => setDynamicList("recommendedFor", index, event.target.value)} />{index > 0 && <button type="button" onClick={() => removeDynamicList("recommendedFor", index)}>削除</button>}</div>)}{profile.recommendedFor.length < 5 && <button type="button" onClick={() => addDynamicList("recommendedFor", 5)}>＋ 追加</button>}</div><div><b>こんな生徒にはおすすめしません</b><small>自分の指導方針に合わない生徒の方針をお書きください（最大5つ）。</small>{(profile.notRecommendedFor.length ? profile.notRecommendedFor : [""]).map((value, index) => <div className="profileDynamicInput" key={`not-recommended-${index}`}><input placeholder="英語初学者" value={value} onChange={event => setDynamicList("notRecommendedFor", index, event.target.value)} />{index > 0 && <button type="button" onClick={() => removeDynamicList("notRecommendedFor", index)}>削除</button>}</div>)}{profile.notRecommendedFor.length < 5 && <button type="button" onClick={() => addDynamicList("notRecommendedFor", 5)}>＋ 追加</button>}</div><label>非対応 <small>自由記述・100文字まで</small><textarea maxLength={100} placeholder="TOEIC対策、文法指導" value={profile.unsupportedContent ?? ""} onChange={event => updateText("unsupportedContent", event.target.value)} /></label><label>講師からのメッセージ <small>500文字まで</small><textarea maxLength={500} placeholder="私は幼少期の頃から英語をやってきていて、そのおかげで英語がよくできるようになりました。等のご自分の経験などをお書きください" value={profile.teacherMessage ?? ""} onChange={event => updateText("teacherMessage", event.target.value)} /></label></section>
-  </div><div className="profileEditorPublish"><div><b>{profile.isPublished ? "現在公開中です" : "現在は非公開です"}</b><small>{profile.isPublished ? "講師検索に表示されています。" : "公開すると、講師検索に表示されます。"}</small></div><div className="profileEditorPublishActions"><button type="button" className="publicationButton" onClick={() => void changePublication()} disabled={loading || saving}>{saving ? "保存中…" : profile.isPublished ? "公開を取り下げる" : "公開する"}</button><button type="submit" disabled={loading || saving}>{saving ? "保存中…" : "プロフィールを保存"}</button></div></div></form><TeacherVerificationRequests /></section>;
+  </div><div className="profileEditorPublish"><div><b>{profile.isPublished ? "現在公開中です" : "現在は非公開です"}</b><small>{profile.isPublished ? "講師検索に表示されています。" : "公開すると、講師検索に表示されます。"}</small>{status && <p className="profilePublishStatus" role="status">{status}</p>}</div><div className="profileEditorPublishActions"><button type="button" className="publicationButton" onClick={() => void changePublication()} disabled={loading || saving}>{saving ? "保存中…" : profile.isPublished ? "公開を取り下げる" : "公開する"}</button><button type="submit" disabled={loading || saving}>{saving ? "保存中…" : "プロフィールを保存"}</button></div></div></form><TeacherVerificationRequests /></section>;
 }
