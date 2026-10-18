@@ -7,7 +7,7 @@ export type LessonCalendarEvent = {
   date: string;
   title: string;
   time?: string;
-  status?: "requested" | "accepted" | "completed";
+  status?: "requested" | "accepted" | "completed" | "cancelled";
 };
 
 type Props = {
@@ -35,6 +35,8 @@ export function LessonCalendar({ events = [], emptyMessage = "この月の授業
     return map;
   }, {}), [events]);
   const visibleEvents = events.filter(event => event.date.startsWith(`${year}-${String(month + 1).padStart(2, "0")}-`)).sort((a, b) => `${a.date}${a.time ?? ""}`.localeCompare(`${b.date}${b.time ?? ""}`));
+  const eventClass = (event: LessonCalendarEvent) => event.status === "requested" ? "requested" : event.status === "cancelled" ? "cancelled" : "accepted";
+  const eventStatusLabel = (event: LessonCalendarEvent) => event.status === "requested" ? "予約待ち" : event.status === "cancelled" ? "キャンセル済み" : event.status === "completed" ? "完了" : "成立";
 
   return <section className="dashboardCalendar" aria-label="授業予定カレンダー">
     <header>
@@ -48,11 +50,9 @@ export function LessonCalendar({ events = [], emptyMessage = "この月の授業
         const date = index + 1;
         const key = dateKey(year, month, date);
         const dayEvents = eventMap[key] ?? [];
-        const hasPending = dayEvents.some(event => event.status === "requested");
-        const hasConfirmed = dayEvents.some(event => event.status === "accepted" || event.status === "completed" || !event.status);
-        return <div className={`calendarDay${key === todayKey ? " today" : ""}`} key={key}><time dateTime={key}>{date}</time>{dayEvents.length > 0 && <span className="calendarEventMarks" title={`${dayEvents.length}件の授業予定`}>{hasPending && <i className="calendarEventDot pending">●</i>}{hasConfirmed && <i className="calendarEventDot confirmed">●</i>}</span>}</div>;
+        return <div className={`calendarDay${key === todayKey ? " today" : ""}`} key={key}><time dateTime={key}>{date}</time>{dayEvents.length > 0 && <div className="calendarEventMarks" title={`${dayEvents.length}件の予約`}>{dayEvents.sort((a, b) => (a.time ?? "").localeCompare(b.time ?? "")).map(event => <span className={`calendarEventMark ${eventClass(event)}`} key={event.id}><i aria-hidden="true">●</i>{event.time && <small>{event.time}</small>}</span>)}</div>}</div>;
       })}
     </div>
-    {visibleEvents.length > 0 ? <ul className="calendarEventList">{visibleEvents.map(event => <li className={event.status === "requested" ? "pending" : "confirmed"} key={event.id}><time dateTime={event.date}>{event.date.slice(5).replace("-", "/")}{event.time ? ` ${event.time}` : ""}</time><span>{event.title}</span><small>{event.status === "requested" ? "承認待ち" : "確定"}</small></li>)}</ul> : <p className="calendarEmpty">{emptyMessage}</p>}
+    {visibleEvents.length > 0 ? <ul className="calendarEventList">{visibleEvents.map(event => <li className={eventClass(event)} key={event.id}><time dateTime={event.date}>{event.date.slice(5).replace("-", "/")}{event.time ? ` ${event.time}` : ""}</time><span>{event.title}</span><small>{eventStatusLabel(event)}</small></li>)}</ul> : <p className="calendarEmpty">{emptyMessage}</p>}
   </section>;
 }

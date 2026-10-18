@@ -5,14 +5,14 @@ export type CalendarLesson = {
   date: string;
   title: string;
   time: string;
-  status: "requested" | "accepted" | "completed";
+  status: "requested" | "accepted" | "completed" | "cancelled";
 };
 
 type ReservationRow = {
   id: string;
   starts_at: string;
   subject: string | null;
-  status: "requested" | "accepted" | "completed";
+  status: "requested" | "accepted" | "completed" | "cancelled";
 };
 
 function formatDate(isoDate: string) {
@@ -45,7 +45,7 @@ export async function getMyLessonCalendarEvents(): Promise<CalendarLesson[]> {
     .from("lesson_reservations")
     .select("id, starts_at, subject, status")
     .or(`teacher_user_id.eq.${authData.user.id},student_user_id.eq.${authData.user.id}`)
-    .in("status", ["requested", "accepted", "completed"])
+    .in("status", ["requested", "accepted", "completed", "cancelled"])
     .order("starts_at", { ascending: true });
 
   if (error) throw error;

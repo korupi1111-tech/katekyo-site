@@ -62,23 +62,39 @@ function toDirectoryProfile(teacher: DirectoryTeacher): ProfileTemplateData {
 }
 
 function DirectoryTeacherCard({ teacher, onOpen }: { teacher: DirectoryTeacher; onOpen: () => void }) {
-  return <PublicProfileCard profile={toDirectoryProfile(teacher)} open={onOpen}/>;
+  const [student, setStudent] = useState(false);
+  const [favorite, setFavorite] = useState(false);
+  const [saving, setSaving] = useState(false);
+  useEffect(() => { let active = true; void getCurrentAccount().then(async account => {
+    if (!active || account?.role !== "student" || !teacher.teacher_profile_id) return;
+    const isFavorite = await isTeacherFavorite(teacher.teacher_profile_id);
+    if (active) { setStudent(true); setFavorite(isFavorite); }
+  }).catch(() => undefined); return () => { active = false; }; }, [teacher.teacher_profile_id]);
+  const changeFavorite = async () => {
+    if (!teacher.teacher_profile_id || saving) return;
+    setSaving(true);
+    try { setFavorite(await toggleTeacherFavorite(teacher.teacher_profile_id, favorite)); }
+    catch { /* The detail view shows a descriptive error if the save cannot be completed. */ }
+    finally { setSaving(false); }
+  };
+  return <PublicProfileCard profile={toDirectoryProfile(teacher)} open={onOpen} onFavorite={student && teacher.teacher_profile_id ? () => void changeFavorite() : undefined} favoriteLabel={favorite ? "★ お気に入りから外す" : "☆ お気に入りに追加"} favoriteDisabled={saving}/>;
 }
 
 function DirectoryTeacherDetail({ teacher, onClose, onStartChat }: { teacher: DirectoryTeacher; onClose: () => void; onStartChat: (teacherProfileId: string) => void }) {
   const profile = toDirectoryProfile(teacher);
   const [student, setStudent] = useState(false);
   const [favorite, setFavorite] = useState(false);
+  const [favoriteMessage, setFavoriteMessage] = useState("");
   useEffect(() => { let active = true; void getCurrentAccount().then(async account => {
     if (!active || account?.role !== "student" || !teacher.teacher_profile_id) return;
     setStudent(true); setFavorite(await isTeacherFavorite(teacher.teacher_profile_id));
   }).catch(() => undefined); return () => { active = false; }; }, [teacher.teacher_profile_id]);
   const changeFavorite = async () => {
     if (!teacher.teacher_profile_id) return;
-    try { const next = await toggleTeacherFavorite(teacher.teacher_profile_id, favorite); setFavorite(next); }
-    catch { /* Favorite state remains unchanged when the request fails. */ }
+    try { const next = await toggleTeacherFavorite(teacher.teacher_profile_id, favorite); setFavorite(next); setFavoriteMessage(next ? "お気に入りに追加しました。マイページの「お気に入りの先生」から確認できます。" : "お気に入りから外しました。"); }
+    catch { setFavoriteMessage("お気に入りを更新できませんでした。ログイン状態を確認して、もう一度お試しください。"); }
   };
-  return <ProfileModalShell profile={profile} close={onClose} onFavorite={student && teacher.teacher_profile_id ? changeFavorite : undefined} favoriteLabel={favorite ? "★ お気に入りから外す" : "☆ お気に入りに追加"} onContact={student && teacher.teacher_profile_id ? () => onStartChat(teacher.teacher_profile_id!) : undefined} availability={teacher.teacher_profile_id ? <PublicTeacherAvailability teacherProfileId={teacher.teacher_profile_id} /> : undefined}/>;
+  return <ProfileModalShell profile={profile} close={onClose} onFavorite={student && teacher.teacher_profile_id ? changeFavorite : undefined} favoriteLabel={favorite ? "★ お気に入りから外す" : "☆ お気に入りに追加"} favoriteMessage={favoriteMessage} onContact={student && teacher.teacher_profile_id ? () => onStartChat(teacher.teacher_profile_id!) : undefined} availability={teacher.teacher_profile_id ? <PublicTeacherAvailability teacherProfileId={teacher.teacher_profile_id} /> : undefined}/>;
 }
 
 function includesAny(values: string[], selected: string[]) {
