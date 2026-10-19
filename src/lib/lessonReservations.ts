@@ -6,8 +6,8 @@ export type LessonReservationStatus = "requested" | "accepted" | "declined" | "c
 export type LessonReservation = {
   id: string;
   conversation_id: string | null;
-  teacher_user_id: string;
-  student_user_id: string;
+  teacher_user_id: string | null;
+  student_user_id: string | null;
   starts_at: string;
   ends_at: string;
   status: LessonReservationStatus;

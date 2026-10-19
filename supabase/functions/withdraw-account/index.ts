@@ -15,15 +15,15 @@ Deno.serve(async request => {
 
   const userId = userData.user.id;
   const now = new Date().toISOString();
-  // 90日間の復帰猶予では個人情報を非公開のまま保管する。
+  // 30日間の復帰猶予では個人情報を非公開のまま保管する。
   // この間に同じメールアドレスの本人が再登録すると、メール認証後に復帰できる。
   const { error: profileError } = await admin.from("user_profiles").update({ account_status: "withdrawn" }).eq("id", userId);
   if (profileError) return json(request, { error: "退会処理を開始できませんでした。" }, 503);
-  await admin.from("account_deletion_requests").upsert({ user_id: userId, requested_at: now, account_data_purge_after: new Date(Date.now() + 90 * 86400_000).toISOString(), chat_purge_after: new Date(Date.now() + 90 * 86400_000).toISOString(), reservation_purge_after: new Date(Date.now() + 90 * 86400_000).toISOString() });
+  await admin.from("account_deletion_requests").upsert({ user_id: userId, requested_at: now, account_data_purge_after: new Date(Date.now() + 30 * 86400_000).toISOString(), chat_purge_after: new Date(Date.now() + 90 * 86400_000).toISOString(), reservation_purge_after: new Date(Date.now() + 365 * 86400_000).toISOString() });
   await admin.from("teacher_profiles").update({ is_published: false }).eq("user_id", userId);
   await admin.from("chat_conversations").update({ withdrawn_at: now, teacher_display_name: "退会済みユーザー", student_display_name: "退会済みユーザー", teacher_subject: null, last_message_text: "この会話は利用できません。" }).or(`teacher_user_id.eq.${userId},student_user_id.eq.${userId}`);
   const { data: objects } = await admin.storage.from("profile-images").list(userId, { limit: 100 });
   const paths = (objects ?? []).map(object => `${userId}/${object.name}`);
   if (paths.length) await admin.storage.from("profile-images").remove(paths);
-  return json(request, { message: "退会処理を受け付けました。公開プロフィールと画像は削除されました。アカウント情報は3か月後に削除されます。退会後もログインし、「やり直す」から復帰できます。" });
+  return json(request, { message: "退会処理を受け付けました。公開プロフィールと画像は削除されました。アカウント情報は30日後に削除されます。退会後もログインし、「やり直す」から復帰できます。" });
 });

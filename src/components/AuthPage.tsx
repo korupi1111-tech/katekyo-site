@@ -32,6 +32,8 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
   const [code, setCode] = useState("");
   const [terms, setTerms] = useState(false);
   const [privacy, setPrivacy] = useState(false);
+  const [minor, setMinor] = useState<"" | "yes" | "no">("");
+  const [guardianConsent, setGuardianConsent] = useState(false);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [resendWait, setResendWait] = useState(0);
@@ -73,6 +75,8 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
     if (!supabase) { setMessage("Supabaseの接続設定が見つかりません。開発サーバーを再起動してからお試しください。"); return; }
     if (mode === "register" && (!terms || !privacy)) { setMessage("利用規約とプライバシーポリシーへの同意が必要です。"); return; }
     if (mode === "register" && (!familyName.trim() || !givenName.trim() || !/^[ぁ-ゖー]+$/.test(familyNameKana) || !/^[ぁ-ゖー]+$/.test(givenNameKana) || !["男性", "女性"].includes(gender))) { setMessage("氏名（漢字等）とふりがなを入力し、性別を選択してください。"); return; }
+    if (mode === "register" && !teacher && !minor) { setMessage("18歳未満かどうかを選択してください。"); return; }
+    if (mode === "register" && !teacher && minor === "yes" && !guardianConsent) { setMessage("18歳未満の方は、保護者の同意を得てから登録してください。"); return; }
     setBusy(true); setMessage("");
     try {
       if (mode === "login") {
@@ -103,7 +107,7 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
           data: {
             role,
             // 氏名は公開せず、講師名だけを「名＋先生」として自動生成する。
-            display_name: teacher ? `${givenNameKana}先生` : `${familyNameKana} ${givenNameKana}`,
+            display_name: teacher ? `${givenNameKana}先生` : givenNameKana,
             legal_name: `${familyName.trim()} ${givenName.trim()}`,
             family_name: familyName.trim(),
             given_name: givenName.trim(),
@@ -112,6 +116,7 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
             gender,
             terms_accepted: true,
             privacy_accepted: true,
+            ...(teacher ? {} : { is_minor: minor === "yes", guardian_consent: minor === "yes" && guardianConsent }),
           },
         },
       });
@@ -228,7 +233,7 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
   return <main className="auth withTopbar"><span>{teacher ? "FOR TEACHERS" : "FOR STUDENTS & FAMILIES"}</span><h1>{title}</h1><p className="authDescription">{explanatoryCopy}</p>
     <div className="authMode"><button className={mode === "register" ? "on" : ""} type="button" onClick={() => setMode("register")}>新規登録</button><button className={mode === "login" ? "on" : ""} type="button" onClick={() => setMode("login")}>ログイン</button></div>
     <form onSubmit={submit}>
-      {mode === "register" && <><label>姓（漢字等）<input required value={familyName} onChange={event => setFamilyName(event.target.value)} autoComplete="family-name" placeholder="山田" /></label><label>名（漢字等）<input required value={givenName} onChange={event => setGivenName(event.target.value)} autoComplete="given-name" placeholder="花" /></label><label>姓（ふりがな）<input required value={familyNameKana} onChange={event => setFamilyNameKana(event.target.value)} placeholder="やまだ" /></label><label>名（ふりがな）<input required value={givenNameKana} onChange={event => setGivenNameKana(event.target.value)} placeholder="はな" /></label><label>性別<select required value={gender} onChange={event => setGender(event.target.value)}><option value="">選択してください</option><option value="男性">男性</option><option value="女性">女性</option></select></label><p className="authIdentityNote">氏名・性別は公開されません。講師の公開名は「名のふりがな＋先生」で自動表示されます。</p></>}
+      {mode === "register" && <><label>姓（漢字等）<input required value={familyName} onChange={event => setFamilyName(event.target.value)} autoComplete="family-name" placeholder="山田" /></label><label>名（漢字等）<input required value={givenName} onChange={event => setGivenName(event.target.value)} autoComplete="given-name" placeholder="花" /></label><label>姓（ふりがな）<input required value={familyNameKana} onChange={event => setFamilyNameKana(event.target.value)} placeholder="やまだ" /></label><label>名（ふりがな）<input required value={givenNameKana} onChange={event => setGivenNameKana(event.target.value)} placeholder="はな" /></label><label>性別<select required value={gender} onChange={event => setGender(event.target.value)}><option value="">選択してください</option><option value="男性">男性</option><option value="女性">女性</option></select></label><p className="authIdentityNote">{teacher ? "氏名・性別は公開されません。講師の公開名は「名のふりがな＋先生」で自動表示されます。" : "氏名・性別は公開されません。講師には「名のふりがな」だけが表示されます。"}</p>{!teacher && <><label>18歳未満ですか<select required value={minor} onChange={event => { setMinor(event.target.value as "" | "yes" | "no"); setGuardianConsent(false); }}><option value="">選択してください</option><option value="yes">はい（18歳未満）</option><option value="no">いいえ（18歳以上）</option></select></label>{minor === "yes" && <label className="authCheck"><input type="checkbox" checked={guardianConsent} onChange={event => setGuardianConsent(event.target.checked)} />保護者の同意を得て登録します</label>}</>}</>}
       <label>メールアドレス<input required type="email" value={email} onChange={event => setEmail(event.target.value)} autoComplete="email" /></label>
       <label>パスワード<input required type="password" minLength={8} value={password} onChange={event => setPassword(event.target.value)} autoComplete={mode === "login" ? "current-password" : "new-password"} /><small>8文字以上で設定してください。</small></label>
       {mode === "register" && <div className="authAgreements" aria-label="規約への同意"><label className="authCheck"><input type="checkbox" checked={terms} onChange={event => setTerms(event.target.checked)} />利用規約に同意する</label><label className="authCheck"><input type="checkbox" checked={privacy} onChange={event => setPrivacy(event.target.checked)} />プライバシーポリシーに同意する</label></div>}

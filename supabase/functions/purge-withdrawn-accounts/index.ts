@@ -13,7 +13,7 @@ Deno.serve(async request => {
   const admin = adminClient();
   if (!admin) return json(request, { error: "削除ジョブの設定が見つかりません。" }, 503);
   const { data: requests, error } = await admin.from("account_deletion_requests")
-    .select("user_id")
+    .select("user_id, reservation_purge_after")
     .is("completed_at", null)
     .lte("account_data_purge_after", new Date().toISOString())
     .limit(50);
@@ -23,7 +23,11 @@ Deno.serve(async request => {
   for (const item of requests ?? []) {
     const userId = item.user_id;
     try {
-      await admin.from("lesson_reservations").delete().or(`teacher_user_id.eq.${userId},student_user_id.eq.${userId}`);
+      // 予約・授業履歴は返金・トラブル対応のため1年を目安に残す。本人のメモは消し、アカウント削除で参加者IDは外れる。
+      const { error: retainError } = await admin.from("lesson_reservations")
+        .update({ retained_until: item.reservation_purge_after, student_note: null })
+        .or(`teacher_user_id.eq.${userId},student_user_id.eq.${userId}`);
+      if (retainError) throw retainError;
       await admin.from("chat_conversations").delete().or(`teacher_user_id.eq.${userId},student_user_id.eq.${userId}`);
       await removeFolder(admin, "profile-images", userId);
       await Promise.all(["education", "qualification", "mock_exam"].map(type => removeFolder(admin, "verification-documents", `${userId}/${type}`)));
@@ -34,5 +38,6 @@ Deno.serve(async request => {
       failures.push(userId);
     }
   }
-  return json(request, { deleted, failed: failures.length });
+  const { data: retention } = await admin.rpc("purge_expired_retention_data");
+  return json(request, { deleted, failed: failures.length, retention });
 });

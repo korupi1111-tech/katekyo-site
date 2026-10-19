@@ -31,9 +31,10 @@ Deno.serve(async request => {
     .maybeSingle();
   if (!deletion?.account_data_purge_after || new Date(deletion.account_data_purge_after).getTime() <= Date.now()) return json(request, { error: "復帰可能期間を過ぎています。新規登録してください。" }, 410);
 
-  const displayName = readText(payload.displayName, 80);
   const legalName = readText(payload.legalName, 160);
   const givenNameKana = readText(payload.givenNameKana, 80);
+  // 生徒の表示名は講師に見えるため、下の名前のひらがな以外を受け付けない。
+  const displayName = profile.role === "teacher" ? readText(payload.displayName, 80) : givenNameKana && /^[ぁ-ゖー]+$/.test(givenNameKana) ? givenNameKana : null;
   const gender = payload.gender === "男性" || payload.gender === "女性" ? payload.gender : null;
   const { error: restoreError } = await admin.from("user_profiles").update({
     account_status: "active",
