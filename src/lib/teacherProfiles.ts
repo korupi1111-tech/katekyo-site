@@ -232,7 +232,7 @@ export async function uploadMyTeacherAvatar(file: File) {
 }
 
 /**
- * 元画像を保存せず、中央を正方形に切り抜いた512px程度のWebPだけを送信する。
+ * 元画像を保存せず、円形に切り抜いた512px程度のWebPだけを送信する。
  * ブラウザ内で処理するため、端末からSupabaseへ送られるのは加工後のファイルのみ。
  */
 export type TeacherAvatarCrop = {
@@ -244,7 +244,7 @@ export type TeacherAvatarCrop = {
 };
 
 /**
- * 元画像を保存せず、指定した範囲だけを正方形・512pxのWebPへ変換する。
+ * 元画像を保存せず、指定した範囲だけを丸形・512pxのWebPへ変換する。
  * x/y は切り取り範囲の左上を、各軸で動かせる範囲に対する割合として受け取る。
  */
 export async function cropTeacherAvatar(file: File, crop: TeacherAvatarCrop) {
@@ -264,7 +264,14 @@ export async function cropTeacherAvatar(file: File, crop: TeacherAvatarCrop) {
     canvas.height = 512;
     const context = canvas.getContext("2d");
     if (!context) throw new Error("画像を加工できませんでした。");
+    // WebPの透明部分を残し、保存されるファイル自体も丸形にする。
+    context.save();
+    context.beginPath();
+    context.arc(256, 256, 256, 0, Math.PI * 2);
+    context.closePath();
+    context.clip();
     context.drawImage(bitmap, sourceX, sourceY, side, side, 0, 0, 512, 512);
+    context.restore();
     const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, "image/webp", 0.9));
     if (!blob) throw new Error("画像をWebP形式に変換できませんでした。");
     return new File([blob], "profile-avatar.webp", { type: "image/webp" });
