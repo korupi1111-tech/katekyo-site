@@ -38,9 +38,12 @@ Supabase Dashboard → Edge Functions → Secrets、またはCLIで次を設定�
 ```text
 TURNSTILE_SECRET_KEY=<TurnstileのSecret Key>
 ALLOWED_ORIGINS=https://<本番ドメイン>,https://<必要なPreviewドメイン>
+VERIFICATION_ALLOWED_ORIGIN=https://<証明書提出を許可する本番ドメイン>
 ```
 
 `ALLOWED_ORIGINS`は末尾の`/`を付けず、カンマ区切りで完全一致のURLを指定します。ローカル開発時は必要に応じて`http://localhost:5173`を追加します。本番で`*`は設定しません。
+
+`VERIFICATION_ALLOWED_ORIGIN`は、証明書画像・PDFの提出専用です。公開URLを1つだけ、末尾の`/`なしで設定します。他のEdge Functionの許可設定と分けることで、証明書提出だけを安全に許可できます。
 
 既存の`SUPABASE_SERVICE_ROLE_KEY`、`BREVO_API_KEY`、`INQUIRY_RECIPIENT_EMAIL`、`INQUIRY_FROM_EMAIL`もEdge Function Secretとしてのみ保持します。
 
@@ -50,7 +53,7 @@ ALLOWED_ORIGINS=https://<本番ドメイン>,https://<必要なPreviewドメイ�
 2. 次のFunctionをデプロイする。
 
 ```powershell
-npx supabase@latest functions deploy password-login send-inquiry upload-profile-avatar withdraw-account --project-ref dajgwnijcvdthjnfsolt --use-api
+npx supabase@latest functions deploy password-login send-inquiry upload-profile-avatar upload-verification-document withdraw-account --project-ref dajgwnijcvdthjnfsolt --use-api
 ```
 
 3. Vercelを再デプロイする。
