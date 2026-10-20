@@ -84,7 +84,7 @@
   .dashboardHero { display: grid; grid-template-columns: 58px 1fr; gap: 14px; padding: 18px; }
   .dashboardHero > img { width: 58px; height: 58px; border-radius: 14px; }
   .dashboardHero h1 { font-size: 24px; }
-  .dashboardHero aside { grid-column: 1 / -1; margin-left: 0; padding: 12px 0 0; border-left: 0; border-top: 1px solid #c8e0d9; }
+  .dashboardHero aside { grid-column: 1 / -1; margin-left: 0; padding: 12px 0 0; border-left: 0; border-top: 1px solid #6f8f86; }
   .accountNotice, .accountFeature, .accountActions, .teacherProfileEditor { padding: 18px; border-radius: 12px; }
   .accountNotice dl, .accountFeature dl { display: grid; grid-template-columns: 1fr; }
   .accountActions { flex-direction: column; }

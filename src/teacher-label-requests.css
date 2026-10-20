@@ -6,9 +6,9 @@
   gap: 10px 16px;
   margin-top: 4px;
   padding: 11px 12px;
-  border: 1px dashed #b6d4ca;
+  border: 1px dashed #6f8f86;
   border-radius: 7px;
-  background: #f4faf7;
+  background: #f6f1e8;
 }
 
 .profileLabelPicker .labelRequestField label {
@@ -18,18 +18,18 @@
   border-radius: 0;
   background: transparent;
   padding: 0;
-  color: #36514a !important;
+  color: #23574d !important;
 }
 
 .profileLabelPicker .labelRequestField input {
   display: block !important;
   width: 100% !important;
   margin: 0 !important;
-  border: 1px solid #b8d2c9;
+  border: 1px solid #6f8f86;
   border-radius: 5px;
   padding: 9px 10px !important;
   background: #fff;
-  accent-color: #087e6b;
+  accent-color: #23574d;
 }
 
 .profileLabelPicker .labelRequestField small {
@@ -42,4 +42,4 @@
 @media (max-width: 760px) {
   .profileLabelPicker > div.labelRequestField { grid-template-columns: 1fr; }
 }
-.profileDetailEditor{display:grid;gap:15px;margin-top:8px;padding:18px;border:1px solid #d7e8e1;background:#fbfefd}.profileDetailEditor h3{margin:0;color:#184a3f}.profileDetailEditor>div{display:grid;gap:7px}.profileDetailEditor small,.teacherProfileEditor label small{display:block;color:#647b74;font-size:11px;font-weight:500;line-height:1.5}.profileDynamicInput{display:flex;gap:7px}.profileDynamicInput input{min-width:0;flex:1}.profileDynamicInput button,.profileFreeLabel>button,.profileDetailEditor>div>button{width:max-content;border:1px solid #9bcfc1;background:#fff;color:#087e6b;padding:7px 10px;font:inherit;font-size:12px;font-weight:800}.ownerOfferList{margin:0;padding-left:16px;color:#087e6b;font-size:11px;line-height:1.45}
+.profileDetailEditor{display:grid;gap:15px;margin-top:8px;padding:18px;border:1px solid #e4dccc;background:#f6f1e8}.profileDetailEditor h3{margin:0;color:#1c1b18}.profileDetailEditor>div{display:grid;gap:7px}.profileDetailEditor small,.teacherProfileEditor label small{display:block;color:#647b74;font-size:11px;font-weight:500;line-height:1.5}.profileDynamicInput{display:flex;gap:7px}.profileDynamicInput input{min-width:0;flex:1}.profileDynamicInput button,.profileFreeLabel>button,.profileDetailEditor>div>button{width:max-content;border:1px solid #6f8f86;background:#fff;color:#23574d;padding:7px 10px;font:inherit;font-size:12px;font-weight:800}.ownerOfferList{margin:0;padding-left:16px;color:#23574d;font-size:11px;line-height:1.45}

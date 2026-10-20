@@ -7,14 +7,14 @@
 .chatSidebarHead .chatRefresh {
   width: 34px;
   height: 34px;
-  color: #173a35;
+  color: #1c1b18;
   background: #fff;
-  border: 1px solid #d6e1dc;
+  border: 1px solid #e4dccc;
   box-shadow: none;
 }
 
 .chatSidebarHead .chatRefresh:hover {
   color: #fff;
-  background: #0e6254;
-  border-color: #0e6254;
+  background: #23574d;
+  border-color: #23574d;
 }

@@ -1,9 +1,9 @@
 /* Homepage composition inspired by the supplied reference.  This layer only
    changes placement and presentation; profile and price values remain data-led. */
 :root {
-  --reference-ink: #112f2b;
-  --reference-green: #005c50;
-  --reference-navy: #103142;
+  --reference-ink: #1c1b18;
+  --reference-green: #1c1b18;
+  --reference-navy: #1c1b18;
   --reference-gold: #dec074;
   --reference-paper: #fbfaf6;
 }
@@ -19,7 +19,7 @@
 .brand b { color: var(--reference-ink); font-size: 27px; }
 .brand span { display: none; }
 .topbar nav { gap: 0; }
-.topbar nav > button, .headerMenu > button { padding: 12px 10px; color: #263d3b; font-size: 12px; }
+.topbar nav > button, .headerMenu > button { padding: 12px 10px; color: #1c1b18; font-size: 12px; }
 .topbar .headerMenu:last-child > button { border-radius: 7px; background: var(--reference-green); color: #fff; padding-inline: 15px; }
 
 .homeReference .hero {
@@ -38,7 +38,7 @@
   max-width: 1120px;
   padding: 25px 34px 90px;
 }
-.homeReference .heroCopy > small { display: block; margin-bottom: 7px; color: #49625b; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+.homeReference .heroCopy > small { display: block; margin-bottom: 7px; color: #23574d; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
 .homeReference .heroCopy h1 {
   max-width: 510px;
   color: var(--reference-ink);
@@ -48,12 +48,12 @@
 }
 .homeReference .heroCopy h1 em { color: var(--reference-green); }
 .homeReference .heroCopy h1 span { color: var(--reference-ink); }
-.homeReference .heroCopy p { margin: 10px 0 14px; max-width: 425px; color: #435a55; font-size: 13px; line-height: 1.7; }
+.homeReference .heroCopy p { margin: 10px 0 14px; max-width: 425px; color: #23574d; font-size: 13px; line-height: 1.7; }
 .homeReference .heroCopy button {
   min-width: 246px;
   padding: 15px 24px;
   border-radius: 7px !important;
-  background: linear-gradient(100deg, #006b5d, #005245);
+  background: linear-gradient(100deg, #23574d, #1c1b18);
   color: #fff;
   box-shadow: 0 12px 22px rgba(0, 82, 69, .20);
   font-size: 15px;
@@ -71,8 +71,8 @@
 }
 .homeReference .heroTrustLine span {
   padding: 2px 21px;
-  border-right: 1px solid #d8e1de;
-  color: #29423d;
+  border-right: 1px solid #e4dccc;
+  color: #23574d;
   font-size: 13px;
   font-weight: 800;
   text-align: center;
@@ -88,7 +88,7 @@
   align-items: center;
   min-height: 104px;
   padding: 0 max(22px, calc((100vw - 1120px) / 2));
-  background: linear-gradient(105deg, #0e3448, #102c3c 59%, #153d50);
+  background: linear-gradient(105deg, #1c1b18, #1c1b18 59%, #1c1b18);
   color: #fff;
 }
 .campaignReferenceBar::before, .campaignReferenceBar::after { position: absolute; width: 168px; height: 168px; border: 1px solid rgba(230,201,117,.24); border-radius: 50%; content: ""; pointer-events: none; }
@@ -101,14 +101,14 @@
   place-content: center;
   gap: 5px;
   background: linear-gradient(145deg, #f2d58b, #d7b966);
-  color: #273642;
+  color: #23574d;
   text-align: center;
 }
 .campaignReferenceRibbon span { font-size: 13px; font-weight: 800; }
 .campaignReferenceRibbon b { font-family: Georgia, "Yu Mincho", serif; font-size: 17px; }
 .campaignReferenceLead > span { color: #e6c975; font-size: 9px; font-weight: 900; letter-spacing: .14em; }
 .campaignReferenceLead h2 { margin: 5px 0; color: #fff; font-family: Georgia, "Yu Mincho", serif; font-size: 23px; letter-spacing: .02em; }
-.campaignReferenceLead p { margin: 0; color: #dbe7e7; font-size: 12px; line-height: 1.55; }
+.campaignReferenceLead p { margin: 0; color: #e4dccc; font-size: 12px; line-height: 1.55; }
 .campaignReferenceBenefit { display: grid; grid-template-columns: auto auto; column-gap: 7px; align-items: end; min-width: 112px; }
 .campaignReferenceBenefit { padding: 10px 13px; border-left: 1px solid rgba(230,201,117,.5); }
 .campaignReferenceBenefit small { grid-column: 1 / -1; color: #e6c975; font-size: 10px; font-weight: 800; }
@@ -118,7 +118,7 @@
   border: 0;
   border-radius: 999px;
   background: linear-gradient(100deg, #dfc174, #efd78e);
-  color: #203340;
+  color: #1c1b18;
   padding: 14px 16px;
   font-weight: 900;
 }

@@ -2,9 +2,9 @@
 .topbar nav>button,.headerMenu>button{white-space:nowrap}
 .topbar nav>button,.topbar .headerMenu>button{font-family:inherit!important;font-style:normal;font-weight:700;letter-spacing:0}
 .headerMenu{position:relative}
-.developerMenu>button{border:1px solid #7a9e95!important;border-radius:5px!important;padding:6px 9px!important;color:#0b6658;font-size:12px}
-.developerMenu>button[aria-expanded="true"]{background:#edf9f6!important}
-.headerMenuPanel{position:absolute;right:0;top:calc(100% + 8px);z-index:70;display:grid;min-width:190px;padding:8px;border:1px solid #cfe4de;border-radius:14px;background:#fff;box-shadow:0 14px 34px rgba(20,72,59,.16)}
-.topbar nav .headerMenuPanel button{width:100%;padding:10px 12px;text-align:left;color:#12332d}
-.topbar nav .headerMenuPanel button:hover{background:#edf9f6;color:#087a67}
+.developerMenu>button{border:1px solid #6f8f86!important;border-radius:5px!important;padding:6px 9px!important;color:#23574d;font-size:12px}
+.developerMenu>button[aria-expanded="true"]{background:#f6f1e8!important}
+.headerMenuPanel{position:absolute;right:0;top:calc(100% + 8px);z-index:70;display:grid;min-width:190px;padding:8px;border:1px solid #e4dccc;border-radius:14px;background:#fff;box-shadow:0 14px 34px rgba(20,72,59,.16)}
+.topbar nav .headerMenuPanel button{width:100%;padding:10px 12px;text-align:left;color:#1c1b18}
+.topbar nav .headerMenuPanel button:hover{background:#f6f1e8;color:#23574d}
 @media(max-width:850px){.topbar nav{max-width:calc(100vw - 78px);overflow-x:auto;scrollbar-width:none}.topbar nav::-webkit-scrollbar{display:none}.topbar nav button{flex:none}.headerMenuPanel{position:fixed;right:12px;top:68px}}

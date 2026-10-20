@@ -4,11 +4,11 @@
  * profile sections, and rank-value-to-icon rendering stay in App.tsx.
  */
 :root {
-  --koru-ink: #15342d;
-  --koru-green: #087e6b;
-  --koru-green-deep: #075e50;
-  --koru-mint: #eaf7f3;
-  --koru-line: #d7e7e1;
+  --koru-ink: #1c1b18;
+  --koru-green: #23574d;
+  --koru-green-deep: #1c1b18;
+  --koru-mint: #f6f1e8;
+  --koru-line: #e4dccc;
   --koru-paper: #fbfcfb;
 }
 
@@ -29,7 +29,7 @@ body { background: var(--koru-paper); color: var(--koru-ink); }
 .brand b { color: var(--koru-ink); font-family: Georgia, "Times New Roman", serif; font-size: 27px; }
 .brand span { color: #71817c; font-size: 11px; letter-spacing: .04em; }
 .topbar nav > button, .headerMenu > button {
-  color: #365149;
+  color: #23574d;
   font-size: 13px;
   font-weight: 800;
 }
@@ -40,7 +40,7 @@ body { background: var(--koru-paper); color: var(--koru-ink); }
   position: relative;
   overflow: hidden;
   min-height: min(650px, calc(100vh - 70px));
-  background: #edf6f3;
+  background: #f6f1e8;
 }
 .hero > img { width: 100%; height: min(650px, calc(100vh - 70px)); object-fit: cover; object-position: 68% center; filter: saturate(.82); }
 .heroShade { background: linear-gradient(90deg, rgba(250,255,253,.98) 0%, rgba(250,255,253,.91) 35%, rgba(250,255,253,.14) 70%, rgba(250,255,253,.04) 100%) !important; }
@@ -67,15 +67,15 @@ body { background: var(--koru-paper); color: var(--koru-ink); }
   transition: transform .2s ease, box-shadow .2s ease;
 }
 .ownerPublicCard:hover { transform: translateY(-3px); box-shadow: 0 24px 56px rgba(21, 73, 60, .15); }
-.ownerCompactHeader { background: linear-gradient(135deg, #f0faf7 0%, #fff 63%, #f8fcfa 100%); }
-.ownerCompactHeader > img { border: 1px solid #deebe7; box-shadow: 0 7px 18px rgba(21, 73, 60, .12); }
+.ownerCompactHeader { background: linear-gradient(135deg, #f6f1e8 0%, #fff 63%, #f6f1e8 100%); }
+.ownerCompactHeader > img { border: 1px solid #e4dccc; box-shadow: 0 7px 18px rgba(21, 73, 60, .12); }
 .ownerCompactIdentity::before { color: #9b781f; font-weight: 900; }
 .ownerCompactIdentity h2 { font-family: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif; letter-spacing: .01em; }
-.ownerQualificationRow > span:first-child { border: 1px solid #e2ede9; background: #fff; }
-.ownerCompactMeta { border-left-color: #dce9e5; }
+.ownerQualificationRow > span:first-child { border: 1px solid #e4dccc; background: #fff; }
+.ownerCompactMeta { border-left-color: #e4dccc; }
 .ownerCompactMeta b, .ownerScore b, .ownerQualificationRow b { color: var(--koru-green-deep); }
-.ownerPublicResults { border-top-color: #c9e1d9; border-bottom-color: #c9e1d9; }
-.ownerPublicAreas { border-top-color: #dfece7; }
+.ownerPublicResults { border-top-color: #6f8f86; border-bottom-color: #6f8f86; }
+.ownerPublicAreas { border-top-color: #e4dccc; }
 .ownerPublicAreas article { min-height: 145px; }
 .ownerTargetLevel { border-radius: 999px; }
 .rankBadge { filter: drop-shadow(0 4px 5px rgba(17, 56, 45, .17)); }
@@ -85,7 +85,7 @@ body { background: var(--koru-paper); color: var(--koru-ink); }
 .teacherCard header { border-bottom: 1px solid rgba(20, 65, 54, .08); }
 .teacherCard .price strong { color: var(--koru-green); }
 
-.advancedSearch, .contactPage { background: #f4f8f7; }
+.advancedSearch, .contactPage { background: #f6f1e8; }
 .advancedSearchHero, .contactPage > section { max-width: 980px; margin-left: auto; margin-right: auto; }
 .advancedSearchHero h1, .contactPage h1 { font-family: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif; }
 .searchPanel, .contactPage > section { border-radius: 16px; box-shadow: 0 14px 34px rgba(21, 73, 60, .07); }
@@ -96,11 +96,11 @@ body { background: var(--koru-paper); color: var(--koru-ink); }
 .contactPage label::after { content: " 必須"; color: #b84856; font-size: 11px; }
 .contactPage .contactHoneypot::after { content: none; }
 
-.ownerProfileDialog { border: 1px solid #b8dbd2; box-shadow: 0 28px 80px rgba(9, 45, 37, .30); }
-.ownerProfileHero { background: linear-gradient(135deg, #e9f8f4, #fff 66%); }
+.ownerProfileDialog { border: 1px solid #6f8f86; box-shadow: 0 28px 80px rgba(9, 45, 37, .30); }
+.ownerProfileHero { background: linear-gradient(135deg, #f6f1e8, #fff 66%); }
 .ownerProfileHero h2 { font-family: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif; }
 .ownerProfileLong, .ownerReviews { border-color: var(--koru-line); }
-.ownerProfileColumns > section { background: #f5faf8; }
+.ownerProfileColumns > section { background: #f6f1e8; }
 .ownerInquiry { position: sticky; bottom: 14px; z-index: 3; box-shadow: 0 13px 28px rgba(8,126,107,.26); }
 
 .mobileBottomNav { display: none; }
@@ -142,14 +142,14 @@ body { background: var(--koru-paper); color: var(--koru-ink); }
   .ownerCompactMeta p { grid-column: 1/-1; margin: 0; }
   .ownerCompactMeta > div { width: auto; grid-template-columns: 1fr 1fr; gap: 6px 10px; }
   .ownerCompactMeta::after { grid-column: 1/-1; padding-top: 8px; font-size: 11px; }
-  .ownerPriceStack { grid-column: 1/-1; grid-row: auto; display: grid; grid-template-columns: 70px 1fr; align-items: center; gap: 1px 9px; padding-top: 10px; border-top: 1px solid #deebe7; }
+  .ownerPriceStack { grid-column: 1/-1; grid-row: auto; display: grid; grid-template-columns: 70px 1fr; align-items: center; gap: 1px 9px; padding-top: 10px; border-top: 1px solid #e4dccc; }
   .ownerPriceStack strong { grid-row: span 2; color: var(--koru-green); font-size: 24px; }
   .ownerPriceStack span { font-size: 10px; }
   .ownerPriceStack span:last-child { color: var(--koru-green-deep); font-size: 12px; font-weight: 900; }
   .ownerPublicResults { margin: 0 14px 10px; padding: 10px 0; }
   .ownerPublicResults h3 { margin-bottom: 4px; font-size: 12px; }
   .ownerPublicResults > div { grid-template-columns: repeat(3, 1fr); }
-  .ownerPublicResults p { min-width: 0; padding: 0 7px; border-bottom: 0; border-right: 1px solid #d3e5df; }
+  .ownerPublicResults p { min-width: 0; padding: 0 7px; border-bottom: 0; border-right: 1px solid #e4dccc; }
   .ownerPublicResults p:last-child { border: 0; }
   .ownerPublicResults b::after { font-size: 11px; }
   .ownerPublicResults span { font-size: 9px; line-height: 1.35; }
@@ -188,7 +188,7 @@ body { background: var(--koru-paper); color: var(--koru-ink); }
   .ownerProfileLong { padding: 16px; }
   .ownerProfileColumns > section { padding: 14px; }
   .ownerInquiry { bottom: 10px; margin-bottom: 12px; }
-  .mobileBottomNav { position: fixed; right: 0; bottom: 0; left: 0; z-index: 90; display: grid; grid-template-columns: repeat(4, 1fr); min-height: 63px; border-top: 1px solid #dce8e4; background: rgba(255,255,255,.97); box-shadow: 0 -6px 20px rgba(15, 56, 46, .08); backdrop-filter: blur(12px); }
+  .mobileBottomNav { position: fixed; right: 0; bottom: 0; left: 0; z-index: 90; display: grid; grid-template-columns: repeat(4, 1fr); min-height: 63px; border-top: 1px solid #e4dccc; background: rgba(255,255,255,.97); box-shadow: 0 -6px 20px rgba(15, 56, 46, .08); backdrop-filter: blur(12px); }
   .mobileBottomNav button { display: grid; place-items: center; align-content: center; gap: 3px; border: 0; background: transparent; color: #789089; font-size: 9px; font-weight: 800; }
   .mobileBottomNav button svg { width: 21px; height: 21px; }
   .mobileBottomNav button.on { color: var(--koru-green); }

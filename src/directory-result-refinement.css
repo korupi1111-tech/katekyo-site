@@ -1,92 +1,92 @@
 /* Search cards follow the same hierarchy as the featured site-owner profile. */
 .directoryTeacherGrid { grid-template-columns: 1fr; gap: 20px; }
-.directoryTeacherCard { overflow: hidden; border: 1px solid #143d4c; border-radius: 10px; padding: 0; box-shadow: 0 14px 30px rgba(13, 44, 53, .10); }
+.directoryTeacherCard { overflow: hidden; border: 1px solid #1c1b18; border-radius: 10px; padding: 0; box-shadow: 0 14px 30px rgba(13, 44, 53, .10); }
 .directoryTeacherCard > header,
 .directoryTeacherCard > .directoryIdentity,
 .directoryTeacherCard > .directorySummary,
-.directoryTeacherCard > .directoryTags { margin: 0; background: #153f4b; color: #fff; }
+.directoryTeacherCard > .directoryTags { margin: 0; background: #1c1b18; color: #fff; }
 .directoryTeacherCard > header { padding: 18px 26px 0; }
-.directoryTeacherCard > header span { background: rgba(255,255,255,.12); color: #e9f3f1; }
+.directoryTeacherCard > header span { background: rgba(255,255,255,.12); color: #f6f1e8; }
 .directoryTeacherCard > header b { background: #f0d48a; color: #533f13; }
 .directoryIdentity { gap: 16px; padding: 13px 26px 14px; }
-.directoryIdentity > i { width: 72px; height: 72px; border: 2px solid rgba(255,255,255,.78); border-radius: 8px; background: linear-gradient(145deg,#2c6670,#194755); color: #f0d48a; font-family: Georgia, serif; font-size: 31px; }
+.directoryIdentity > i { width: 72px; height: 72px; border: 2px solid rgba(255,255,255,.78); border-radius: 8px; background: linear-gradient(145deg,#23574d,#23574d); color: #f0d48a; font-family: Georgia, serif; font-size: 31px; }
 .directoryIdentity small { color: #e7cc83; font-size: 11px; }
 .directoryIdentity h3 { margin: 3px 0; color: #fff; font-family: Georgia, "Yu Mincho", serif; font-size: 25px; }
-.directoryIdentity p { color: #e4eeee; font-size: 14px; }
-.directorySummary { min-height: 0; margin: 0; padding: 0 26px 14px; color: #e8f0ef; font-size: 14px; }
+.directoryIdentity p { color: #e4dccc; font-size: 14px; }
+.directorySummary { min-height: 0; margin: 0; padding: 0 26px 14px; color: #e4dccc; font-size: 14px; }
 .directoryTags { padding: 0 26px 19px; border-bottom: 1px solid rgba(228,238,238,.26); }
-.directoryTags span { border: 1px solid rgba(228,238,238,.26); border-radius: 5px; background: rgba(255,255,255,.1); color: #e8f0ef; }
+.directoryTags span { border: 1px solid rgba(228,238,238,.26); border-radius: 5px; background: rgba(255,255,255,.1); color: #e4dccc; }
 .directoryTeacherCard dl { margin: 0; padding: 16px 26px; border: 0; background: #fff; }
-.directoryTeacherCard dl div { padding: 0 14px; border-color: #dbe5e1; }
-.directoryTeacherCard dd { color: #164957; font-size: 15px; }
+.directoryTeacherCard dl div { padding: 0 14px; border-color: #e4dccc; }
+.directoryTeacherCard dd { color: #23574d; font-size: 15px; }
 .directoryFree { margin: 0; padding: 0 26px 18px; background: #fff; color: #9a7629; }
 .directoryTeacherCard:has(.directoryFree) dl { padding-bottom: 9px; }
 
-.directoryTeacherHeader { display: flex; align-items: start; justify-content: space-between; margin: 0; padding: 18px 26px 0; background: #153f4b; color: #fff; }
+.directoryTeacherHeader { display: flex; align-items: start; justify-content: space-between; margin: 0; padding: 18px 26px 0; background: #1c1b18; color: #fff; }
 .directoryTeacherHeader > span { margin-top: 4px; border-radius: 5px; background: #f0d48a; padding: 5px 8px; color: #533f13; font-size: 11px; font-weight: 900; }
 .directoryRank small, .directoryRank b { display: block; }
 .directoryRank small { color: #e7cc83; font-size: 10px; font-weight: 900; letter-spacing: .09em; }
 .directoryRank b { margin-top: 2px; color: #f0d48a; font-family: Georgia, serif; font-size: 31px; line-height: 1; }
-.directoryProfileProof { position: relative; display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 0; padding: 0 26px 16px; border-bottom: 1px solid rgba(228,238,238,.26); background: #153f4b; color: #e4eeee; font-size: 12px; }
+.directoryProfileProof { position: relative; display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 0; padding: 0 26px 16px; border-bottom: 1px solid rgba(228,238,238,.26); background: #1c1b18; color: #e4dccc; font-size: 12px; }
 .directoryProfileProof p { margin: 0; }
 .directoryProfileProof p:first-child { padding: 6px 9px; border: 1px solid rgba(228,238,238,.25); border-radius: 5px; background: rgba(255,255,255,.08); }
 .directoryProfileProof b { color: #f0d48a; }
 .directoryProfileProof i, .directoryQuickFacts i { margin-left: 4px; color: #f0d48a; font-style: normal; font-weight: 900; }
 .directoryProfileProof > span { display: inline-flex; align-items: center; gap: 7px; }
 .directoryProfileProof > span strong { display: inline-grid; place-items: center; min-width: 31px; min-height: 31px; border: 1px solid #d8bd70; border-radius: 50%; color: #f0d48a; font-family: Georgia, serif; }
-.directoryQuickFacts { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 24px; margin: 0; padding: 15px 26px; border-bottom: 1px solid #dbe5e1; background: #fff; color: #3f504b; font-size: 13px; }
+.directoryQuickFacts { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 24px; margin: 0; padding: 15px 26px; border-bottom: 1px solid #e4dccc; background: #fff; color: #3f504b; font-size: 13px; }
 .directoryQuickFacts p { margin: 0; }
 .directoryQuickFacts > div { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, max-content); gap: 16px; color: #52635e; font-size: 12px; }
-.directoryQuickFacts b { color: #164957; }
+.directoryQuickFacts b { color: #23574d; }
 .directoryPrice { position: absolute; top: 50px; right: 28px; display: flex; flex-direction: column; align-items: center; gap: 5px; color: #f0d48a; text-align: center; }
 .directoryPrice strong { font-size: 27px; line-height: 1; }
-.directoryPrice span { max-width: 105px; color: #e8f0ef; font-size: 10px; font-weight: 800; line-height: 1.25; }
+.directoryPrice span { max-width: 105px; color: #e4dccc; font-size: 10px; font-weight: 800; line-height: 1.25; }
 .directoryTeacherCard { position: relative; }
-.directoryEvidence { margin: 0; padding: 16px 26px; border-bottom: 1px solid #dbe5e1; background: #fff; }
-.directoryEvidence h3 { margin: 0 0 8px; color: #164957; font-size: 13px; letter-spacing: .1em; }
+.directoryEvidence { margin: 0; padding: 16px 26px; border-bottom: 1px solid #e4dccc; background: #fff; }
+.directoryEvidence h3 { margin: 0 0 8px; color: #23574d; font-size: 13px; letter-spacing: .1em; }
 .directoryEvidence dl { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; padding: 0; }
-.directoryEvidence dl div { padding: 0 12px; border-right: 1px solid #dbe5e1; }
+.directoryEvidence dl div { padding: 0 12px; border-right: 1px solid #e4dccc; }
 .directoryEvidence dl div:first-child { padding-left: 0; }
 .directoryEvidence dl div:last-child { border-right: 0; }
 .directoryEvidence dt { color: #71837e; font-size: 11px; }
-.directoryEvidence dd { margin: 4px 0 0; color: #164957; font-size: 15px; font-weight: 900; }
+.directoryEvidence dd { margin: 4px 0 0; color: #23574d; font-size: 15px; font-weight: 900; }
 .directoryAreas { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; background: #fff; }
-.directoryAreas article { padding: 17px 20px 20px; border-right: 1px solid #e1ece8; }
+.directoryAreas article { padding: 17px 20px 20px; border-right: 1px solid #e4dccc; }
 .directoryAreas article:last-child { border-right: 0; }
-.directoryAreas h4 { margin: 0 0 8px; color: #164957; font-size: 13px; }
-.directoryAreas p { margin: 6px 0; color: #475d57; font-size: 13px; line-height: 1.6; }
+.directoryAreas h4 { margin: 0 0 8px; color: #23574d; font-size: 13px; }
+.directoryAreas p { margin: 6px 0; color: #23574d; font-size: 13px; line-height: 1.6; }
 .directoryAreas > article:nth-child(2) span { display: inline-block; margin: 4px 5px 0 0; border: 1px solid #d5b65f; border-radius: 5px; background: #fffbef; padding: 4px 6px; color: #755719; font-size: 10px; font-weight: 900; }
 
 /* Same layout values as the featured owner profile on the home page. */
-.directoryOwnerLayout { border: 1px solid #143d4c; border-radius: 10px; background: #102f40; box-shadow: 0 22px 45px rgba(13,44,53,.16); }
-.directoryOwnerLayout .ownerCompactHeader { display: grid; width: 100%; min-height: 204px; margin: 0; grid-template-columns: 96px 106px minmax(0, 1fr); gap: 17px; padding: 25px 180px 19px 27px; border-radius: 9px 9px 0 0; background: linear-gradient(120deg,#102f40,#184858 65%,#245e65); color: #fff; }
+.directoryOwnerLayout { border: 1px solid #1c1b18; border-radius: 10px; background: #1c1b18; box-shadow: 0 22px 45px rgba(13,44,53,.16); }
+.directoryOwnerLayout .ownerCompactHeader { display: grid; width: 100%; min-height: 204px; margin: 0; grid-template-columns: 96px 106px minmax(0, 1fr); gap: 17px; padding: 25px 180px 19px 27px; border-radius: 9px 9px 0 0; background: linear-gradient(120deg,#1c1b18,#23574d 65%,#23574d); color: #fff; }
 .directoryOwnerLayout .ownerPublicCurrentRank { grid-column: 1; grid-row: 1; color: #e6cc82; text-align: center; }
 .directoryOwnerLayout .ownerPublicCurrentRank small { color: #e6cc82; font-size: 11px; }
-.directoryRankBadge { display: grid; place-items: center; width: 84px; height: 84px; margin: 4px auto 0; border: 2px solid #e6cc82; border-radius: 50%; background: radial-gradient(circle at 35% 28%,#456f79,#102f40 68%); color: #f0d48a; font-family: Georgia, serif; font-size: 24px; font-weight: 900; box-shadow: inset 0 0 0 4px rgba(240,212,138,.16); }
+.directoryRankBadge { display: grid; place-items: center; width: 84px; height: 84px; margin: 4px auto 0; border: 2px solid #e6cc82; border-radius: 50%; background: radial-gradient(circle at 35% 28%,#23574d,#1c1b18 68%); color: #f0d48a; font-family: Georgia, serif; font-size: 24px; font-weight: 900; box-shadow: inset 0 0 0 4px rgba(240,212,138,.16); }
 .directoryRankBadgeSmall { display: inline-grid; width: 54px; height: 54px; margin: 0; font-size: 15px; }
-.directoryAvatar { display: grid; grid-column: 2; grid-row: 1; place-items: center; width: 106px; height: 106px; border: 2px solid rgba(255,255,255,.77); border-radius: 8px; background: linear-gradient(145deg,#326c73,#173f4d); box-shadow: 0 8px 18px rgba(0,0,0,.20); color: #f0d48a; font-family: Georgia, serif; font-size: 44px; font-weight: 900; }
+.directoryAvatar { display: grid; grid-column: 2; grid-row: 1; place-items: center; width: 106px; height: 106px; border: 2px solid rgba(255,255,255,.77); border-radius: 8px; background: linear-gradient(145deg,#23574d,#1c1b18); box-shadow: 0 8px 18px rgba(0,0,0,.20); color: #f0d48a; font-family: Georgia, serif; font-size: 44px; font-weight: 900; }
 .directoryOwnerLayout .ownerCompactIdentity { grid-column: 3; grid-row: 1; min-width: 0; }
 .directoryOwnerLayout .ownerCompactIdentity > small { color: #e6cc82; font-size: 11px; font-weight: 900; letter-spacing: .1em; }
 .directoryOwnerLayout .ownerCompactIdentity h2 { margin: 7px 0 12px; color: #fff; font-family: Georgia,"Yu Mincho",serif; font-size: clamp(24px,2.5vw,33px); letter-spacing: .02em; }
-.directoryOwnerLayout .ownerQualificationRow, .directoryOwnerLayout .ownerScore { color: #e4eeee; }
+.directoryOwnerLayout .ownerQualificationRow, .directoryOwnerLayout .ownerScore { color: #e4dccc; }
 .directoryOwnerLayout .ownerQualificationRow > span:first-child { border: 1px solid rgba(228,238,238,.28); background: rgba(255,255,255,.1); }
 .directoryOwnerLayout .ownerQualificationRow b, .directoryOwnerLayout .ownerScore b { color: #f0d48a; }
-.directoryOwnerLayout .ownerHighestRank { color: #e4eeee; font-size: 14px; }
-.directoryOwnerLayout .ownerCompactMeta { grid-column: 1 / -1; grid-row: 2; align-self: stretch; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 7px 22px; padding: 13px 0 0; border-top: 1px solid rgba(228,238,238,.26); border-left: 0; color: #ecf3f3; }
+.directoryOwnerLayout .ownerHighestRank { color: #e4dccc; font-size: 14px; }
+.directoryOwnerLayout .ownerCompactMeta { grid-column: 1 / -1; grid-row: 2; align-self: stretch; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 7px 22px; padding: 13px 0 0; border-top: 1px solid rgba(228,238,238,.26); border-left: 0; color: #f6f1e8; }
 .directoryOwnerLayout .ownerCompactMeta p, .directoryOwnerLayout .ownerCompactMeta > div { color: inherit; }
 .directoryOwnerLayout .ownerCompactMeta > div { grid-column: 1 / -1; }
 .directoryOwnerLayout .ownerCompactMeta b { color: #e7cc83; }
 .directoryOwnerLayout .ownerPriceStack { position: absolute; top: 21px; right: 56px; width: 100px; color: #f0d48a; }
 .directoryOwnerLayout .ownerPriceStack strong { color: #f0d48a; font-size: 34px; }
-.directoryOwnerLayout .ownerPriceStack span { color: #e8f0ef; }
-.directoryOwnerLayout .ownerPublicResults { margin: 0; padding: 18px 28px 15px; border-top-color: #d7e3df; border-bottom-color: #d7e3df; background: #fff; }
-.directoryOwnerLayout .ownerPublicResults h3 { color: #174956; font-size: 14px; letter-spacing: .12em; }
-.directoryOwnerLayout .ownerPublicResults b { color: #0b6257; font-size: 16px; }
-.directoryOwnerLayout .ownerPublicAreas { margin: 0; padding: 0 28px 23px; border-top-color: #dce6e2; background: #fff; }
-.directoryOwnerLayout .ownerPublicAreas article { border-color: #dce6e2; }
-.directoryOwnerLayout .ownerPublicAreas h3 { color: #164957; }
+.directoryOwnerLayout .ownerPriceStack span { color: #e4dccc; }
+.directoryOwnerLayout .ownerPublicResults { margin: 0; padding: 18px 28px 15px; border-top-color: #e4dccc; border-bottom-color: #e4dccc; background: #fff; }
+.directoryOwnerLayout .ownerPublicResults h3 { color: #23574d; font-size: 14px; letter-spacing: .12em; }
+.directoryOwnerLayout .ownerPublicResults b { color: #23574d; font-size: 16px; }
+.directoryOwnerLayout .ownerPublicAreas { margin: 0; padding: 0 28px 23px; border-top-color: #e4dccc; background: #fff; }
+.directoryOwnerLayout .ownerPublicAreas article { border-color: #e4dccc; }
+.directoryOwnerLayout .ownerPublicAreas h3 { color: #23574d; }
 .directoryOwnerLayout .ownerTargetLevel { border-color: #d5b65f; background: #fffbef; color: #755719; }
-.directoryOwnerLayout .ownerPublicDetail { display: block; margin: 0; padding: 0 28px 24px; background: #fff; color: #075f52; font-weight: 900; }
+.directoryOwnerLayout .ownerPublicDetail { display: block; margin: 0; padding: 0 28px 24px; background: #fff; color: #23574d; font-weight: 900; }
 
 @media (max-width: 760px) {
   .directoryTeacherCard > header { padding: 15px 16px 0; }
@@ -110,7 +110,7 @@
   .directoryEvidence dt { font-size: 9px; }
   .directoryEvidence dd { font-size: 12px; }
   .directoryAreas { grid-template-columns: 1fr; }
-  .directoryAreas article { padding: 15px 16px; border-right: 0; border-bottom: 1px solid #e1ece8; }
+  .directoryAreas article { padding: 15px 16px; border-right: 0; border-bottom: 1px solid #e4dccc; }
   .directoryAreas article:last-child { border-bottom: 0; }
   .directoryOwnerLayout .ownerCompactHeader { grid-template-columns: 61px 76px minmax(0,1fr); gap: 10px; min-height: 0; padding: 53px 105px 18px 16px; }
   .directoryOwnerLayout .ownerPublicCurrentRank { grid-column: 1; }
@@ -135,25 +135,25 @@
 .directoryOwnerLayout .ownerPublicAreas article:last-child p:last-child { display: block !important; background: transparent !important; color: #42544f !important; font-size: inherit !important; }
 .directoryOwnerLayout .ownerPublicAreas article:nth-child(2) > p:first-of-type::after,
 .directoryOwnerLayout .ownerPublicAreas article:last-child p:last-child::after { display: none !important; content: none !important; }
-.directoryOwnerLayout .ownerTargetLevel { background: #f0faf7 !important; color: #087e6b !important; }
+.directoryOwnerLayout .ownerTargetLevel { background: #f6f1e8 !important; color: #23574d !important; }
 .directoryOwnerLayout .ownerQualificationRow > span:first-child,
 .directoryOwnerLayout .ownerVerifiedQualification { background: transparent !important; }
 
 .directoryOverlay { position: fixed; z-index: 120; inset: 0; display: grid; place-items: center; padding: 20px; overflow: auto; background: rgba(8, 25, 34, .76); backdrop-filter: blur(6px); }
-.directoryDetailDialog { position: relative; width: min(860px, 100%); margin: auto; overflow: hidden; border: 1px solid #315666; border-radius: 10px; background: #fff; box-shadow: 0 28px 80px rgba(0,0,0,.3); }
-.directoryDetailDialog > header { padding: 34px 38px 28px; background: linear-gradient(120deg,#102f40,#245e65); color: #fff; }
+.directoryDetailDialog { position: relative; width: min(860px, 100%); margin: auto; overflow: hidden; border: 1px solid #23574d; border-radius: 10px; background: #fff; box-shadow: 0 28px 80px rgba(0,0,0,.3); }
+.directoryDetailDialog > header { padding: 34px 38px 28px; background: linear-gradient(120deg,#1c1b18,#23574d); color: #fff; }
 .directoryDetailDialog > header span { color: #f0d48a; font-size: 11px; font-weight: 900; letter-spacing: .15em; }
 .directoryDetailDialog > header h2 { margin: 7px 0; font-family: Georgia,"Yu Mincho",serif; font-size: 34px; }
-.directoryDetailDialog > header p { margin: 0; color: #e4eeee; }
-.directoryDetailDialog > section { margin: 0 38px; padding: 24px 0; border-bottom: 1px solid #dbe5e1; }
-.directoryDetailDialog h3 { margin: 0 0 14px; color: #164957; font-size: 16px; }
-.directoryDetailDialog dl { display: grid; grid-template-columns: repeat(2,1fr); gap: 0; margin: 0; border: 1px solid #dbe5e1; }
-.directoryDetailDialog dl div { padding: 13px 15px; border-right: 1px solid #dbe5e1; border-bottom: 1px solid #dbe5e1; }
+.directoryDetailDialog > header p { margin: 0; color: #e4dccc; }
+.directoryDetailDialog > section { margin: 0 38px; padding: 24px 0; border-bottom: 1px solid #e4dccc; }
+.directoryDetailDialog h3 { margin: 0 0 14px; color: #23574d; font-size: 16px; }
+.directoryDetailDialog dl { display: grid; grid-template-columns: repeat(2,1fr); gap: 0; margin: 0; border: 1px solid #e4dccc; }
+.directoryDetailDialog dl div { padding: 13px 15px; border-right: 1px solid #e4dccc; border-bottom: 1px solid #e4dccc; }
 .directoryDetailDialog dt { color: #677a75; font-size: 11px; font-weight: 900; }
-.directoryDetailDialog dd { margin: 5px 0 0; color: #213e39; font-size: 14px; line-height: 1.55; }
-.directoryDetailDialog section > p { margin: 10px 0; color: #435951; line-height: 1.75; }
-.directoryDetailDialog section > p b { color: #164957; }
-.directoryDetailDialog > aside { margin: 0; padding: 14px 38px; background: #f0f6f4; color: #526760; font-size: 12px; }
+.directoryDetailDialog dd { margin: 5px 0 0; color: #1c1b18; font-size: 14px; line-height: 1.55; }
+.directoryDetailDialog section > p { margin: 10px 0; color: #23574d; line-height: 1.75; }
+.directoryDetailDialog section > p b { color: #23574d; }
+.directoryDetailDialog > aside { margin: 0; padding: 14px 38px; background: #f6f1e8; color: #526760; font-size: 12px; }
 .directoryDetailClose { position: absolute; top: 14px; right: 14px; display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid rgba(255,255,255,.62); border-radius: 50%; background: rgba(255,255,255,.12); color: #fff; font-size: 23px; line-height: 1; }
 .directoryOwnerLayout { cursor: pointer; }
 .directoryOwnerLayout:focus-visible { outline: 3px solid #e2c36e; outline-offset: 4px; }
@@ -173,10 +173,10 @@
 .directoryFeaturedTeacherSection .directoryTeacherCard { position: relative; width: 100%; overflow: hidden; padding: 0; font: inherit; text-align: left; cursor: pointer; }
 .directoryFeaturedTeacherSection .directoryTeacherCard > .ownerCompactHeader span { background: transparent; }
 .directoryFeaturedTeacherSection .directoryTeacherCard > .ownerCompactHeader b { background: transparent; color: inherit; }
-.directoryFeaturedTeacherSection .ownerCompactHeader > .directoryAvatar { display: grid; grid-column: 2; grid-row: 1; place-items: center; width: 106px; height: 106px; border: 2px solid rgba(255,255,255,.77); border-radius: 8px; background: linear-gradient(145deg,#326c73,#173f4d); box-shadow: 0 8px 18px rgba(0,0,0,.20); color: #f0d48a; font-family: Georgia, serif; font-size: 44px; font-weight: 900; }
+.directoryFeaturedTeacherSection .ownerCompactHeader > .directoryAvatar { display: grid; grid-column: 2; grid-row: 1; place-items: center; width: 106px; height: 106px; border: 2px solid rgba(255,255,255,.77); border-radius: 8px; background: linear-gradient(145deg,#23574d,#1c1b18); box-shadow: 0 8px 18px rgba(0,0,0,.20); color: #f0d48a; font-family: Georgia, serif; font-size: 44px; font-weight: 900; }
 .directoryFeaturedTeacherSection .ownerQualificationRow > span:first-child { background: rgba(255,255,255,.1); }
 .directoryFeaturedTeacherSection .ownerCompactHeader .ownerFavorite { background: transparent; color: #f3d885; }
-.directoryFeaturedTeacherSection .ownerCompactHeader .ownerPriceStack span { color: #e8f0ef; }
+.directoryFeaturedTeacherSection .ownerCompactHeader .ownerPriceStack span { color: #e4dccc; }
 .directoryFeaturedTeacherSection .ownerPublicResults b { font-size: 27px !important; background: transparent !important; }
 .directoryFeaturedTeacherSection .ownerPublicResults b::after { display: none !important; content: none !important; }
 .directoryFeaturedTeacherSection .ownerPublicAreas article:nth-child(2) > p:first-of-type,
@@ -191,7 +191,7 @@
 }
 
 /* The opened profile uses the same dossier components as the site-owner profile. */
-.directoryProfileDialog .ownerProfileHero > .directoryDetailAvatar { display: grid; grid-column: 2; grid-row: 1; place-items: center; width: 108px; height: 108px; border: 2px solid rgba(255,255,255,.78); border-radius: 7px; background: linear-gradient(145deg,#326c73,#173f4d); box-shadow: 0 9px 20px rgba(0,0,0,.24); color: #f0d48a; font-family: Georgia, serif; font-size: 46px; font-weight: 900; }
+.directoryProfileDialog .ownerProfileHero > .directoryDetailAvatar { display: grid; grid-column: 2; grid-row: 1; place-items: center; width: 108px; height: 108px; border: 2px solid rgba(255,255,255,.78); border-radius: 7px; background: linear-gradient(145deg,#23574d,#1c1b18); box-shadow: 0 9px 20px rgba(0,0,0,.24); color: #f0d48a; font-family: Georgia, serif; font-size: 46px; font-weight: 900; }
 
 @media (max-width: 700px) {
   .directoryProfileDialog .ownerProfileHero > .directoryDetailAvatar { width: 82px; height: 82px; font-size: 36px; }
