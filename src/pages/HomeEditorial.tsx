@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight, BadgeCheck, BookOpenText, Check, GraduationCap, Mic, PenLine, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BadgeCheck, BookOpenText, CalendarCheck, Check, GraduationCap, Mic, PenLine, ShieldCheck, Sparkles } from "lucide-react";
 import "../home-editorial.css";
 
 type Destination = "search" | "teacher-auth" | "family-auth" | "pricing" | "student-guide" | "teacher-guide" | "ranks" | "articles";
@@ -6,13 +6,18 @@ type Props = { onNavigate: (page: Destination) => void };
 
 // トップページ案B「学びのジャーナル」：紙の質感、大きな和文見出しと欧文イタリック、アーチ型の写真、イラストのコラージュ。
 // 未提供のAI機能は必ず「準備中」と表示し、数字は確認できる事実だけを使う。
-const strengths = ["英検長文の精読", "初見問題の方針づくり", "因果関係で覚える日本史", "図で解く中学受験算数", "例文で覚える英単語", "記述問題の組み立て", "共通テストの時間配分", "苦手単元のやり直し"];
-
 const flow = [
-  { no: "01", title: "学び方を伝える", text: "科目や学年だけでなく、どこで手が止まるのか、どう理解したいのか。その違いから先生を探せます。", art: "/home/desk-morning.webp" },
-  { no: "02", title: "教え方で選ぶ", text: "講師は得意な指導と、対応しない内容まで公開。資格や学歴は運営が確認したうえで表示します。", art: "/home/desk-reading.webp" },
-  { no: "03", title: "授業を記録に残す", text: "予約から授業後のふりかえりまでサイトの中で完結。積み重ねた授業は、講師の信頼の記録になります。", art: "/home/desk-evening.webp" },
+  { no: "01", title: "学び方を伝える", text: "科目や学年だけでなく、どこで手が止まるのか、どう理解したいのか。その違いから先生を探せます。" },
+  { no: "02", title: "教え方で選ぶ", text: "講師は得意な指導と、対応しない内容まで公開。資格や学歴は運営が確認したうえで表示します。" },
+  { no: "03", title: "授業を記録に残す", text: "予約から授業後のふりかえりまでサイトの中で完結。積み重ねた授業は、講師の信頼の記録になります。" },
 ];
+
+// 各段階の画面見本（実際に提供している機能だけを描く）
+function FlowScreen({ step }: { step: number }) {
+  if (step === 0) return <div className="heScreen"><p className="heScreenTitle">あなたについて</p><div className="heChips"><span className="on">高校2年</span><span className="on">英語</span><span>数学</span><span className="on">英検準1級</span></div><p className="heScreenField">長文は読めるけど、選択肢で迷ってしまう。</p></div>;
+  if (step === 1) return <div className="heScreen"><div className="heScreenHead"><img src="/demo-teacher-avatar.svg" alt="" /><div><b>英検長文読解の先生</b><span>英語　英検2級〜1級</span></div><img className="heScreenRank" src="/rank-sr.png" alt="" /></div><dl className="heScreenRows"><div><dt>得意な指導</dt><dd>本文を正確に捉える精読</dd></div><div><dt>対応しない内容</dt><dd>文法用語の暗記中心の指導</dd></div></dl></div>;
+  return <div className="heScreen"><div className="heScreenHead"><CalendarCheck className="heScreenIcon" /><div><b>授業後レポート</b><span>英語　60分</span></div><em>提出済み</em></div><ul className="heScreenList"><li><Check />授業は予定どおり実施</li><li><Check />プロフィールどおりの指導内容</li></ul></div>;
+}
 
 const columns = [
   { title: "私が「感覚の英語」を身につけた方法", art: "/home/desk-evening.webp" },
@@ -42,7 +47,6 @@ export function HomeEditorial({ onNavigate }: Props) {
 
       <div className="heCollage" aria-hidden="true">
         <figure className="heArch"><img src="/home/hero-student.webp" alt="" /></figure>
-        <figure className="heRound"><img src="/home/desk-morning.webp" alt="" /></figure>
         <div className="heNote heNoteMatch">
           <p className="heTiny">MATCHED BY STRENGTH</p>
           <div className="heMatch"><img src="/demo-teacher-avatar.svg" alt="" /><div><b>英検長文読解の先生</b><span>精読で誤読を直す</span></div><BadgeCheck /></div>
@@ -53,18 +57,14 @@ export function HomeEditorial({ onNavigate }: Props) {
       </div>
     </section>
 
-    <div className="heMarquee" aria-label="講師の得意の例">
-      <div className="heMarqueeTrack">{[...strengths, ...strengths].map((item, index) => <span key={index} aria-hidden={index >= strengths.length}>{item}<i>✦</i></span>)}</div>
-    </div>
-
     <section className="heSection" aria-labelledby="he-flow-title">
       <header className="heHead">
         <p className="heIndex">No. 1 — How it works</p>
         <h2 id="he-flow-title">選ぶ、から。<em>出会う</em>、へ。</h2>
       </header>
       <ol className="heFlow">
-        {flow.map(item => <li key={item.no}>
-          <figure><img src={item.art} alt="" loading="lazy" /><span>{item.no}</span></figure>
+        {flow.map((item, index) => <li key={item.no}>
+          <figure><FlowScreen step={index} /><span>{item.no}</span></figure>
           <h3>{item.title}</h3>
           <p>{item.text}</p>
         </li>)}

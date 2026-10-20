@@ -1,0 +1,27 @@
+/* サイト共通フッター。トップページ（学びのジャーナル）の紙と墨の色調に合わせる。 */
+.siteFooter { padding: clamp(56px, 7vw, 88px) max(24px, calc((100% - 1200px) / 2)) 32px; border-top: 1px solid rgba(28, 27, 24, .1); background: #f3eee4; color: #1c1b18; font-family: "Zen Kaku Gothic New", "Noto Sans JP", "Hiragino Sans", sans-serif; }
+.siteFooter * { box-sizing: border-box; }
+.siteFooter h3, .siteFooter p, .siteFooter ul { margin: 0; }
+.siteFooter button { padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+.siteFooter button:focus-visible { outline: 2px solid #23574d; outline-offset: 3px; }
+.siteFooterTop { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 32px; padding-bottom: 40px; border-bottom: 1px solid rgba(28, 27, 24, .14); }
+.siteFooterBrand b { display: block; font-family: "Instrument Serif", Georgia, serif; font-size: 44px; font-weight: 400; line-height: 1; }
+.siteFooterBrand p { margin-top: 12px; color: #45423b; font-size: 15px; }
+.siteFooterAccounts { display: flex; flex-wrap: wrap; gap: 12px; }
+.siteFooterAccounts button { display: grid; gap: 2px; min-width: 200px; padding: 14px 20px; border: 1px solid rgba(28, 27, 24, .2); border-radius: 12px; background: #fbf8f2; font-size: 15px; font-weight: 700; text-align: left; transition: border-color .2s ease, background .2s ease; }
+.siteFooterAccounts button:hover { border-color: #1c1b18; background: #fff; }
+.siteFooterAccounts small { color: #7a756b; font-size: 12px; font-weight: 500; }
+.siteFooterLinks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; padding: 40px 0; }
+.siteFooterLinks h3 { font-size: 14px; font-weight: 700; }
+.siteFooterLinks ul { display: grid; gap: 12px; margin-top: 16px; padding: 0; list-style: none; }
+.siteFooterLinks button { color: #45423b; font-size: 14px; text-align: left; }
+.siteFooterLinks button:hover { color: #1c1b18; text-decoration: underline; text-underline-offset: 4px; }
+.siteFooterBottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding-top: 24px; border-top: 1px solid rgba(28, 27, 24, .14); color: #7a756b; font-size: 12px; }
+@media (max-width: 760px) {
+  .siteFooterLinks { grid-template-columns: 1fr 1fr; }
+  .siteFooterAccounts, .siteFooterAccounts button { width: 100%; }
+  .siteFooter { padding-bottom: 96px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .siteFooter * { transition: none !important; }
+}
