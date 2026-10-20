@@ -5,7 +5,7 @@ import { getCurrentAccount } from "../lib/account";
 import { getTeacherAvatarUrl } from "../lib/teacherProfiles";
 import { isTeacherFavorite, toggleTeacherFavorite } from "../lib/teacherFavorites";
 import { PublicTeacherAvailability } from "./PublicTeacherAvailability";
-import { hasPublishedColumns } from "../lib/teacherColumns";
+import { getTeacherProfileIdsWithColumns, hasPublishedColumns } from "../lib/teacherColumns";
 import { contactMethodOptions, directorySearchSubjectMatches, directorySearchSubjectOptions, lessonStyleOptions, lessonTypeOptions, normalizeCombinedContactMethod, qualificationLabelOptions } from "../lib/teacherLabels";
 import "../advanced-search.css";
 
@@ -64,7 +64,7 @@ function toDirectoryProfile(teacher: DirectoryTeacher): ProfileTemplateData {
   };
 }
 
-function DirectoryTeacherCard({ teacher, onOpen }: { teacher: DirectoryTeacher; onOpen: () => void }) {
+function DirectoryTeacherCard({ teacher, onOpen, onOpenColumns }: { teacher: DirectoryTeacher; onOpen: () => void; onOpenColumns?: () => void }) {
   const [student, setStudent] = useState(false);
   const [favorite, setFavorite] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -80,10 +80,10 @@ function DirectoryTeacherCard({ teacher, onOpen }: { teacher: DirectoryTeacher; 
     catch { /* The detail view shows a descriptive error if the save cannot be completed. */ }
     finally { setSaving(false); }
   };
-  return <PublicProfileCard profile={toDirectoryProfile(teacher)} open={onOpen} onFavorite={student && teacher.teacher_profile_id ? () => void changeFavorite() : undefined} favoriteLabel={favorite ? "★ お気に入りから外す" : "☆ お気に入りに追加"} favoriteDisabled={saving}/>;
+  return <PublicProfileCard profile={toDirectoryProfile(teacher)} open={onOpen} onOpenArticles={onOpenColumns} onFavorite={student && teacher.teacher_profile_id ? () => void changeFavorite() : undefined} favoriteLabel={favorite ? "★ お気に入りから外す" : "☆ お気に入りに追加"} favoriteDisabled={saving}/>;
 }
 
-function DirectoryTeacherDetail({ teacher, onClose, onStartChat, onOpenTeacherColumns }: { teacher: DirectoryTeacher; onClose: () => void; onStartChat: (teacherProfileId: string) => void; onOpenTeacherColumns: (teacherProfileId: string) => void }) {
+function DirectoryTeacherDetail({ teacher, onClose, onStartChat, onOpenTeacherColumns, onRequireLogin }: { teacher: DirectoryTeacher; onClose: () => void; onStartChat: (teacherProfileId: string) => void; onOpenTeacherColumns?: (teacherProfileId: string) => void; onRequireLogin: () => void }) {
   const profile = toDirectoryProfile(teacher);
   const [hasColumns, setHasColumns] = useState(false);
   useEffect(() => { let active = true; if (teacher.teacher_profile_id) void hasPublishedColumns(teacher.teacher_profile_id).then(value => { if (active) setHasColumns(value); }); return () => { active = false; }; }, [teacher.teacher_profile_id]);
@@ -99,7 +99,22 @@ function DirectoryTeacherDetail({ teacher, onClose, onStartChat, onOpenTeacherCo
     try { const next = await toggleTeacherFavorite(teacher.teacher_profile_id, favorite); setFavorite(next); setFavoriteMessage(next ? "お気に入りに追加しました。マイページの「お気に入りの先生」から確認できます。" : "お気に入りから外しました。"); }
     catch { setFavoriteMessage("お気に入りを更新できませんでした。ログイン状態を確認して、もう一度お試しください。"); }
   };
-  return <ProfileModalShell profile={profile} close={onClose} onFavorite={student && teacher.teacher_profile_id ? changeFavorite : undefined} favoriteLabel={favorite ? "★ お気に入りから外す" : "☆ お気に入りに追加"} favoriteMessage={favoriteMessage} onContact={student && teacher.teacher_profile_id ? () => onStartChat(teacher.teacher_profile_id!) : undefined} availability={teacher.teacher_profile_id ? <PublicTeacherAvailability teacherProfileId={teacher.teacher_profile_id} /> : undefined} onOpenColumns={hasColumns && teacher.teacher_profile_id ? () => onOpenTeacherColumns(teacher.teacher_profile_id!) : undefined}/>;
+  // 問い合わせボタンは常に表示し、生徒・保護者としてログインしていない場合はログインを案内する。
+  const contact = () => {
+    if (!teacher.teacher_profile_id) return;
+    if (student) { onStartChat(teacher.teacher_profile_id); return; }
+    if (window.confirm("この講師に問い合わせるには、生徒・保護者としてログインしてください。ログイン画面を開きますか？")) { onClose(); onRequireLogin(); }
+  };
+  return <ProfileModalShell profile={profile} close={onClose} onFavorite={student && teacher.teacher_profile_id ? changeFavorite : undefined} favoriteLabel={favorite ? "★ お気に入りから外す" : "☆ お気に入りに追加"} favoriteMessage={favoriteMessage} onContact={teacher.teacher_profile_id ? contact : undefined} availability={teacher.teacher_profile_id ? <PublicTeacherAvailability teacherProfileId={teacher.teacher_profile_id} /> : undefined} onOpenColumns={hasColumns && teacher.teacher_profile_id && onOpenTeacherColumns ? () => onOpenTeacherColumns(teacher.teacher_profile_id!) : undefined}/>;
+}
+
+/** コラム集などから開く、講師のプロフィール詳細のポップアップ。 */
+export function TeacherProfilePopup({ teacherProfileId, onClose, onStartChat, onOpenTeacherColumns, onRequireLogin }: { teacherProfileId: string; onClose: () => void; onStartChat: (teacherProfileId: string) => void; onOpenTeacherColumns?: (teacherProfileId: string) => void; onRequireLogin: () => void }) {
+  const [teacher, setTeacher] = useState<DirectoryTeacher | null | undefined>(undefined);
+  useEffect(() => { let active = true; getPublishedDirectoryTeachers().then(list => { if (active) setTeacher(list.find(item => item.teacher_profile_id === teacherProfileId) ?? null); }).catch(() => { if (active) setTeacher(null); }); return () => { active = false; }; }, [teacherProfileId]);
+  useEffect(() => { if (teacher === null) { window.alert("この講師のプロフィールは現在公開されていません。"); onClose(); } }, [teacher, onClose]);
+  if (!teacher) return null;
+  return <DirectoryTeacherDetail teacher={teacher} onClose={onClose} onStartChat={onStartChat} onOpenTeacherColumns={onOpenTeacherColumns} onRequireLogin={onRequireLogin} />;
 }
 
 function includesAny(values: string[], selected: string[]) {
@@ -128,18 +143,20 @@ function matchesFilters(teacher: DirectoryTeacher, filters: SearchFilters) {
     && supportMatches;
 }
 
-function DirectoryResults({ teachers, loading, error, filters, onStartChat, onOpenTeacherColumns }: { teachers: DirectoryTeacher[]; loading: boolean; error: string; filters: SearchFilters; onStartChat: (teacherProfileId: string) => void; onOpenTeacherColumns: (teacherProfileId: string) => void }) {
+function DirectoryResults({ teachers, loading, error, filters, onStartChat, onOpenTeacherColumns, onRequireLogin }: { teachers: DirectoryTeacher[]; loading: boolean; error: string; filters: SearchFilters; onStartChat: (teacherProfileId: string) => void; onOpenTeacherColumns: (teacherProfileId: string) => void; onRequireLogin: () => void }) {
   const [selectedTeacher, setSelectedTeacher] = useState<DirectoryTeacher | null>(null);
+  const [columnTeacherIds, setColumnTeacherIds] = useState<Set<string>>(new Set());
+  useEffect(() => { let active = true; void getTeacherProfileIdsWithColumns().then(ids => { if (active) setColumnTeacherIds(ids); }); return () => { active = false; }; }, []);
   const results = useMemo(() => teachers.filter(teacher => matchesFilters(teacher, filters)), [teachers, filters]);
 
   return <section className="directoryResults" aria-live="polite">
     <div className="directoryResultsHead"><div><span>DATABASE RESULTS</span><h2>講師検索結果</h2></div><b>{loading ? "読み込み中" : `${results.length}人`}</b></div>
-    {error ? <p className="directoryState">{error}</p> : loading ? <p className="directoryState">公開中の講師データを読み込んでいます。</p> : results.length === 0 ? <p className="directoryState">条件に合う講師が見つかりませんでした。条件を少し広げてお試しください。</p> : <section className="section featuredTeacherSection"><p className="directoryVerifiedNote"><i className="ownerVerifiedCheck" aria-hidden="true">✓</i>は、その資格や学歴が運営によって認定された証明です。</p><div className="directoryTeacherGrid">{results.map(teacher => <DirectoryTeacherCard key={teacher.id} teacher={teacher} onOpen={() => setSelectedTeacher(teacher)} />)}</div></section>}
-    {selectedTeacher && <DirectoryTeacherDetail teacher={selectedTeacher} onClose={() => setSelectedTeacher(null)} onStartChat={onStartChat} onOpenTeacherColumns={onOpenTeacherColumns} />}
+    {error ? <p className="directoryState">{error}</p> : loading ? <p className="directoryState">公開中の講師データを読み込んでいます。</p> : results.length === 0 ? <p className="directoryState">条件に合う講師が見つかりませんでした。条件を少し広げてお試しください。</p> : <section className="section featuredTeacherSection"><p className="directoryVerifiedNote"><i className="ownerVerifiedCheck" aria-hidden="true">✓</i>は、その資格や学歴が運営によって認定された証明です。</p><div className="directoryTeacherGrid">{results.map(teacher => <DirectoryTeacherCard key={teacher.id} teacher={teacher} onOpen={() => setSelectedTeacher(teacher)} onOpenColumns={teacher.teacher_profile_id && columnTeacherIds.has(teacher.teacher_profile_id) ? () => onOpenTeacherColumns(teacher.teacher_profile_id!) : undefined} />)}</div></section>}
+    {selectedTeacher && <DirectoryTeacherDetail teacher={selectedTeacher} onClose={() => setSelectedTeacher(null)} onStartChat={onStartChat} onOpenTeacherColumns={onOpenTeacherColumns} onRequireLogin={onRequireLogin} />}
   </section>;
 }
 
-export function AdvancedSearchPage({ onStartChat, onOpenTeacherColumns }: { onStartChat: (teacherProfileId: string) => void; onOpenTeacherColumns: (teacherProfileId: string) => void }) {
+export function AdvancedSearchPage({ onStartChat, onOpenTeacherColumns, onRequireLogin }: { onStartChat: (teacherProfileId: string) => void; onOpenTeacherColumns: (teacherProfileId: string) => void; onRequireLogin: () => void }) {
   const [teachers, setTeachers] = useState<DirectoryTeacher[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -182,7 +199,7 @@ export function AdvancedSearchPage({ onStartChat, onOpenTeacherColumns }: { onSt
     </section>
     <button className="moreSearchToggle" aria-expanded={more} onClick={() => setMore(!more)}>さらに詳しく探す <span>{more ? "−" : "＋"}</span></button>
     {more && <section className="searchPanel detailedSearch"><h2>詳細条件</h2><div className="searchFieldGrid"><fieldset><legend>授業の進め方</legend><Chips values={lessonStyleOptions} selected={filters.lessonStyles} onChange={lessonStyles => update({ lessonStyles })} /></fieldset><fieldset className="searchWide"><legend>資格・認定 <small>講師の自己申告ラベル</small></legend><Chips values={qualificationLabelOptions} selected={filters.qualificationLabels} onChange={qualificationLabels => update({ qualificationLabels })} /></fieldset><fieldset><legend>授業外サポート</legend><div className="searchChecks">{["質問対応あり", "添削対応あり", "学習管理あり"].map(option => <label key={option}><input checked={filters.supportOptions.includes(option)} onChange={() => update({ supportOptions: toggleValue(filters.supportOptions, option) })} type="checkbox" />{option}</label>)}</div></fieldset></div><button className="searchApply" onClick={applyFilters} type="button">詳細条件を適用する</button></section>}
-    <DirectoryResults teachers={teachers} loading={loading} error={error} filters={appliedFilters} onStartChat={onStartChat} onOpenTeacherColumns={onOpenTeacherColumns} />
+    <DirectoryResults teachers={teachers} loading={loading} error={error} filters={appliedFilters} onStartChat={onStartChat} onOpenTeacherColumns={onOpenTeacherColumns} onRequireLogin={onRequireLogin} />
     <section className="concernSearch"><span>SEARCH BY CONCERN</span><h2>悩みから探す</h2><div>{[["英語", ["長文の点数が安定しない", "感覚で読んでいて、解答根拠を説明できない", "英作文を添削してほしい", "英文法を基礎から学び直したい", "英検対策をしてほしい", "TOEIC対策をしてほしい", "一問だけ質問したい"]], ["数学", ["計算ミスが多い", "公式は覚えているが使い方が分からない", "解説を読んでも理解できない", "証明問題が苦手", "共通テスト対策をしたい", "難関大学の記述対策をしたい", "一問だけ質問したい"]], ["学習全般", ["勉強方法を相談したい", "学習計画を立ててほしい", "進路について相談したい", "志望校を決めたい", "面接練習をしたい", "志望理由書を添削してほしい"]]].map(([title, values]) => <article key={title as string}><h3>{title}</h3><ul>{(values as string[]).map(value => <li key={value}><button>{value}</button></li>)}</ul></article>)}</div></section>
   </main>;
 }

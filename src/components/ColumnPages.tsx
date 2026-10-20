@@ -55,7 +55,7 @@ export function ColumnAuthorGroups({ onOpenColumn, onOpenTeacher }: { onOpenColu
 }
 
 /** 1人の講師のコラムページ。フォルダごとに並べる。 */
-export function TeacherColumnsView({ teacherProfileId, onOpenColumn, onBack }: { teacherProfileId: string; onOpenColumn: (column: TeacherColumn, author: ColumnAuthor) => void; onBack: () => void }) {
+export function TeacherColumnsView({ teacherProfileId, onOpenColumn, onBack, onContact }: { teacherProfileId: string; onOpenColumn: (column: TeacherColumn, author: ColumnAuthor) => void; onBack: () => void; onContact: (teacherProfileId: string) => void }) {
   const [data, setData] = useState<Awaited<ReturnType<typeof getTeacherPublishedColumns>> | null>(null);
   const [error, setError] = useState("");
   useEffect(() => { let active = true; getTeacherPublishedColumns(teacherProfileId).then(value => { if (active) setData(value); }).catch(() => { if (active) setError("コラムを読み込めませんでした。"); }); return () => { active = false; }; }, [teacherProfileId]);
@@ -68,10 +68,11 @@ export function TeacherColumnsView({ teacherProfileId, onOpenColumn, onBack }: {
     <button type="button" className="colTextButton" onClick={onBack}>コラム一覧に戻る</button>
     <header className="colTeacherHead"><AuthorBadge author={author} /><p>{data.columns.length}本のコラム</p></header>
     {sections.map(section => <section className="colGroup" key={section.key}>{section.name && <h3>{section.name}</h3>}<div className="colGrid">{section.columns.map(column => <ColumnCard key={column.id} column={column} onOpen={() => onOpenColumn(column, author)} />)}</div></section>)}
+    <div className="colContact"><p>{author.name}の授業に興味を持ったら、プロフィールを見て問い合わせできます。</p><button type="button" className="colButton" onClick={() => onContact(author.teacherProfileId)}>この講師に問い合わせる</button></div>
   </div>;
 }
 
-export function ColumnReader({ column, author, onBack, onOpenTeacher }: { column: TeacherColumn; author: ColumnAuthor; onBack: () => void; onOpenTeacher: () => void }) {
+export function ColumnReader({ column, author, onBack, onOpenTeacher, onContact }: { column: TeacherColumn; author: ColumnAuthor; onBack: () => void; onOpenTeacher: () => void; onContact: (teacherProfileId: string) => void }) {
   const image = getColumnImageUrl(column.imagePath);
   return <article className="colReader">
     <button type="button" className="colTextButton" onClick={onBack}>戻る</button>
@@ -79,7 +80,10 @@ export function ColumnReader({ column, author, onBack, onOpenTeacher }: { column
     <div className="colReaderMeta"><AuthorBadge author={author} /><small>{formatDate(column.publishedAt)}</small></div>
     {image && <img className="colReaderImage" src={image} alt="" />}
     <ColumnBody body={column.body} />
-    <button type="button" className="colButton outline" onClick={onOpenTeacher}>{author.name}のコラムをもっと読む</button>
+    <div className="colReaderActions">
+      <button type="button" className="colButton" onClick={() => onContact(author.teacherProfileId)}>この講師に問い合わせる</button>
+      <button type="button" className="colButton outline" onClick={onOpenTeacher}>{author.name}のコラムをもっと読む</button>
+    </div>
   </article>;
 }
 

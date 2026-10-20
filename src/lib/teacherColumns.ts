@@ -147,6 +147,13 @@ export async function getTeacherPublishedColumns(teacherProfileId: string) {
   return { author, columns, folders: (folders ?? []) as ColumnFolder[] };
 }
 
+/** 公開コラムを持つ講師の一覧（検索結果のカードにボタンを出すため、まとめて1回で取得する）。 */
+export async function getTeacherProfileIdsWithColumns() {
+  const { data, error } = await client().from("teacher_columns").select("teacher_profile_id").eq("is_published", true);
+  if (error) return new Set<string>();
+  return new Set((data ?? []).map(row => row.teacher_profile_id as string));
+}
+
 /** 公開コラムを1本以上持つ講師かどうか（プロフィールのボタン表示用）。 */
 export async function hasPublishedColumns(teacherProfileId: string) {
   const { count, error } = await client().from("teacher_columns").select("id", { count: "exact", head: true }).eq("teacher_profile_id", teacherProfileId).eq("is_published", true);

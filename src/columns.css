@@ -110,6 +110,11 @@
 .directoryVerifiedNote { display: flex; align-items: center; gap: 6px; margin: 0 0 18px; padding: 12px 16px; border-radius: 12px; background: #e4eee9; color: #1c1b18; font-size: 14px; font-weight: 700; }
 .directoryVerifiedNote .ownerVerifiedCheck { position: static; transform: none; }
 
+/* コラム集の下の問い合わせ */
+.colContact { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: 24px; padding: 24px 26px; border-radius: 18px; background: #e4eee9; }
+.colContact p { margin: 0; color: #1c1b18; font-size: 15px; line-height: 1.8; }
+.colReaderActions { display: flex; flex-wrap: wrap; gap: 12px; }
+
 /* 講師プロフィールの最初の画面に置く「この講師のコラムを読む」 */
 .ownerProfileHero .ownerColumnsLink { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 8px 16px; border: 1px solid #1c1b18; border-radius: 999px; background: #fff; color: #1c1b18; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
 .ownerProfileHero .ownerColumnsLink:hover { background: #1c1b18; color: #fbf8f2; }
