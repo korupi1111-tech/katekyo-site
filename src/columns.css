@@ -1,0 +1,111 @@
+/* コラム（一覧・講師ごとのページ・本文・講師の管理画面）。ジャーナル版の紙と墨の色調。 */
+.colWrap { padding: clamp(32px, 5vw, 56px) max(24px, calc((100% - 1100px) / 2)) clamp(72px, 9vw, 112px); }
+.colPage { min-height: 70vh; padding: clamp(32px, 5vw, 56px) max(24px, calc((100% - 960px) / 2)) clamp(72px, 9vw, 112px); background: #fbf8f2; color: #1c1b18; font-family: "Zen Kaku Gothic New", "Noto Sans JP", sans-serif; }
+.colWrap *, .colPage * { box-sizing: border-box; }
+.colWrap button, .colPage button, .colPage input, .colPage textarea, .colPage select { font-family: inherit; }
+.colState { padding: 40px 0; color: #7a756b; }
+.colTextButton { padding: 2px 0; border: 0; border-bottom: 1px solid currentColor; background: none; color: #23574d; font-size: 14px; font-weight: 700; cursor: pointer; }
+.colButton { height: 48px; padding: 0 26px; border: 1px solid #1c1b18; border-radius: 999px; background: #1c1b18; color: #fbf8f2; font-size: 15px; font-weight: 700; cursor: pointer; }
+.colButton:hover:not(:disabled) { background: #23574d; border-color: #23574d; }
+.colButton.outline { background: transparent; color: #1c1b18; }
+.colButton.outline:hover:not(:disabled) { background: #1c1b18; color: #fbf8f2; }
+.colButton.small { display: inline-flex; align-items: center; height: 38px; padding: 0 16px; font-size: 13px; }
+.colButton:disabled { opacity: .5; cursor: not-allowed; }
+.colMessage { margin: 16px 0; padding: 12px 16px; border-radius: 12px; background: #e4eee9; color: #1c1b18; font-size: 14px; }
+:is(.colWrap, .colPage) button:focus-visible, .colPage :is(input, textarea, select):focus-visible { outline: 2px solid #23574d; outline-offset: 2px; }
+
+/* 講師ごとのまとまり */
+.colGroup { padding: 32px 0; border-top: 1px solid rgba(28, 27, 24, .12); }
+.colGroup:first-child { border-top: 0; padding-top: 0; }
+.colGroup > header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.colGroup h3 { margin: 0 0 16px; font-size: 20px; font-weight: 900; }
+.colAuthor { display: inline-flex; align-items: center; gap: 12px; }
+.colAuthor img, .colAvatarFallback { width: 48px; height: 48px; flex: none; border-radius: 50%; object-fit: cover; }
+.colAvatarFallback { display: grid; place-items: center; background: #e4eee9; color: #23574d; font-weight: 900; }
+.colAuthor b { display: block; font-size: 17px; }
+.colAuthor small { color: #7a756b; font-size: 13px; }
+.colGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.colCard { display: flex; flex-direction: column; gap: 8px; padding: 0 0 18px; overflow: hidden; border: 1px solid rgba(28, 27, 24, .1); border-radius: 18px; background: #fff; color: #1c1b18; text-align: left; cursor: pointer; transition: transform .2s ease, box-shadow .2s ease; }
+.colCard:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(28, 27, 24, .08); }
+.colCard img, .colCardPlaceholder { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.colCardPlaceholder { display: grid; place-items: center; background: #f3eee4; color: rgba(28, 27, 24, .25); font-family: "Instrument Serif", Georgia, serif; font-size: 72px; }
+.colCard b, .colCard .colCardExcerpt, .colCard small { padding: 0 18px; }
+.colCard b { margin-top: 6px; font-size: 16px; line-height: 1.6; }
+.colCardExcerpt { color: #45423b; font-size: 13px; line-height: 1.8; }
+.colCard small { margin-top: auto; color: #7a756b; font-size: 12px; }
+.colTeacherHead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 20px 0 8px; padding-bottom: 20px; border-bottom: 2px solid #1c1b18; }
+.colTeacherHead p { margin: 0; color: #7a756b; }
+
+/* 本文 */
+.colReader { max-width: 760px; margin: 0 auto; }
+.colReader h2 { margin: 20px 0 16px; font-size: clamp(28px, 4vw, 40px); font-weight: 900; line-height: 1.4; }
+.colReaderMeta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 20px; border-bottom: 1px solid rgba(28, 27, 24, .12); }
+.colReaderMeta small { color: #7a756b; }
+.colReaderImage { width: 100%; margin: 28px 0 0; border-radius: 18px; }
+.colReaderBody { margin: 28px 0 40px; }
+.colReaderBody p { margin: 0 0 1.4em; font-size: 17px; line-height: 2.1; white-space: pre-wrap; }
+
+/* 講師の管理画面 */
+.colStudioHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin: 20px 0 28px; }
+.colStudioHead h1 { margin: 0; font-size: clamp(30px, 4vw, 44px); font-weight: 900; }
+.colStudioHead p { max-width: 34em; margin: 10px 0 0; color: #45423b; line-height: 1.9; }
+.colPlus { position: relative; }
+.colPlusButton { display: grid; place-items: center; width: 56px; height: 56px; border: 0; border-radius: 50%; background: #1c1b18; color: #fbf8f2; cursor: pointer; box-shadow: 0 10px 24px rgba(28, 27, 24, .2); }
+.colPlusButton svg { width: 26px; height: 26px; }
+.colPlusMenu { position: absolute; top: 64px; right: 0; z-index: 5; display: grid; min-width: 200px; padding: 6px; border: 1px solid rgba(28, 27, 24, .12); border-radius: 14px; background: #fff; box-shadow: 0 18px 40px rgba(28, 27, 24, .14); }
+.colPlusMenu button { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 0; border-radius: 10px; background: none; color: #1c1b18; font-size: 15px; font-weight: 700; text-align: left; cursor: pointer; }
+.colPlusMenu button:hover { background: #f3eee4; }
+.colPlusMenu svg { width: 18px; height: 18px; color: #23574d; }
+.colZones { display: grid; gap: 16px; }
+.colZone { padding: 18px 20px; border: 2px dashed transparent; border-radius: 18px; background: #fff; transition: border-color .15s ease, background .15s ease; }
+.colZone.over { border-color: #23574d; background: #e4eee9; }
+.colZone > header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.colZone h2 { margin: 0; font-size: 18px; font-weight: 900; }
+.colRename { width: min(320px, 100%); padding: 8px 10px; border: 1px solid #1c1b18; border-radius: 8px; font-size: 16px; font-weight: 700; }
+.colZoneActions { display: flex; gap: 4px; }
+.colZoneActions button, .colIconButton { display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 8px; background: none; color: #7a756b; cursor: pointer; }
+.colZoneActions button:hover, .colIconButton:hover { background: #f3eee4; color: #1c1b18; }
+.colZoneActions svg, .colIconButton svg { width: 17px; height: 17px; }
+.colZone ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.colZone li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid rgba(28, 27, 24, .1); border-radius: 12px; background: #fbf8f2; cursor: grab; }
+.colZone li:active { cursor: grabbing; }
+.colItemOpen { display: grid; flex: 1; min-width: 0; gap: 2px; padding: 0; border: 0; background: none; color: #1c1b18; text-align: left; cursor: pointer; }
+.colItemOpen b { overflow: hidden; font-size: 15px; text-overflow: ellipsis; white-space: nowrap; }
+.colItemOpen small { color: #7a756b; font-size: 12px; }
+.colZone select { max-width: 160px; padding: 6px 8px; border: 1px solid rgba(28, 27, 24, .2); border-radius: 8px; background: #fff; font-size: 13px; }
+.colEmpty { margin: 0; color: #7a756b; font-size: 14px; }
+
+/* 入力画面 */
+.colEditor { display: grid; gap: 22px; max-width: 760px; margin: 0 auto; }
+.colField { display: grid; gap: 8px; }
+.colField > span { font-size: 14px; font-weight: 700; }
+.colField input, .colField textarea, .colField select { width: 100%; padding: 12px 14px; border: 1px solid rgba(28, 27, 24, .2); border-radius: 12px; background: #fff; color: #1c1b18; font-size: 16px; }
+.colField input { font-size: 20px; font-weight: 700; }
+.colField textarea { min-height: 420px; line-height: 2; resize: vertical; }
+.colImageDrop { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 140px; border: 2px dashed rgba(28, 27, 24, .2); border-radius: 14px; background: #fff; color: #45423b; font-size: 14px; cursor: pointer; }
+.colImageDrop svg { width: 22px; height: 22px; color: #23574d; }
+.colImagePreview { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; }
+.colImagePreview img { width: min(360px, 100%); border-radius: 12px; }
+.colImagePreview > div { display: grid; gap: 10px; justify-items: start; }
+.colEditorActions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+@media (max-width: 860px) { .colGrid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) {
+  .colGrid { grid-template-columns: 1fr; }
+  .colZone li { flex-wrap: wrap; }
+  .colZone select { max-width: none; flex: 1; }
+  .colStudioHead { flex-direction: column-reverse; }
+}
+@media (prefers-reduced-motion: reduce) { .colCard, .colZone { transition: none; } }
+
+/* 授業後アンケートの5段階評価と「その他」の入力欄 */
+.lessonFeedbackStars { display: flex; align-items: center; gap: 4px; margin: 6px 0 14px; }
+.lessonFeedbackStars button { width: 40px; height: 40px; padding: 0; border: 0; background: none; color: #d8d2c6; font-size: 30px; line-height: 1; cursor: pointer; }
+.lessonFeedbackStars button.on { color: #c99a2e; }
+.lessonFeedbackStars span { margin-left: 8px; color: #7a756b; font-size: 13px; }
+.lessonFeedbackOther { display: grid; gap: 6px; margin-top: 12px; font-size: 13px; font-weight: 700; }
+.lessonFeedbackOther input { padding: 10px 12px; border: 1px solid rgba(28, 27, 24, .2); border-radius: 10px; font: inherit; font-weight: 400; }
+
+/* 先生を探す：確認済みマークの説明 */
+.directoryVerifiedNote { display: flex; align-items: center; gap: 6px; margin: 0 0 18px; padding: 12px 16px; border-radius: 12px; background: #e4eee9; color: #1c1b18; font-size: 14px; font-weight: 700; }
+.directoryVerifiedNote .ownerVerifiedCheck { position: static; transform: none; }

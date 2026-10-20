@@ -20,17 +20,23 @@ function FeedbackCard({ report, onSubmitted }: { report: LessonFeedbackReport; o
   const [profileMatched, setProfileMatched] = useState<boolean | null>(null);
   const [alignmentItems, setAlignmentItems] = useState<string[]>([]);
   const [comment, setComment] = useState("");
+  const [rating, setRating] = useState<number | null>(null);
+  const [otherText, setOtherText] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const isDetailed = report.surveyKind === "profile_check";
   const issueOptions = report.respondentRole === "teacher" ? teacherIssueOptions : studentIssueOptions;
 
   const submit = async (lessonWasHeld: boolean) => {
-    if (!lessonWasHeld && !issues.length) { setMessage("NOの場合は、当てはまる理由を選択してください。"); return; }
-    if (isDetailed && profileMatched === null) { setMessage("プロフィール内容との一致を選択してください。"); return; }
+    if (!lessonWasHeld && !issues.length) { setMessage("授業がなかった理由を選択してください。"); return; }
+    if (!lessonWasHeld && issues.includes("その他") && !otherText.trim()) { setMessage("「その他」の内容を入力してください。"); return; }
+    if (isDetailed && lessonWasHeld && profileMatched === null) { setMessage("プロフィールどおりの授業だったかを選択してください。"); return; }
+    if (isDetailed && lessonWasHeld && rating === null) { setMessage("先生の評価を5段階で選択してください。"); return; }
+    // 「その他」は、入力した内容と一緒に送る。
+    const issueReasons = issues.map(issue => issue === "その他" ? `その他：${otherText.trim()}` : issue);
     setBusy(true); setMessage("");
     try {
-      await submitLessonFeedbackReport({ reportId: report.id, lessonWasHeld, issueReasons: issues, profileMatched, alignmentItems, reviewComment: comment });
+      await submitLessonFeedbackReport({ reportId: report.id, lessonWasHeld, issueReasons, profileMatched, alignmentItems, reviewComment: comment, teacherRating: rating });
       await onSubmitted();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "報告書を送信できませんでした。");
@@ -39,10 +45,10 @@ function FeedbackCard({ report, onSubmitted }: { report: LessonFeedbackReport; o
 
   return <article className={`lessonFeedbackCard ${isDetailed ? "detailed" : "basic"}`}>
     <header><div><span>{isDetailed ? "3回に1回の詳細アンケート" : "毎回のかんたん確認"}</span><h3>{report.subject?.trim() || "授業"}</h3><p>{formatReservationSchedule(report.startsAt, report.endsAt)}</p></div>{isDetailed ? <strong>一致率の確認</strong> : <strong>Yes / No</strong>}</header>
-    <section className="lessonFeedbackQuestion"><b>授業は予定どおり、正常に行われましたか？</b><div className="lessonFeedbackChoice"><button type="button" className={held === true ? "selected yes" : "yes"} disabled={busy} onClick={() => { setHeld(true); if (!isDetailed) void submit(true); }}><Check />YES</button><button type="button" className={held === false ? "selected no" : "no"} disabled={busy} onClick={() => setHeld(false)}><X />NO</button></div>{!isDetailed && <small>YESなら、これだけで送信完了です。</small>}</section>
-    {held === false && <section className="lessonFeedbackIssue"><b>当てはまるものを選んでください</b><div>{issueOptions.map(option => <button type="button" className={issues.includes(option) ? "selected" : ""} disabled={busy} key={option} onClick={() => setIssues(values => toggle(values, option))}>{option}</button>)}</div></section>}
-    {isDetailed && <section className="lessonFeedbackDetail"><b>登録されているプロフィール内容どおりの授業でしたか？</b><p>回答はプロフィール一致率の集計に使います。</p><div className="lessonFeedbackChoice"><button type="button" className={profileMatched === true ? "selected yes" : "yes"} disabled={busy} onClick={() => setProfileMatched(true)}><Check />はい</button><button type="button" className={profileMatched === false ? "selected no" : "no"} disabled={busy} onClick={() => setProfileMatched(false)}><X />いいえ</button></div><b>どの項目について確認しましたか？ <small>複数選択可</small></b><div className="lessonFeedbackTags">{alignmentOptions.map(option => <button type="button" className={alignmentItems.includes(option) ? "selected" : ""} disabled={busy} key={option} onClick={() => setAlignmentItems(values => toggle(values, option))}>{option}</button>)}</div><label>講師へのコメント <small>このコメントは、口コミに反映されます。</small><textarea maxLength={500} value={comment} onChange={event => setComment(event.target.value)} placeholder="任意です。授業で良かった点や改善してほしい点を書けます。" /></label><button type="button" className="lessonFeedbackSubmit" disabled={busy || held === null} onClick={() => void submit(held ?? false)}>{busy ? "送信中…" : "アンケートを送信"}</button></section>}
-    {!isDetailed && held === false && <button type="button" className="lessonFeedbackSubmit" disabled={busy || !issues.length} onClick={() => void submit(false)}>{busy ? "送信中…" : "理由を送信"}</button>}
+    <section className="lessonFeedbackQuestion"><b>予定していた授業はありましたか？</b><div className="lessonFeedbackChoice"><button type="button" className={held === true ? "selected yes" : "yes"} disabled={busy} onClick={() => { setHeld(true); if (!isDetailed) void submit(true); }}><Check />YES</button><button type="button" className={held === false ? "selected no" : "no"} disabled={busy} onClick={() => setHeld(false)}><X />NO</button></div>{!isDetailed && <small>YESなら、これだけで送信完了です。</small>}</section>
+    {held === false && <section className="lessonFeedbackIssue"><b>授業がなかった理由を選んでください</b><div>{issueOptions.map(option => <button type="button" className={issues.includes(option) ? "selected" : ""} disabled={busy} key={option} onClick={() => setIssues(values => toggle(values, option))}>{option}</button>)}</div>{issues.includes("その他") && <label className="lessonFeedbackOther">「その他」の内容<input maxLength={100} value={otherText} onChange={event => setOtherText(event.target.value)} placeholder="例：体調不良のため延期した" /></label>}</section>}
+    {isDetailed && held === true && <section className="lessonFeedbackDetail"><b>登録されているプロフィール内容どおりの授業でしたか？</b><p>回答はプロフィール一致率の集計に使います。</p><div className="lessonFeedbackChoice"><button type="button" className={profileMatched === true ? "selected yes" : "yes"} disabled={busy} onClick={() => setProfileMatched(true)}><Check />はい</button><button type="button" className={profileMatched === false ? "selected no" : "no"} disabled={busy} onClick={() => setProfileMatched(false)}><X />いいえ</button></div><b>どの項目について確認しましたか？ <small>複数選択可</small></b><div className="lessonFeedbackTags">{alignmentOptions.map(option => <button type="button" className={alignmentItems.includes(option) ? "selected" : ""} disabled={busy} key={option} onClick={() => setAlignmentItems(values => toggle(values, option))}>{option}</button>)}</div><b>先生の授業を5段階で評価してください</b><div className="lessonFeedbackStars" role="radiogroup" aria-label="先生の評価">{[1, 2, 3, 4, 5].map(value => <button type="button" role="radio" aria-checked={rating === value} aria-label={`${value}点`} className={rating !== null && value <= rating ? "on" : ""} disabled={busy} key={value} onClick={() => setRating(value)}>★</button>)}<span>{rating ? `${rating} / 5` : "未選択"}</span></div><label>口コミ <small>任意です。講師の口コミとして反映されます。</small><textarea maxLength={500} value={comment} onChange={event => setComment(event.target.value)} placeholder="任意です。授業で良かった点や改善してほしい点を書けます。" /></label><button type="button" className="lessonFeedbackSubmit" disabled={busy || held === null} onClick={() => void submit(held ?? false)}>{busy ? "送信中…" : "アンケートを送信"}</button></section>}
+    {held === false && <button type="button" className="lessonFeedbackSubmit" disabled={busy || !issues.length} onClick={() => void submit(false)}>{busy ? "送信中…" : "理由を送信"}</button>}
     {message && <p className="lessonFeedbackMessage" role="status">{message}</p>}
   </article>;
 }

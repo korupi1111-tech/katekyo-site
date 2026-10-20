@@ -73,6 +73,7 @@ export async function submitLessonFeedbackReport(input: {
   profileMatched?: boolean | null;
   alignmentItems?: string[];
   reviewComment?: string;
+  teacherRating?: number | null;
 }) {
   const { error } = await requireClient().rpc("submit_lesson_feedback_report", {
     p_report_id: input.reportId,
@@ -81,6 +82,7 @@ export async function submitLessonFeedbackReport(input: {
     p_profile_matched: input.profileMatched ?? null,
     p_alignment_items: input.alignmentItems ?? [],
     p_review_comment: input.reviewComment?.trim() || null,
+    p_teacher_rating: input.teacherRating ?? null,
   });
   if (error) throw error;
 }

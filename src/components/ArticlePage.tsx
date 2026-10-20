@@ -1,5 +1,7 @@
 import { ArrowRight, BookOpen, Clock3 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { ColumnAuthorGroups, ColumnReader, TeacherColumnsView } from "./ColumnPages";
+import type { ColumnAuthor, TeacherColumn } from "../lib/teacherColumns";
 import "../articles.css";
 
 type ArticleTeaserProps = { onNavigate: (page: "articles") => void };
@@ -141,22 +143,42 @@ function ArticleOwnerProfile({ onOpenProfile }: { onOpenProfile: () => void }) {
   </aside>;
 }
 
-export function ArticlePage({ onOpenProfile }: { onOpenProfile: () => void }) {
-  const [selectedId, setSelectedId] = useState<1 | 2 | 3 | 4>(1);
+type ArticleView = { kind: "list" } | { kind: "owner"; id: 1 | 2 | 3 | 4 } | { kind: "column"; column: TeacherColumn; author: ColumnAuthor } | { kind: "teacher"; teacherProfileId: string };
+
+function OwnerSeries({ initialId, onOpenProfile, onBack }: { initialId: 1 | 2 | 3 | 4; onOpenProfile: () => void; onBack: () => void }) {
+  const [selectedId, setSelectedId] = useState<1 | 2 | 3 | 4>(initialId);
   const article = articleList.find(item => item.id === selectedId)!;
   const selectArticle = (id: 1 | 2 | 3 | 4) => { setSelectedId(id); window.scrollTo(0, 0); };
+  return <div className="articleLayout">
+    <aside className="articleIndex" aria-label="記事一覧">
+      <button type="button" className="colTextButton" onClick={onBack}>コラム一覧に戻る</button>
+      <div><small>ARTICLES</small><b>記事一覧</b></div>
+      {articleList.map(item => <button type="button" className={selectedId === item.id ? "active" : ""} key={item.id} onClick={() => selectArticle(item.id)}><span>SERIES　|　第{item.id}回</span><strong>{item.title}</strong><small>{seriesName}</small></button>)}
+    </aside>
+    <article className="articleBody">
+      <header><div className="articleCategory"><BookOpen size={16} /> 講師紹介　|　英語</div><p className="articleSeriesName">SERIES　|　{seriesName}　／　第{selectedId}回</p><h2>{article.title}</h2><p className="articleLead">{article.lead}</p><div className="articleAuthor"><img src="/owner.jpg" alt="こうたろう先生のアイコン"/><p><b>こうたろう先生 <span className="articleOwnerRole">👑 SITE OWNER</span></b><small><Clock3 size={14} /> 読了目安 {article.minutes}分</small></p></div><img className="articleIllustration" src={article.image} alt={article.imageAlt} /></header>
+      {selectedId === 1 ? <FirstArticle onNext={() => selectArticle(2)} /> : selectedId === 2 ? <SecondArticle onNext={() => selectArticle(3)} /> : selectedId === 3 ? <ThirdArticle onNext={() => selectArticle(4)} /> : <FourthArticle />}
+      <ArticleOwnerProfile onOpenProfile={onOpenProfile} />
+    </article>
+  </div>;
+}
+
+/** コラムのトップ。書いた講師ごとにまとめて並べる。運営者の連載は最初のまとまりとして表示する。 */
+export function ArticlePage({ onOpenProfile, teacherProfileId = null }: { onOpenProfile: () => void; teacherProfileId?: string | null }) {
+  const [view, setView] = useState<ArticleView>(teacherProfileId ? { kind: "teacher", teacherProfileId } : { kind: "list" });
+  useEffect(() => { setView(teacherProfileId ? { kind: "teacher", teacherProfileId } : { kind: "list" }); }, [teacherProfileId]);
+  const go = (next: ArticleView) => { setView(next); window.scrollTo(0, 0); };
   return <main className="articlePage withTopbar">
     <header className="articleHero"><span>TEACHER-WRITTEN ARTICLES</span><h1>講師直筆のコラム集</h1><p>講師が自分の学び方や指導への考え方を、本人の言葉で綴った記事集です。</p></header>
-    <div className="articleLayout">
-      <aside className="articleIndex" aria-label="記事一覧">
-        <div><small>ARTICLES</small><b>記事一覧</b></div>
-        {articleList.map(item => <button type="button" className={selectedId === item.id ? "active" : ""} key={item.id} onClick={() => selectArticle(item.id)}><span>SERIES　|　第{item.id}回</span><strong>{item.title}</strong><small>{seriesName}</small></button>)}
-      </aside>
-      <article className="articleBody">
-        <header><div className="articleCategory"><BookOpen size={16} /> 講師紹介　|　英語</div><p className="articleSeriesName">SERIES　|　{seriesName}　／　第{selectedId}回</p><h2>{article.title}</h2><p className="articleLead">{article.lead}</p><div className="articleAuthor"><img src="/owner.jpg" alt="こうたろう先生のアイコン"/><p><b>こうたろう先生 <span className="articleOwnerRole">👑 SITE OWNER</span></b><small><Clock3 size={14} /> 読了目安 {article.minutes}分</small></p></div><img className="articleIllustration" src={article.image} alt={article.imageAlt} /></header>
-        {selectedId === 1 ? <FirstArticle onNext={() => selectArticle(2)} /> : selectedId === 2 ? <SecondArticle onNext={() => selectArticle(3)} /> : selectedId === 3 ? <ThirdArticle onNext={() => selectArticle(4)} /> : <FourthArticle />}
-        <ArticleOwnerProfile onOpenProfile={onOpenProfile} />
-      </article>
-    </div>
+    {view.kind === "owner" ? <OwnerSeries initialId={view.id} onOpenProfile={onOpenProfile} onBack={() => go({ kind: "list" })} />
+      : view.kind === "column" ? <div className="colWrap"><ColumnReader column={view.column} author={view.author} onBack={() => go({ kind: "list" })} onOpenTeacher={() => go({ kind: "teacher", teacherProfileId: view.author.teacherProfileId })} /></div>
+      : view.kind === "teacher" ? <div className="colWrap"><TeacherColumnsView teacherProfileId={view.teacherProfileId} onBack={() => go({ kind: "list" })} onOpenColumn={(column, author) => go({ kind: "column", column, author })} /></div>
+      : <div className="colWrap">
+        <section className="colGroup">
+          <header><span className="colAuthor"><img src="/owner.jpg" alt="" /><span><b>こうたろう先生</b><small>英語　連載「{seriesName}」</small></span></span></header>
+          <div className="colGrid">{articleList.map(item => <button type="button" className="colCard" key={item.id} onClick={() => go({ kind: "owner", id: item.id })}><span className="colCardPlaceholder" aria-hidden="true">“</span><b>{item.title}</b><span className="colCardExcerpt">{item.lead}</span><small>第{item.id}回　読了目安 {item.minutes}分</small></button>)}</div>
+        </section>
+        <ColumnAuthorGroups onOpenColumn={(column, author) => go({ kind: "column", column, author })} onOpenTeacher={id => go({ kind: "teacher", teacherProfileId: id })} />
+      </div>}
   </main>;
 }

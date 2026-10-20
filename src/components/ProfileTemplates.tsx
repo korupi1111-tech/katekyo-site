@@ -75,7 +75,7 @@ export function ProfileDetailContent({ profile: sourceProfile }: { profile: Prof
 }
 
 /* Shared outer shell too: both profile details close, scroll, and position identically. */
-export function ProfileModalShell({ profile, close, onContact, onFavorite, favoriteLabel, favoriteMessage, availability }: { profile: ProfileTemplateData; close: () => void; onContact?: () => void; onFavorite?: () => void; favoriteLabel?: string; favoriteMessage?: string; availability?: ReactNode }) {
+export function ProfileModalShell({ profile, close, onContact, onFavorite, favoriteLabel, favoriteMessage, availability, onOpenColumns }: { profile: ProfileTemplateData; close: () => void; onContact?: () => void; onFavorite?: () => void; favoriteLabel?: string; favoriteMessage?: string; availability?: ReactNode; onOpenColumns?: () => void }) {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") close(); };
     window.addEventListener("keydown", onKeyDown);
@@ -83,5 +83,5 @@ export function ProfileModalShell({ profile, close, onContact, onFavorite, favor
     return () => { window.removeEventListener("keydown", onKeyDown); document.body.style.overflow = ""; };
   }, [close]);
 
-  return <div className="overlay" onClick={close}><article className="modal ownerProfileDialog" onClick={event => event.stopPropagation()}><button className="close" type="button" onClick={close} aria-label="閉じる"><X/></button><ProfileDetailContent profile={profile}/>{availability}<div className="ownerProfileActions">{onFavorite && <button className="ownerFavoriteButton" type="button" onClick={onFavorite}>{favoriteLabel ?? "☆ お気に入りに追加"}</button>}{onContact && <button className="ownerInquiry" type="button" onClick={onContact}>この先生に問い合わせる</button>}</div>{favoriteMessage && <p className="ownerFavoriteMessage" role="status">{favoriteMessage}</p>}</article></div>;
+  return <div className="overlay" onClick={close}><article className="modal ownerProfileDialog" onClick={event => event.stopPropagation()}><button className="close" type="button" onClick={close} aria-label="閉じる"><X/></button><ProfileDetailContent profile={profile}/>{availability}<div className="ownerProfileActions">{onOpenColumns && <button className="ownerFavoriteButton" type="button" onClick={onOpenColumns}>この講師のコラム</button>}{onFavorite &&<button className="ownerFavoriteButton" type="button" onClick={onFavorite}>{favoriteLabel ?? "☆ お気に入りに追加"}</button>}{onContact && <button className="ownerInquiry" type="button" onClick={onContact}>この先生に問い合わせる</button>}</div>{favoriteMessage && <p className="ownerFavoriteMessage" role="status">{favoriteMessage}</p>}</article></div>;
 }
