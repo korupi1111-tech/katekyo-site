@@ -1,4 +1,5 @@
 import "../information-pages.css";
+import "../pricing-journal.css";
 import { GraduationCap, UserRound, UsersRound } from "lucide-react";
 
 export type InformationPage = "student-guide" | "teacher-guide" | "pricing" | "campaign" | "rank-details" | "profile-guide";
@@ -34,7 +35,54 @@ export function InformationHub({ onNavigate }: { onNavigate: Navigate }) {
 }
 
 export function PricingPage({ onNavigate }: { onNavigate: Navigate }) {
-  return <PageFrame pageClass="pricingPage" eyebrow="PRICING" title="利用料金" intro="閲覧は無料です。現在は無料期間中のため、年額のアカウント登録をしなくても各機能をご利用いただけます。料金プランは公開予定です。" heroAction={<button className="campaignBubble" onClick={() => onNavigate("campaign")}><span>CAMPAIGN NOW</span><b>創設期キャンペーン実施中</b><small>最大2年間 運営費無料　→</small></button>}><Section title="授業料と手数料"><p>授業料は講師と家庭の間で直接決定され、そのまま講師と家庭のものです。私たちは今後も授業料から手数料をいただきません。</p><FeeFreeList /></Section><div className="pricingPreview"><div className="pricingPreviewContent" aria-hidden="true"><Section title="生徒アカウント"><p className="priceNumber">年額 4,000円（税込）</p><p>講師への問い合わせ、お気に入り登録、授業履歴管理、大学・学科情報の利用ができます。</p></Section><Section title="ファミリーアカウント"><p className="priceNumber">年額 3,000円（税込）＋ お子様1人につき 1,000円（税込）</p><p>保護者向けの管理アカウントです。お子様ごとの予約・契約状況を管理できます。お子様が授業を受ける場合は、お子様ごとの生徒登録が必要です。本人確認を完了したお子様の追加料金は無料です。</p><p>例：お子様1人は年額4,000円、2人は5,000円、3人は6,000円です。3人のうち2人が本人確認済みの場合は年額4,000円です。</p></Section><Section title="講師アカウント"><p className="priceNumber">年額 4,000円（税込）</p><p>講師プロフィールの公開、生徒募集、授業実績の記録、ランク制度への参加、生徒・家庭からの問い合わせ受付ができます。生徒が1人でも10人でも料金は変わりません。</p></Section><Section title="よくある質問"><p><b>月額ですか？</b><br />いいえ。すべて年額です。年額4,000円は月額換算で約333円、1日あたり約11円です。</p><p><b>契約が成立したら追加料金はかかりますか？</b><br />かかりません。紹介料、成約手数料、授業ごとの徴収はありません。</p></Section></div><div className="pricingPreviewNotice" role="note"><span>FREE PERIOD</span><b>現在は無料期間中です</b><p>料金プランは公開予定です。期間中に登録した方は、条件の達成で最大2年間無料になります。</p><ul><li><b>無料期間の終了後</b>：生徒は年額登録が必要です。講師は3回目の授業まで年会費なしで行えます。SRランクへ昇格後に次の授業を行うには、年額登録が必要です。</li><li>無料期間中に登録し、2年間無料の対象となった方は、その期間が終わるまで年額登録は不要です。</li></ul></div></div></PageFrame>;
+  return <main className="pricingJournal withTopbar">
+    <header className="pjHero">
+      <h1>利用料金</h1>
+      <p>ページの閲覧は無料です。現在は無料期間中のため、年額のアカウント登録をしなくても各機能を使えます。料金プランは公開予定です。</p>
+    </header>
+
+    <section className="pjNow" aria-labelledby="pj-now">
+      <div>
+        <h2 id="pj-now">現在は無料期間中です</h2>
+        <p>期間中に登録した方は、条件を達成すると最大2年間無料になります。</p>
+        <button className="pjLink" onClick={() => onNavigate("campaign")}>無料期間の条件を見る</button>
+      </div>
+      <ul>
+        <li><b>生徒・保護者</b><span>登録・検索・相談・予約をすべて無料で使えます。</span></li>
+        <li><b>講師</b><span>プロフィールの公開と授業の受付を無料で始められます。</span></li>
+      </ul>
+    </section>
+
+    <section className="pjSection" aria-labelledby="pj-fee">
+      <h2 id="pj-fee">授業料からの手数料は、0円です</h2>
+      <p className="pjLead">授業料は講師とご家庭の間で決まり、そのまま講師に支払われます。無料期間の終了後も、授業料から手数料をいただくことはありません。</p>
+      <dl className="pjZero">
+        <div><dt>紹介料</dt><dd>0円</dd></div>
+        <div><dt>成約手数料</dt><dd>0円</dd></div>
+        <div><dt>授業ごとの徴収</dt><dd>0円</dd></div>
+        <div><dt>売上に応じた手数料</dt><dd>0円</dd></div>
+      </dl>
+    </section>
+
+    <section className="pjSection" aria-labelledby="pj-after">
+      <h2 id="pj-after">無料期間の終了後（予定）</h2>
+      <p className="pjLead">金額は公開時にお知らせします。年額のアカウント登録が必要になるのは、次の場合です。</p>
+      <div className="pjAfter">
+        <article><h3>生徒</h3><p>サイトの機能を使うには、年額のアカウント登録が必要になります。</p></article>
+        <article><h3>講師</h3><p>3回目の授業までは年会費なしで授業できます。SRランクに昇格したあと、次の授業を行うには年額登録が必要です。</p></article>
+        <article><h3>無料期間中に登録した方</h3><p>2年間無料の対象になった方は、その期間が終わるまで年額登録は不要です。</p></article>
+      </div>
+    </section>
+
+    <section className="pjSection" aria-labelledby="pj-faq">
+      <h2 id="pj-faq">よくある質問</h2>
+      <dl className="pjFaq">
+        <div><dt>無料期間はいつまでですか？</dt><dd>サービス開始後の一定期間を予定しています。終了時期は事前にお知らせします。</dd></div>
+        <div><dt>契約が決まったら、追加の料金はかかりますか？</dt><dd>かかりません。紹介料、成約手数料、授業ごとの徴収はありません。</dd></div>
+        <div><dt>授業料はいくらですか？</dt><dd>授業料は講師ごとに異なり、講師とご家庭の間で決まります。各講師のプロフィールで確認できます。</dd></div>
+      </dl>
+    </section>
+  </main>;
 }
 
 export function CampaignPage() {
