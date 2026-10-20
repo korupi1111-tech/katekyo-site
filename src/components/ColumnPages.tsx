@@ -7,8 +7,25 @@ import {
 } from "../lib/teacherColumns";
 import "../columns.css";
 
-const excerpt = (body: string) => body.replace(/\s+/g, " ").trim().slice(0, 80);
+// 本文の中で「## 」から始まる行をサブタイトルとして扱う。
+const subtitleMark = "## ";
+const isSubtitleLine = (line: string) => line.startsWith(subtitleMark);
+const excerpt = (body: string) => body.split("\n").filter(line => !isSubtitleLine(line)).join(" ").replace(/\s+/g, " ").trim().slice(0, 80);
 const formatDate = (value: string | null) => value ? new Date(value).toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" }) : "";
+
+/** 本文を、サブタイトルと段落（空行区切り）に分けて表示する。 */
+function ColumnBody({ body }: { body: string }) {
+  const blocks: { kind: "subtitle" | "paragraph"; text: string }[] = [];
+  let paragraph: string[] = [];
+  const flush = () => { if (paragraph.length) { blocks.push({ kind: "paragraph", text: paragraph.join("\n") }); paragraph = []; } };
+  for (const line of body.split("\n")) {
+    if (isSubtitleLine(line)) { flush(); const text = line.slice(subtitleMark.length).trim(); if (text) blocks.push({ kind: "subtitle", text }); }
+    else if (!line.trim()) flush();
+    else paragraph.push(line);
+  }
+  flush();
+  return <div className="colReaderBody">{blocks.map((block, index) => block.kind === "subtitle" ? <h3 key={index} className="colSubtitle">{block.text}</h3> : <p key={index}>{block.text}</p>)}</div>;
+}
 
 function AuthorBadge({ author }: { author: ColumnAuthor }) {
   return <span className="colAuthor">{author.avatarUrl ? <img src={author.avatarUrl} alt="" /> : <span className="colAvatarFallback" aria-hidden="true">{author.name.slice(0, 1)}</span>}<span><b>{author.name}</b><small>{author.mainSubject}</small></span></span>;
@@ -61,7 +78,7 @@ export function ColumnReader({ column, author, onBack, onOpenTeacher }: { column
     <h2>{column.title}</h2>
     <div className="colReaderMeta"><AuthorBadge author={author} /><small>{formatDate(column.publishedAt)}</small></div>
     {image && <img className="colReaderImage" src={image} alt="" />}
-    <div className="colReaderBody">{column.body.split(/\n{2,}/).map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div>
+    <ColumnBody body={column.body} />
     <button type="button" className="colButton outline" onClick={onOpenTeacher}>{author.name}のコラムをもっと読む</button>
   </article>;
 }
@@ -71,6 +88,38 @@ const emptyDraft = (folderId: string | null): Draft => ({ id: null, title: "", b
 
 function ColumnEditor({ draft: initial, folders, onDone }: { draft: Draft; folders: ColumnFolder[]; onDone: (message: string) => void }) {
   const [draft, setDraft] = useState(initial);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const [cursorOnSubtitle, setCursorOnSubtitle] = useState(false);
+
+  // 選択中の行（またはカーソルがある行）の範囲を返す。
+  const selectedLines = (text: string, start: number, end: number) => {
+    const from = text.lastIndexOf("\n", start - 1) + 1;
+    const lineEnd = text.indexOf("\n", end);
+    return { from, to: lineEnd < 0 ? text.length : lineEnd };
+  };
+  const updateCursorState = () => {
+    const area = bodyRef.current;
+    if (!area) return;
+    const { from, to } = selectedLines(area.value, area.selectionStart, area.selectionEnd);
+    const lines = area.value.slice(from, to).split("\n").filter(line => line.trim());
+    setCursorOnSubtitle(lines.length > 0 && lines.every(isSubtitleLine));
+  };
+  // 押すと選択中の行がサブタイトルになり、もう一度押すと元の行に戻る。
+  const toggleSubtitle = () => {
+    const area = bodyRef.current;
+    if (!area) return;
+    const text = draft.body;
+    const { from, to } = selectedLines(text, area.selectionStart, area.selectionEnd);
+    const lines = text.slice(from, to).split("\n");
+    const content = lines.filter(line => line.trim());
+    if (!content.length) return;
+    const makeSubtitle = !content.every(isSubtitleLine);
+    const changed = lines.map(line => !line.trim() ? line : makeSubtitle ? (isSubtitleLine(line) ? line : subtitleMark + line) : (isSubtitleLine(line) ? line.slice(subtitleMark.length) : line)).join("\n");
+    const next = text.slice(0, from) + changed + text.slice(to);
+    setDraft(value => ({ ...value, body: next }));
+    setCursorOnSubtitle(makeSubtitle);
+    requestAnimationFrame(() => { area.focus(); area.setSelectionRange(from, from + changed.length); });
+  };
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const uploadedPaths = useRef<string[]>([]);
@@ -104,7 +153,15 @@ function ColumnEditor({ draft: initial, folders, onDone }: { draft: Draft; folde
       {image ? <div className="colImagePreview"><img src={image} alt="" /><div><label className="colButton outline small">写真を変える<input type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={event => void pickImage(event.target.files?.[0])} /></label><button type="button" className="colTextButton" onClick={() => setDraft(value => ({ ...value, imagePath: null }))}>写真を外す</button></div></div>
         : <label className="colImageDrop"><ImagePlus aria-hidden="true" />写真を選ぶ（JPEG・PNG・WebP、5MBまで）<input type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={event => void pickImage(event.target.files?.[0])} /></label>}
     </div>
-    <label className="colField"><span>本文</span><textarea value={draft.body} onChange={event => setDraft(value => ({ ...value, body: event.target.value }))} placeholder="本文を入力してください。文字数の制限はありません。空行で段落が分かれます。" /></label>
+    <div className="colField">
+      <span>本文</span>
+      <div className="colToolbar">
+        <button type="button" className={cursorOnSubtitle ? "on" : ""} aria-pressed={cursorOnSubtitle} onMouseDown={event => event.preventDefault()} onClick={toggleSubtitle}>{cursorOnSubtitle ? "サブタイトルを元に戻す" : "行をサブタイトルにする"}</button>
+        <small>サブタイトルにしたい行にカーソルを置くか、行を選んでから押してください。</small>
+      </div>
+      <textarea ref={bodyRef} aria-label="本文" value={draft.body} onChange={event => { setDraft(value => ({ ...value, body: event.target.value })); updateCursorState(); }} onSelect={updateCursorState} onKeyUp={updateCursorState} onClick={updateCursorState} placeholder="本文を入力してください。文字数の制限はありません。空行で段落が分かれます。" />
+    </div>
+    {draft.body.trim() && <div className="colField"><span>プレビュー</span><div className="colPreview"><ColumnBody body={draft.body} /></div></div>}
     <label className="colField"><span>フォルダ</span><select value={draft.folderId ?? ""} onChange={event => setDraft(value => ({ ...value, folderId: event.target.value || null }))}><option value="">フォルダなし</option>{folders.map(folder => <option key={folder.id} value={folder.id}>{folder.name}</option>)}</select></label>
     <div className="colEditorActions">
       <button type="button" className="colButton" disabled={busy} onClick={() => void save(true)}>{draft.isPublished ? "更新して公開する" : "公開する"}</button>
