@@ -7,8 +7,9 @@ const types = new Set(["education", "qualification", "mock_exam"]);
 // 本番URLが変わった場合も VERIFICATION_ALLOWED_ORIGIN だけを更新すればよい。
 function verificationCorsHeaders(request: Request) {
   const origin = request.headers.get("origin");
-  const allowedOrigin = Deno.env.get("VERIFICATION_ALLOWED_ORIGIN");
-  if (!origin || origin !== allowedOrigin) return null;
+  // カンマ区切りで複数のURLを登録しても動くようにする（末尾の / は無視）。
+  const allowedOrigins = (Deno.env.get("VERIFICATION_ALLOWED_ORIGIN") ?? "").split(",").map(value => value.trim().replace(/\/$/, "")).filter(Boolean);
+  if (!origin || !allowedOrigins.includes(origin)) return null;
   return {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Headers": "authorization, x-client-info, x-supabase-client, apikey, content-type",
