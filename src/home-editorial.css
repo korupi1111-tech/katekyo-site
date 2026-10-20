@@ -97,12 +97,12 @@
 
 /* Flow */
 .heFlow { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(20px, 3vw, 40px); padding: 0; list-style: none; }
-.heFlow li:nth-child(2) { margin-top: 64px; }
-.heFlow li:nth-child(3) { margin-top: 128px; }
+.heFlow > li:nth-child(2) { margin-top: 64px; }
+.heFlow > li:nth-child(3) { margin-top: 128px; }
 .heFlow figure { position: relative; display: flex; align-items: flex-end; aspect-ratio: 4 / 5; margin: 0; padding: 0 18px 22px; overflow: hidden; border-radius: 22px; background: var(--he-green-tint); }
-.heFlow li:nth-child(2) figure { background: var(--he-sand); }
-.heFlow li:nth-child(3) figure { background: #e9e6f1; }
-.heFlow figure span { position: absolute; top: 14px; left: 18px; color: var(--he-ink); font-family: var(--he-serif); font-size: 64px; font-style: italic; line-height: 1; }
+.heFlow > li:nth-child(2) figure { background: var(--he-sand); }
+.heFlow > li:nth-child(3) figure { background: #e9e6f1; }
+.heFlow figure > .heStepNo { position: absolute; top: 14px; left: 18px; color: var(--he-ink); font-family: var(--he-serif); font-size: 64px; font-style: italic; line-height: 1; }
 .heFlow h3 { margin-top: 24px; font-size: 22px; font-weight: 700; }
 .heFlow p { margin-top: 12px; color: var(--he-text); font-size: 15px; line-height: 1.95; }
 
@@ -142,13 +142,19 @@
 .heLedger p { grid-column: 2; color: var(--he-text); font-size: 14px; }
 .heRanks img { width: 46px; height: auto; }
 
-/* Journal */
-.heJournal { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-.heEntry { position: relative; display: grid; gap: 14px; align-content: start; padding: 0; border: 0; background: none; color: var(--he-ink); text-align: left; }
-.heEntry img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 16px; filter: saturate(.95); transition: transform .5s ease, filter .5s ease; }
-.heEntry:hover img { transform: translateY(-6px); filter: saturate(1.1); }
-.heEntryNo { color: var(--he-vermilion); font-family: var(--he-serif); font-size: 22px; font-style: italic; }
-.heEntry b { font-size: 16px; font-weight: 700; line-height: 1.65; }
+/* Journal — 画像を使わず、色面と文字で見せる */
+.heJournal { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.heEntry { display: flex; flex-direction: column; min-height: 340px; padding: 26px 24px 22px; border: 0; border-radius: 20px; background: var(--he-green-tint); color: var(--he-ink); text-align: left; transition: transform .25s ease, box-shadow .25s ease; }
+.heEntry:nth-child(2) { background: var(--he-sand); }
+.heEntry:nth-child(3) { background: #e9e6f1; }
+.heEntry:nth-child(4) { background: #f3e3dc; }
+.heEntry:hover { transform: translateY(-4px); box-shadow: 0 18px 36px rgba(28, 27, 24, .1); }
+.heEntryQuote { height: 40px; color: rgba(28, 27, 24, .25); font-family: var(--he-serif); font-size: 72px; line-height: 1; }
+.heEntryTag { width: fit-content; margin-top: 8px; padding: 3px 10px; border-radius: 999px; background: rgba(255, 255, 255, .7); color: var(--he-green); font-size: 12px; font-weight: 700; }
+.heEntry b { margin-top: 14px; font-size: 18px; font-weight: 700; line-height: 1.6; }
+.heEntryLead { margin-top: 10px !important; color: var(--he-text); font-size: 13px; line-height: 1.8; }
+.heEntryAuthor { display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 18px; color: var(--he-muted); font-size: 12px; }
+.heEntryAuthor img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; }
 
 /* Tools */
 .heTools { display: grid; grid-template-columns: minmax(200px, .7fr) minmax(0, 1.3fr); gap: clamp(32px, 6vw, 96px); align-items: center; }
@@ -173,9 +179,10 @@
   .heHero { min-height: 0; }
   .heCollage { height: 520px; }
   .heFlow { grid-template-columns: 1fr; }
-  .heFlow li:nth-child(n) { margin-top: 0; }
+  .heFlow > li:nth-child(n) { margin-top: 0; }
   .heFlow figure { aspect-ratio: auto; min-height: 260px; padding-top: 72px; }
   .heJournal { grid-template-columns: repeat(2, 1fr); }
+  .heEntry { min-height: 0; }
   .heCat { width: 220px; }
 }
 @media (max-width: 560px) {

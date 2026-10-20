@@ -20,10 +20,10 @@ function FlowScreen({ step }: { step: number }) {
 }
 
 const columns = [
-  { title: "私が「感覚の英語」を身につけた方法", art: "/home/desk-evening.webp" },
-  { title: "「感覚の英語」の限界と、私がぶつかった壁", art: "/home/desk-structure.webp" },
-  { title: "なぜ中学生で英検準1級に合格できたのか", art: "/home/desk-reading.webp" },
-  { title: "私なりの英検攻略法", art: "/home/desk-morning.webp" },
+  { title: "私が「感覚の英語」を身につけた方法", tag: "英語学習", lead: "英語を「勉強」としてだけでなく、日常の楽しみとして続けてきた経験について。" },
+  { title: "「感覚の英語」の限界と、私がぶつかった壁", tag: "英語学習", lead: "読める・聞けるのに、正確に書けない。感覚的な英語力の限界に向き合った経験について。" },
+  { title: "なぜ中学生で英検準1級に合格できたのか", tag: "英検", lead: "長文全訳を続けたことで、文法・語彙・構文理解をつなげた経験について。" },
+  { title: "私なりの英検攻略法", tag: "英検", lead: "単語だけに偏らず、長文・ライティング・リスニングまで英検に向き合う考え方。" },
 ];
 
 export function HomeEditorial({ onNavigate }: Props) {
@@ -64,7 +64,7 @@ export function HomeEditorial({ onNavigate }: Props) {
       </header>
       <ol className="heFlow">
         {flow.map((item, index) => <li key={item.no}>
-          <figure><FlowScreen step={index} /><span>{item.no}</span></figure>
+          <figure><FlowScreen step={index} /><span className="heStepNo">{item.no}</span></figure>
           <h3>{item.title}</h3>
           <p>{item.text}</p>
         </li>)}
@@ -92,10 +92,12 @@ export function HomeEditorial({ onNavigate }: Props) {
         <button className="heLink" onClick={() => onNavigate("articles")}>コラムをすべて読む<ArrowUpRight aria-hidden="true" /></button>
       </header>
       <div className="heJournal">
-        {columns.map((item, index) => <button key={item.title} className="heEntry" onClick={() => onNavigate("articles")}>
-          <img src={item.art} alt="" loading="lazy" />
-          <span className="heEntryNo">{String(index + 1).padStart(2, "0")}</span>
+        {columns.map(item => <button key={item.title} className="heEntry" onClick={() => onNavigate("articles")}>
+          <span className="heEntryQuote" aria-hidden="true">“</span>
+          <span className="heEntryTag">{item.tag}</span>
           <b>{item.title}</b>
+          <p className="heEntryLead">{item.lead}</p>
+          <span className="heEntryAuthor"><img src="/owner.jpg" alt="" />こうたろう先生</span>
         </button>)}
       </div>
     </section>
