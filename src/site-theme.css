@@ -1,0 +1,90 @@
+/* トップページ以外のページを「学びのジャーナル」の色調にそろえる手書きの層。
+   色の置き換えは site-theme-recolor.css（自動生成）、ここでは土台・見出し・ヒーロー・主ボタンを扱う。 */
+:root {
+  --theme-paper: #fbf8f2;
+  --theme-sand: #f3eee4;
+  --theme-ink: #1c1b18;
+  --theme-text: #45423b;
+  --theme-muted: #7a756b;
+  --theme-green: #23574d;
+  --theme-line: rgba(28, 27, 24, .12);
+  --theme-jp: "Zen Kaku Gothic New", "Noto Sans JP", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  --theme-serif: "Instrument Serif", Georgia, serif;
+}
+body { background: var(--theme-paper); color: var(--theme-ink); font-family: var(--theme-jp); }
+
+/* ページの土台 */
+:is(.informationPage, .rankSystemPage, .rankingClosedPage, .auth, .dashboardPage, .chatListPage, .contactPage, .articlePage, .advancedSearch, .legalPage, .infoBase, .adminReview) {
+  background: var(--theme-paper) !important;
+  color: var(--theme-ink);
+  font-family: var(--theme-jp);
+}
+:is(.informationPage, .rankSystemPage, .rankingClosedPage, .auth, .dashboardPage, .chatListPage, .contactPage, .articlePage, .advancedSearch, .legalPage, .infoBase, .adminReview) :is(h1, h2, h3) {
+  font-family: var(--theme-jp) !important;
+  color: var(--theme-ink);
+  letter-spacing: -.005em;
+}
+
+/* ヒーロー：暗い帯や緑のグラデーションをやめ、紙の上に大きな見出しを置く */
+:is(.informationHero, .rankSystemHero, .articleHero, .pageHero, .legalHero, .campaignHero, .advancedSearchHero) {
+  border-bottom: 1px solid var(--theme-line);
+  background: var(--theme-paper) !important;
+  color: var(--theme-ink) !important;
+}
+:is(.informationHero, .rankSystemHero, .articleHero, .pageHero, .legalHero, .campaignHero) h1 {
+  color: var(--theme-ink) !important;
+  font-weight: 900 !important;
+  line-height: 1.25 !important;
+}
+:is(.informationHero, .rankSystemHero, .articleHero, .pageHero, .legalHero, .campaignHero, .advancedSearchHero, .chatListHero) > span,
+:is(.informationHero, .rankSystemHero, .pageHero) small {
+  color: var(--theme-green) !important;
+  font-family: var(--theme-serif);
+  font-size: 18px !important;
+  font-style: italic;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+  text-transform: none;
+}
+:is(.informationHero, .rankSystemHero, .articleHero, .pageHero, .legalHero, .campaignHero) p { color: var(--theme-text) !important; }
+.campaignHero em { color: var(--theme-green) !important; font-style: normal; }
+.dashboardHero { border: 1px solid var(--theme-line) !important; background: var(--theme-sand) !important; }
+.dashboardHero h1, .dashboardHero p { color: var(--theme-ink) !important; }
+
+/* キャンペーンの数字ボックスなど、暗い面だった部分 */
+.campaignHeroFacts > div, .campaignTopPromo, .rankingClosedCard { background: var(--theme-sand) !important; color: var(--theme-ink) !important; border-color: var(--theme-line) !important; }
+.campaignHeroFacts b, .campaignHeroFacts small, .campaignHeroFacts span, .campaignTopPromo h2, .campaignTopPromo p, .rankingClosedCard h1, .rankingClosedCard p { color: var(--theme-ink) !important; }
+
+/* セクションと本文 */
+:is(.informationContent, .rankSystemContent, .legalContent) { color: var(--theme-text); }
+:is(.informationContent, .rankSystemContent) section { border-color: var(--theme-line) !important; }
+
+/* 主なボタン：墨色の丸ボタンにそろえる */
+:is(.auth, .contactPage, .dashboardPage, .chatListPage, .advancedSearch) button[type="submit"],
+.auth form > button:not(.outline):not(.authTextButton),
+.contactPage form button,
+.rankingClosedCard button,
+.reservationSubmit, .lessonFeedbackSubmit, .profileEditorPublish .publicationButton {
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: var(--theme-ink) !important;
+  color: var(--theme-paper) !important;
+}
+:is(.auth, .contactPage, .dashboardPage, .chatListPage, .advancedSearch) button[type="submit"]:hover,
+.auth form > button:not(.outline):not(.authTextButton):hover,
+.contactPage form button:hover,
+.rankingClosedCard button:hover { background: var(--theme-green) !important; }
+:is(.auth, .contactPage, .dashboardPage, .chatListPage, .advancedSearch) :is(input, select, textarea):focus { outline: 2px solid var(--theme-green); outline-offset: 1px; }
+
+/* 認証ページのカード */
+.auth > section, .auth .authCard { border: 1px solid var(--theme-line) !important; border-radius: 24px !important; background: #fff !important; box-shadow: 0 24px 60px rgba(28, 27, 24, .08) !important; }
+.authMode button.on { background: var(--theme-ink) !important; color: var(--theme-paper) !important; }
+
+/* 右下の無料期間の案内 */
+.campaignDock { border: 1px solid var(--theme-line) !important; background: #fff !important; color: var(--theme-ink) !important; box-shadow: 0 16px 36px rgba(28, 27, 24, .14) !important; }
+.campaignDock span { color: var(--theme-green) !important; }
+.campaignDock b, .campaignDock small { color: var(--theme-ink) !important; }
+
+/* スマホ下部のナビ */
+.mobileBottomNav { background: rgba(251, 248, 242, .96) !important; border-top: 1px solid var(--theme-line) !important; }
+.mobileBottomNav button.on { color: var(--theme-green) !important; }

@@ -39,6 +39,8 @@ import "./directory-result-refinement.css";
 import "../legal-pages.css";
 import "./site-footer.css";
 import "./site-header.css";
+import "./site-theme-recolor.css";
+import "./site-theme.css";
 
 void OwnerProfileDetails;
 void OwnerDetailOnly;
