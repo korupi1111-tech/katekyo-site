@@ -1,8 +1,10 @@
 import { ArrowRight, ArrowUpRight, BadgeCheck, BookOpenText, CalendarCheck, Check, GraduationCap, Mic, PenLine, ShieldCheck, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
 import "../home-editorial.css";
+import { columnExcerpt, getRandomPublishedColumns, type ColumnWithAuthor } from "../lib/teacherColumns";
 
 type Destination = "search" | "teacher-auth" | "family-auth" | "pricing" | "student-guide" | "teacher-guide" | "ranks" | "articles";
-type Props = { onNavigate: (page: Destination) => void };
+type Props = { onNavigate: (page: Destination) => void; onOpenColumn?: (columnId: string) => void };
 
 // トップページ案B「学びのジャーナル」：紙の質感、大きな和文見出しと欧文イタリック、アーチ型の写真、イラストのコラージュ。
 // 未提供のAI機能は必ず「準備中」と表示し、数字は確認できる事実だけを使う。
@@ -26,7 +28,10 @@ const columns = [
   { title: "私なりの英検攻略法", tag: "英検", lead: "単語だけに偏らず、長文・ライティング・リスニングまで英検に向き合う考え方。" },
 ];
 
-export function HomeEditorial({ onNavigate }: Props) {
+export function HomeEditorial({ onNavigate, onOpenColumn }: Props) {
+  // 公開中のコラムからランダムに4本。1本もなければ固定の4本を出す。
+  const [pickup, setPickup] = useState<ColumnWithAuthor[]>([]);
+  useEffect(() => { let active = true; getRandomPublishedColumns(4).then(items => { if (active) setPickup(items); }).catch(() => undefined); return () => { active = false; }; }, []);
   return <main className="he withTopbar">
     <section className="heHero" aria-labelledby="he-title">
       <div className="heHeroCopy">
@@ -92,7 +97,13 @@ export function HomeEditorial({ onNavigate }: Props) {
         <button className="heLink" onClick={() => onNavigate("articles")}>コラムをすべて読む<ArrowUpRight aria-hidden="true" /></button>
       </header>
       <div className="heJournal">
-        {columns.map(item => <button key={item.title} className="heEntry" onClick={() => onNavigate("articles")}>
+        {pickup.length ? pickup.map(({ column, author }) => <button key={column.id} className="heEntry" onClick={() => onOpenColumn ? onOpenColumn(column.id) : onNavigate("articles")}>
+          <span className="heEntryQuote" aria-hidden="true">“</span>
+          <span className="heEntryTag">{author.mainSubject}</span>
+          <b>{column.title}</b>
+          <p className="heEntryLead">{columnExcerpt(column.body)}</p>
+          <span className="heEntryAuthor">{author.avatarUrl ? <img src={author.avatarUrl} alt="" /> : null}{author.name}</span>
+        </button>) : columns.map(item => <button key={item.title} className="heEntry" onClick={() => onNavigate("articles")}>
           <span className="heEntryQuote" aria-hidden="true">“</span>
           <span className="heEntryTag">{item.tag}</span>
           <b>{item.title}</b>

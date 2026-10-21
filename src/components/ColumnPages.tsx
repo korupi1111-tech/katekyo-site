@@ -1,16 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { FilePlus2, FolderPlus, ImagePlus, Pencil, Plus, Trash2 } from "lucide-react";
 import {
   createColumnFolder, deleteColumn, deleteColumnFolder, deleteColumnImage, getColumnImageUrl, getMyColumns,
-  getPublishedColumnsByAuthor, getTeacherPublishedColumns, moveColumnToFolder, renameColumnFolder, saveColumn,
-  uploadColumnImage, type AuthorWithColumns, type ColumnAuthor, type ColumnFolder, type TeacherColumn,
+  columnExcerpt as excerpt, getPublishedColumn, getPublishedColumnsByAuthor, getRandomPublishedColumns, getTeacherPublishedColumns, moveColumnToFolder, renameColumnFolder, saveColumn,
+  uploadColumnImage, type AuthorWithColumns, type ColumnAuthor, type ColumnWithAuthor, type ColumnFolder, type TeacherColumn,
 } from "../lib/teacherColumns";
 import "../columns.css";
 
 // 本文の中で「## 」から始まる行をサブタイトルとして扱う。
 const subtitleMark = "## ";
 const isSubtitleLine = (line: string) => line.startsWith(subtitleMark);
-const excerpt = (body: string) => body.split("\n").filter(line => !isSubtitleLine(line)).join(" ").replace(/\s+/g, " ").trim().slice(0, 80);
 const formatDate = (value: string | null) => value ? new Date(value).toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" }) : "";
 
 /** 本文を、サブタイトルと段落（空行区切り）に分けて表示する。 */
@@ -31,13 +30,13 @@ function AuthorBadge({ author }: { author: ColumnAuthor }) {
   return <span className="colAuthor">{author.avatarUrl ? <img src={author.avatarUrl} alt="" /> : <span className="colAvatarFallback" aria-hidden="true">{author.name.slice(0, 1)}</span>}<span><b>{author.name}</b><small>{author.mainSubject}</small></span></span>;
 }
 
-function ColumnCard({ column, onOpen }: { column: TeacherColumn; onOpen: () => void }) {
+function ColumnCard({ column, author, onOpen }: { column: TeacherColumn; author?: ColumnAuthor; onOpen: () => void }) {
   const image = getColumnImageUrl(column.imagePath);
   return <button type="button" className="colCard" onClick={onOpen}>
     {image ? <img src={image} alt="" loading="lazy" /> : <span className="colCardPlaceholder" aria-hidden="true">“</span>}
     <b>{column.title}</b>
     <span className="colCardExcerpt">{excerpt(column.body)}</span>
-    <small>{formatDate(column.publishedAt)}</small>
+    <small>{author ? `${author.name}　` : ""}{formatDate(column.publishedAt)}</small>
   </button>;
 }
 
@@ -52,6 +51,27 @@ export function ColumnAuthorGroups({ onOpenColumn, onOpenTeacher }: { onOpenColu
     <header><AuthorBadge author={group} /><button type="button" className="colTextButton" onClick={() => onOpenTeacher(group.teacherProfileId)}>この講師のコラムをすべて見る（{group.columns.length}本）</button></header>
     <div className="colGrid">{group.columns.slice(0, 3).map(column => <ColumnCard key={column.id} column={column} onOpen={() => onOpenColumn(column, group)} />)}</div>
   </section>)}</>;
+}
+
+/** 公開中のコラムからランダムに選んで並べる。1本もなければ fallback を表示する。 */
+export function ColumnPickup({ limit, onOpenColumn, fallback = null }: { limit: number; onOpenColumn: (column: TeacherColumn, author: ColumnAuthor) => void; fallback?: ReactNode }) {
+  const [items, setItems] = useState<ColumnWithAuthor[] | null>(null);
+  useEffect(() => { let active = true; getRandomPublishedColumns(limit).then(value => { if (active) setItems(value); }).catch(() => { if (active) setItems([]); }); return () => { active = false; }; }, [limit]);
+  if (!items) return <p className="colState">コラムを読み込んでいます。</p>;
+  if (!items.length) return <>{fallback}</>;
+  return <section className="colGroup colPickup">
+    <header><span className="colPickupLabel">ピックアップ</span></header>
+    <div className="colGrid">{items.map(({ column, author }) => <ColumnCard key={column.id} column={column} author={author} onOpen={() => onOpenColumn(column, author)} />)}</div>
+  </section>;
+}
+
+/** URLで直接開いたコラム。 */
+export function ColumnById({ id, onBack, onOpenTeacher, onContact }: { id: string; onBack: () => void; onOpenTeacher: (teacherProfileId: string) => void; onContact: (teacherProfileId: string) => void }) {
+  const [item, setItem] = useState<ColumnWithAuthor | null | undefined>(undefined);
+  useEffect(() => { let active = true; getPublishedColumn(id).then(value => { if (active) setItem(value); }).catch(() => { if (active) setItem(null); }); return () => { active = false; }; }, [id]);
+  if (item === undefined) return <p className="colState">コラムを読み込んでいます。</p>;
+  if (!item) return <div className="colState"><p>このコラムは公開されていないか、削除されました。</p><button type="button" className="colTextButton" onClick={onBack}>コラム一覧に戻る</button></div>;
+  return <ColumnReader column={item.column} author={item.author} onBack={onBack} onOpenTeacher={() => onOpenTeacher(item.author.teacherProfileId)} onContact={onContact} />;
 }
 
 /** 1人の講師のコラムページ。フォルダごとに並べる。 */
@@ -74,6 +94,7 @@ export function TeacherColumnsView({ teacherProfileId, onOpenColumn, onBack, onC
 
 export function ColumnReader({ column, author, onBack, onOpenTeacher, onContact }: { column: TeacherColumn; author: ColumnAuthor; onBack: () => void; onOpenTeacher: () => void; onContact: (teacherProfileId: string) => void }) {
   const image = getColumnImageUrl(column.imagePath);
+  useEffect(() => { document.title = `${column.title}｜korupiyo`; }, [column.title]);
   return <article className="colReader">
     <button type="button" className="colTextButton" onClick={onBack}>戻る</button>
     <h2>{column.title}</h2>

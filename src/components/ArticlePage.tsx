@@ -1,6 +1,6 @@
 import { ArrowRight, BookOpen, Clock3 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ColumnAuthorGroups, ColumnReader, TeacherColumnsView } from "./ColumnPages";
+import { ColumnAuthorGroups, ColumnById, ColumnPickup, ColumnReader, TeacherColumnsView } from "./ColumnPages";
 import { TeacherProfilePopup } from "./AdvancedSearchPage";
 import type { ColumnAuthor, TeacherColumn } from "../lib/teacherColumns";
 import "../articles.css";
@@ -144,7 +144,14 @@ function ArticleOwnerProfile({ onOpenProfile }: { onOpenProfile: () => void }) {
   </aside>;
 }
 
-type ArticleView = { kind: "list" } | { kind: "owner"; id: 1 | 2 | 3 | 4 } | { kind: "column"; column: TeacherColumn; author: ColumnAuthor } | { kind: "teacher"; teacherProfileId: string };
+type ArticleView = { kind: "list" } | { kind: "owner"; id: 1 | 2 | 3 | 4 } | { kind: "column"; column: TeacherColumn; author: ColumnAuthor } | { kind: "columnById"; id: string } | { kind: "teacher"; teacherProfileId: string };
+export type ArticleRoute = { teacherProfileId: string | null; columnId: string | null };
+
+function viewFor(route: ArticleRoute): ArticleView {
+  if (route.columnId) return { kind: "columnById", id: route.columnId };
+  if (route.teacherProfileId) return { kind: "teacher", teacherProfileId: route.teacherProfileId };
+  return { kind: "list" };
+}
 
 function OwnerSeries({ initialId, onOpenProfile, onBack }: { initialId: 1 | 2 | 3 | 4; onOpenProfile: () => void; onBack: () => void }) {
   const [selectedId, setSelectedId] = useState<1 | 2 | 3 | 4>(initialId);
@@ -165,21 +172,23 @@ function OwnerSeries({ initialId, onOpenProfile, onBack }: { initialId: 1 | 2 | 
 }
 
 /** コラムのトップ。書いた講師ごとにまとめて並べる。運営者の連載は最初のまとまりとして表示する。 */
-export function ArticlePage({ onOpenProfile, teacherProfileId = null, onStartChat, onRequireLogin, onTeacherChange }: { onOpenProfile: () => void; teacherProfileId?: string | null; onStartChat: (teacherProfileId: string) => void; onRequireLogin: () => void; onTeacherChange?: (teacherProfileId: string | null) => void }) {
+export function ArticlePage({ onOpenProfile, teacherProfileId = null, columnId = null, onStartChat, onRequireLogin, onRouteChange }: { onOpenProfile: () => void; teacherProfileId?: string | null; columnId?: string | null; onStartChat: (teacherProfileId: string) => void; onRequireLogin: () => void; onRouteChange?: (route: ArticleRoute) => void }) {
   const [contactTeacherId, setContactTeacherId] = useState<string | null>(null);
-  const [view, setView] = useState<ArticleView>(teacherProfileId ? { kind: "teacher", teacherProfileId } : { kind: "list" });
-  useEffect(() => { setView(teacherProfileId ? { kind: "teacher", teacherProfileId } : { kind: "list" }); }, [teacherProfileId]);
-  const go = (next: ArticleView) => { setView(next); window.scrollTo(0, 0); if (next.kind === "list") onTeacherChange?.(null); else if (next.kind === "teacher") onTeacherChange?.(next.teacherProfileId); };
+  const [view, setView] = useState<ArticleView>(() => viewFor({ teacherProfileId, columnId }));
+  // URLが変わったら表示を合わせる。開いたばかりのコラムは読み直さない。
+  useEffect(() => { setView(current => current.kind === "column" && current.column.id === columnId ? current : viewFor({ teacherProfileId, columnId })); }, [teacherProfileId, columnId]);
+  const go = (next: ArticleView) => { setView(next); window.scrollTo(0, 0); if (next.kind === "list") onRouteChange?.({ teacherProfileId: null, columnId: null }); else if (next.kind === "teacher") onRouteChange?.({ teacherProfileId: next.teacherProfileId, columnId: null }); else if (next.kind === "column") onRouteChange?.({ teacherProfileId: null, columnId: next.column.id }); };
   return <main className="articlePage withTopbar">
     <header className="articleHero"><span>TEACHER-WRITTEN ARTICLES</span><h1>講師直筆のコラム集</h1><p>講師が自分の学び方や指導への考え方を、本人の言葉で綴った記事集です。</p></header>
     {view.kind === "owner" ? <OwnerSeries initialId={view.id} onOpenProfile={onOpenProfile} onBack={() => go({ kind: "list" })} />
       : view.kind === "column" ? <div className="colWrap"><ColumnReader column={view.column} author={view.author} onBack={() => go({ kind: "list" })} onOpenTeacher={() => go({ kind: "teacher", teacherProfileId: view.author.teacherProfileId })} onContact={setContactTeacherId} /></div>
+      : view.kind === "columnById" ? <div className="colWrap"><ColumnById id={view.id} onBack={() => go({ kind: "list" })} onOpenTeacher={id => go({ kind: "teacher", teacherProfileId: id })} onContact={setContactTeacherId} /></div>
       : view.kind === "teacher" ? <div className="colWrap"><TeacherColumnsView teacherProfileId={view.teacherProfileId} onBack={() => go({ kind: "list" })} onOpenColumn={(column, author) => go({ kind: "column", column, author })} onContact={setContactTeacherId} /></div>
       : <div className="colWrap">
-        <section className="colGroup">
+        <ColumnPickup limit={6} onOpenColumn={(column, author) => go({ kind: "column", column, author })} fallback={<section className="colGroup">
           <header><span className="colAuthor"><img src="/owner.jpg" alt="" /><span><b>こうたろう先生</b><small>英語　連載「{seriesName}」</small></span></span></header>
           <div className="colGrid">{articleList.map(item => <button type="button" className="colCard" key={item.id} onClick={() => go({ kind: "owner", id: item.id })}><span className="colCardPlaceholder" aria-hidden="true">“</span><b>{item.title}</b><span className="colCardExcerpt">{item.lead}</span><small>第{item.id}回　読了目安 {item.minutes}分</small></button>)}</div>
-        </section>
+        </section>} />
         <ColumnAuthorGroups onOpenColumn={(column, author) => go({ kind: "column", column, author })} onOpenTeacher={id => go({ kind: "teacher", teacherProfileId: id })} />
       </div>}
     {contactTeacherId && <TeacherProfilePopup teacherProfileId={contactTeacherId} onClose={() => setContactTeacherId(null)} onStartChat={id => { setContactTeacherId(null); onStartChat(id); }} onRequireLogin={onRequireLogin} />}

@@ -131,3 +131,4 @@
 .colToolbar small { color: #7a756b; font-size: 12px; }
 .colPreview { padding: 24px 26px; border: 1px solid rgba(28, 27, 24, .12); border-radius: 14px; background: #fff; }
 .colPreview .colReaderBody { margin: 0; }
+.colPickupLabel{color:#23574d;font-size:12px;font-weight:900;letter-spacing:.16em}

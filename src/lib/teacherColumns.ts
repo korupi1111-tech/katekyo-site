@@ -160,3 +160,32 @@ export async function hasPublishedColumns(teacherProfileId: string) {
   if (error) return false;
   return (count ?? 0) > 0;
 }
+
+export type ColumnWithAuthor = { column: TeacherColumn; author: ColumnAuthor };
+
+/** 公開中のコラムから、ランダムに選んだ数本（ホームとコラム一覧のピックアップ用）。 */
+export async function getRandomPublishedColumns(limit: number): Promise<ColumnWithAuthor[]> {
+  const { data, error } = await client().from("teacher_columns").select(columnFields).eq("is_published", true).limit(200);
+  if (error) throw error;
+  const columns = ((data ?? []) as ColumnRow[]).map(toColumn);
+  for (let index = columns.length - 1; index > 0; index -= 1) {
+    const swap = Math.floor(Math.random() * (index + 1));
+    [columns[index], columns[swap]] = [columns[swap], columns[index]];
+  }
+  const picked = columns.slice(0, limit);
+  const authors = await authorsFor([...new Set(picked.map(column => column.teacherProfileId))]);
+  return picked.flatMap(column => { const author = authors.get(column.teacherProfileId); return author ? [{ column, author }] : []; });
+}
+
+/** URLで開いた公開コラム1本。非公開・削除済みなら null。 */
+export async function getPublishedColumn(id: string): Promise<ColumnWithAuthor | null> {
+  const { data, error } = await client().from("teacher_columns").select(columnFields).eq("id", id).eq("is_published", true).maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  const column = toColumn(data as ColumnRow);
+  const author = (await authorsFor([column.teacherProfileId])).get(column.teacherProfileId);
+  return author ? { column, author } : null;
+}
+
+/** 一覧カード用の抜粋（サブタイトル行を除いた先頭80字）。 */
+export const columnExcerpt = (body: string) => body.split("\n").filter(line => !line.startsWith("## ")).join(" ").replace(/\s+/g, " ").trim().slice(0, 80);
