@@ -48,7 +48,7 @@ export function PricingPage({ onNavigate }: { onNavigate: Navigate }) {
         <button className="pjLink" onClick={() => onNavigate("campaign")}>無料期間の条件を見る</button>
       </div>
       <ul>
-        <li><b>生徒・保護者</b><span>登録・検索・相談・予約をすべて無料で使えます。</span></li>
+        <li><b>生徒・保護者</b><span>登録・検索・講師についての問い合わせを無料で使えます。</span></li>
         <li><b>講師</b><span>プロフィールの公開と授業の受付を無料で始められます。</span></li>
       </ul>
     </section>

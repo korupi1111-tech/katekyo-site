@@ -6,7 +6,7 @@ import type { PostHog } from "posthog-js";
 const posthogKey = import.meta.env.VITE_POSTHOG_KEY as string | undefined;
 const posthogHost = "https://us.i.posthog.com";
 
-type AnalyticsEvent = "landing" | "page_view" | "signup_started" | "signup_completed" | "teacher_detail_opened" | "chat_started" | "report_submitted";
+type AnalyticsEvent = "landing" | "page_view" | "signup_started" | "signup_completed" | "teacher_detail_opened" | "chat_started" | "report_submitted" | "teacher_inquiry_opened" | "teacher_inquiry_submitted";
 type AnalyticsProperties = Record<string, string>;
 
 let client: PostHog | null = null;
@@ -26,13 +26,19 @@ function load(): Promise<PostHog | null> {
       disable_surveys: true,
       advanced_disable_flags: true,
       person_profiles: "identified_only",
-      // URLのクエリとハッシュは送らない（UTMは送信前に別項目として取り出される）。
+      // URLのクエリとハッシュ、URL内の講師IDは送らない（UTMは送信前に別項目として取り出される）。
       before_send: event => {
         if (!event) return event;
-        for (const key of ["$current_url", "$referrer", "$initial_current_url", "$initial_referrer", "$session_entry_url", "$session_entry_referrer"]) {
-          const value = event.properties[key];
-          if (typeof value === "string") event.properties[key] = value.split(/[?#]/)[0];
-        }
+        const sanitize = (properties: Record<string, unknown> | undefined) => {
+          if (!properties) return;
+          for (const [key, value] of Object.entries(properties)) {
+            if (typeof value === "string" && /(url|referrer|pathname)$/.test(key)) properties[key] = value.split(/[?#]/)[0].replace(/\/(inquiry|columns\/teacher)\/[^/]+/, "/$1/:id");
+            else if (value && typeof value === "object" && !Array.isArray(value)) sanitize(value as Record<string, unknown>);
+          }
+        };
+        sanitize(event.properties);
+        sanitize(event.$set);
+        sanitize(event.$set_once);
         return event;
       },
     });

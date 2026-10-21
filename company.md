@@ -88,7 +88,7 @@ CEOが確定しないもの：事業優先順位、価格、規約上の重要�
 |---|---|---|---|---|
 | CEO | - | ✅ | company/progress/checks/blockers の更新 | checks.md 週次レビュー |
 | 01 サイト公開 | 1 | 🟡 | 公開手順書・通報ページ・監視/復旧手順（docs/divisions/site-release/） | checks.md C-RELEASE |
-| 16 家庭教師マッチング | 1 | ✅ | 講師検索・予約・チャット・授業後フィードバック | build / lint / RLS |
+| 16 家庭教師マッチング | 1 | ✅ | 講師検索、運営経由の講師問い合わせ（チャット・予約は停止中、機能は保持） | build / lint / RLS |
 | 17 記事集（講師コラム） | 1 | ✅ | 講師コラム・コラム経由の問い合わせ | build / lint |
 | 08 大学検索 | 1 | ⬜ | 大学・学部・学科DB（出典・確認日つき） | 公式情報との照合 |
 | 02 SNS戦略 | 横断 | 🟡 | 公開告知の投稿キュー8本（承認待ち）、UTM計測設計（docs/divisions/social-strategy/） | brand-reviewer＋創業者承認 |

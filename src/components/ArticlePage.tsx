@@ -165,11 +165,11 @@ function OwnerSeries({ initialId, onOpenProfile, onBack }: { initialId: 1 | 2 | 
 }
 
 /** コラムのトップ。書いた講師ごとにまとめて並べる。運営者の連載は最初のまとまりとして表示する。 */
-export function ArticlePage({ onOpenProfile, teacherProfileId = null, onStartChat, onRequireLogin }: { onOpenProfile: () => void; teacherProfileId?: string | null; onStartChat: (teacherProfileId: string) => void; onRequireLogin: () => void }) {
+export function ArticlePage({ onOpenProfile, teacherProfileId = null, onStartChat, onRequireLogin, onTeacherChange }: { onOpenProfile: () => void; teacherProfileId?: string | null; onStartChat: (teacherProfileId: string) => void; onRequireLogin: () => void; onTeacherChange?: (teacherProfileId: string | null) => void }) {
   const [contactTeacherId, setContactTeacherId] = useState<string | null>(null);
   const [view, setView] = useState<ArticleView>(teacherProfileId ? { kind: "teacher", teacherProfileId } : { kind: "list" });
   useEffect(() => { setView(teacherProfileId ? { kind: "teacher", teacherProfileId } : { kind: "list" }); }, [teacherProfileId]);
-  const go = (next: ArticleView) => { setView(next); window.scrollTo(0, 0); };
+  const go = (next: ArticleView) => { setView(next); window.scrollTo(0, 0); if (next.kind === "list") onTeacherChange?.(null); else if (next.kind === "teacher") onTeacherChange?.(next.teacherProfileId); };
   return <main className="articlePage withTopbar">
     <header className="articleHero"><span>TEACHER-WRITTEN ARTICLES</span><h1>講師直筆のコラム集</h1><p>講師が自分の学び方や指導への考え方を、本人の言葉で綴った記事集です。</p></header>
     {view.kind === "owner" ? <OwnerSeries initialId={view.id} onOpenProfile={onOpenProfile} onBack={() => go({ kind: "list" })} />
