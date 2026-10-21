@@ -86,3 +86,27 @@ export function subscribeToMyLessonReservations(onChanged: () => void): Realtime
     .on("postgres_changes", { event: "*", schema: "public", table: "lesson_reservations" }, onChanged)
     .subscribe();
 }
+
+/** 終了時刻を過ぎた確定済みの予約のうち、自分がまだ「授業は行われたか」に答えていないもの。 */
+export async function getLessonsAwaitingHeldAnswer() {
+  const client = requireClient();
+  const [{ data: reservations, error }, { data: answers, error: answerError }] = await Promise.all([
+    client
+      .from("lesson_reservations")
+      .select("id, conversation_id, teacher_user_id, student_user_id, starts_at, ends_at, status, subject, created_at")
+      .in("status", ["accepted", "completed"])
+      .lte("ends_at", new Date().toISOString())
+      .order("ends_at", { ascending: false })
+      .limit(20),
+    client.from("lesson_held_confirmations").select("reservation_id"),
+  ]);
+  if (error) throw error;
+  if (answerError) throw answerError;
+  const answered = new Set((answers ?? []).map(answer => answer.reservation_id as string));
+  return ((reservations ?? []) as LessonReservation[]).filter(reservation => !answered.has(reservation.id));
+}
+
+export async function confirmLessonHeld(reservationId: string, lessonWasHeld: boolean) {
+  const { error } = await requireClient().rpc("confirm_lesson_held", { p_reservation_id: reservationId, p_lesson_was_held: lessonWasHeld });
+  if (error) throw error;
+}
