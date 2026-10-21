@@ -1,5 +1,34 @@
 # progress.md — ハンドオフ記録（状態管理ファイル）
 
+## 2026-10-21 実行10：規約改定の反映、ランダムコラムとコラム単体URL、講師の仕事用メール
+
+### 会社
+- 完了ノード：01 サイト公開（規約・ポリシー）、17 記事集（ランダム表示・単体URL）、16 家庭教師マッチング（仕事用メールと同意）
+- 実行中：database-reviewer による新規マイグレーション2本の監査
+- ブロック中：公開（B-11 ドメイン）、講師の仕事用メール（B-31 本番DB適用）
+
+### 出力（保存ファイル）
+- `/src/components/LegalPage.tsx` — 規約第2条差し替え、第5条の2新設、第4・5・7条、ポリシー各条
+- `/src/lib/teacherColumns.ts` — ランダム取得・1本取得・抜粋
+- `/src/components/ColumnPages.tsx`、`/src/components/ArticlePage.tsx`、`/src/pages/HomeEditorial.tsx`、`/src/App.tsx` — ピックアップ表示、/columns/<id>
+- `/supabase/migrations/202610210036_teacher_contact_settings.sql`、`/src/lib/teacherProfiles.ts`、`/src/components/TeacherContactSettings.tsx` — 仕事用メールと同意
+- `/docs/divisions/tutor-matching/operator-inquiry-flow.md` — 運営の確認SQLと送信前チェック
+
+### 意思決定
+- コラムはDBの公開済みからランダムに選ぶ。0件のときだけ従来の固定連載を出す（空のページを避けるため）。
+- 仕事用メールは公開プロフィールと別テーブル。読めるのは本人と運営のみ、書き込みは関数経由のみ。同意の日時と版をサーバーで記録。
+- 退会・停止中の講師の連絡先は送らない（運営の確認SQLで account_status を見る）。
+
+### 創業者からの承認・作業が必要
+1. B-31：`202610210036_teacher_contact_settings.sql` の本番適用
+2. B-32：本番で、テストアカウントのコラムが一覧・ホームに出るか確認
+3. B-11 ドメイン、B-19 PostHog、B-26 専門家確認、本番反映
+
+### 次のアクション
+1. database-reviewer の指摘への対応
+2. B-09：テスト基盤（vitest）
+3. B-15：プロフィール・コラムからの通報導線
+
 ## 2026-10-21 実行9：チャット・予約を「作成中」表示に、創業者の講師表示
 
 ### 会社

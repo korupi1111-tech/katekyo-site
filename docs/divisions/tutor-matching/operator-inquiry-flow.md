@@ -19,6 +19,17 @@
 
 ## 2. 運営が送る文面（テンプレート）
 
+### 2-0. 講師の仕事用メールと同意の確認（Supabase SQL Editor・管理者のみ）
+問い合わせ本文の「講師ID」を入れて実行する。`share_consent` が false、または行がない場合は連絡先を送らず、講師へ登録を依頼する。
+```sql
+select tp.display_name, up.account_status, c.work_email, c.share_consent, c.consented_at, c.consent_version
+from public.teacher_profiles tp
+join public.user_profiles up on up.id = tp.user_id
+left join public.teacher_contact_settings c on c.teacher_user_id = tp.user_id
+where tp.id = '<講師ID>';
+```
+- `account_status` が `active` 以外（退会・停止など）の講師の連絡先は送らない。
+
 ### 2-1. 講師への通知（SMS／メール）
 ```
 korupiyo運営です。
@@ -54,6 +65,7 @@ korupiyo運営
 ### 2-3. 送信前チェック（誤送信防止）
 - [ ] 宛先が問い合わせのメールアドレスと一致している（コピー＆ペーストで入れる）
 - [ ] 講師名と仕事用メールが、問い合わせ本文の「講師ID」の講師のものと一致している
+- [ ] 2-0 のSQLで `share_consent = true`・`account_status = active` を確認した
 - [ ] 講師へ通知してから24時間たっている（または講師の了承がある）
 - [ ] BCC・CC を使っていない
 
@@ -65,6 +77,6 @@ korupiyo運営
   3. 専門家確認：運営による連絡先の取次ぎが職業紹介（職業安定法）に当たるか／電気通信事業の届出の要否／第三者提供の記録義務
   4. 個人Gmailの運用リスク（2段階認証、独自ドメインメールへの移行）
 
-## 4. 未実装（次の作業）
-- 講師の「仕事用メールアドレス」登録欄（運営だけが見られる別テーブル）と講師の同意
-- 授業があったかどうかのアンケート（仕様は創業者に確認中）
+## 4. 実装状況
+- 講師の仕事用メール登録欄と同意：実装済み（講師マイページ。`202610210036_teacher_contact_settings.sql` の本番適用が必要）
+- 授業のYES/NOアンケート：実装済みだが非表示（予約機能の公開時に使う。`202610210035` は予約公開時に適用）

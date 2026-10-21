@@ -285,3 +285,20 @@ export function getTeacherAvatarUrl(path: string | null | undefined) {
   if (/^https?:\/\//.test(path)) return path;
   return supabase.storage.from("profile-images").getPublicUrl(path).data.publicUrl;
 }
+
+// 講師の仕事用メールアドレス（運営だけが読める）と、問い合わせ者へ渡すことへの同意。利用規約 第5条の2。
+// 同意文言を変えたら版を更新する。
+export const teacherContactConsentVersion = "2026-10-21";
+export type TeacherContactSettings = { workEmail: string; shareConsent: boolean; consentedAt: string | null };
+
+export async function getMyTeacherContact(): Promise<TeacherContactSettings> {
+  const client = requireClient();
+  const { data, error } = await client.from("teacher_contact_settings").select("work_email, share_consent, consented_at").maybeSingle();
+  if (error) throw error;
+  return { workEmail: (data?.work_email as string | null) ?? "", shareConsent: !!data?.share_consent, consentedAt: (data?.consented_at as string | null) ?? null };
+}
+
+export async function saveMyTeacherContact(workEmail: string, shareConsent: boolean) {
+  const { error } = await requireClient().rpc("save_my_teacher_contact", { p_work_email: workEmail, p_share_consent: shareConsent, p_consent_version: teacherContactConsentVersion });
+  if (error) throw error;
+}
