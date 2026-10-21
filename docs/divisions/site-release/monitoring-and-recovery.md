@@ -23,7 +23,13 @@ select
 from public.user_profiles
 where role::text <> 'admin';
 ```
-※ `user_profiles.created_at` 列の有無は適用前に確認すること。テストアカウントは集計から除外する（除外方法は blockers.md B-13）。
+※ `user_profiles.created_at` は `202610060001` で定義済み（確認済み）。テストアカウントは除外しない（創業者決定。数件の誤差として扱う）。
+
+### 死活監視の登録手順（創業者承認済み・創業者が実施）
+1. UptimeRobot（無料プラン）でアカウントを作成
+2. 「New Monitor」→ 種類 HTTP(s)、URL `https://<DOMAIN>`、間隔 5分
+3. 通知先に運営メールアドレスを設定
+4. 登録後、checks.md の C-RELEASE「公開後の監視と復旧手順」に登録日を記録
 
 ## 2. バックアップ
 
