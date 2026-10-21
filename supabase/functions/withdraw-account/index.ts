@@ -21,6 +21,8 @@ Deno.serve(async request => {
   if (profileError) return json(request, { error: "退会処理を開始できませんでした。" }, 503);
   await admin.from("account_deletion_requests").upsert({ user_id: userId, requested_at: now, account_data_purge_after: new Date(Date.now() + 30 * 86400_000).toISOString(), chat_purge_after: new Date(Date.now() + 90 * 86400_000).toISOString(), reservation_purge_after: new Date(Date.now() + 365 * 86400_000).toISOString() });
   await admin.from("teacher_profiles").update({ is_published: false }).eq("user_id", userId);
+  // 運営経由の問い合わせで渡す仕事用メールと同意は、退会時点で消す。復帰した場合は同意を取り直す。
+  await admin.from("teacher_contact_settings").delete().eq("teacher_user_id", userId);
   await admin.from("chat_conversations").update({ withdrawn_at: now, teacher_display_name: "退会済みユーザー", student_display_name: "退会済みユーザー", teacher_subject: null, last_message_text: "この会話は利用できません。" }).or(`teacher_user_id.eq.${userId},student_user_id.eq.${userId}`);
   const { data: objects } = await admin.storage.from("profile-images").list(userId, { limit: 100 });
   const paths = (objects ?? []).map(object => `${userId}/${object.name}`);

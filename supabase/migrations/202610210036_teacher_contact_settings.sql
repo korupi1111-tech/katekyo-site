@@ -12,6 +12,7 @@ create table if not exists public.teacher_contact_settings (
 );
 
 alter table public.teacher_contact_settings enable row level security;
+revoke insert, update, delete on public.teacher_contact_settings from anon, authenticated;
 
 drop policy if exists "Teachers can read their own contact settings" on public.teacher_contact_settings;
 create policy "Teachers can read their own contact settings"
@@ -37,6 +38,12 @@ begin
   if auth.uid() is null then raise exception 'ログインが必要です'; end if;
   if not exists (select 1 from public.user_profiles where id = auth.uid() and role::text = 'teacher') then
     raise exception '講師アカウントだけが設定できます';
+  end if;
+  if not exists (select 1 from public.user_profiles where id = auth.uid() and account_status::text in ('active', 'pending_phone')) then
+    raise exception '現在のアカウントの状態では設定できません';
+  end if;
+  if coalesce(p_share_consent, false) and nullif(trim(coalesce(p_consent_version, '')), '') is null then
+    raise exception '同意した規約の版を確認できませんでした';
   end if;
   if v_email is not null and (char_length(v_email) > 254 or v_email !~ '^[^\s@]+@[^\s@]+\.[^\s@]+$') then
     raise exception 'メールアドレスの形式を確認してください';
@@ -70,5 +77,5 @@ begin
 end;
 $$;
 
-revoke all on function public.save_my_teacher_contact(text, boolean, text) from public;
+revoke all on function public.save_my_teacher_contact(text, boolean, text) from public, anon;
 grant execute on function public.save_my_teacher_contact(text, boolean, text) to authenticated;
