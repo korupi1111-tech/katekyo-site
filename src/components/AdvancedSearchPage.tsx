@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getPublishedDirectoryTeachers, type DirectoryTeacher } from "../lib/teacherDirectory";
 import { ProfileModalShell, PublicProfileCard, type ProfileTemplateData } from "./ProfileTemplates";
 import { getCurrentAccount } from "../lib/account";
+import { track } from "../lib/analytics";
 import { getTeacherAvatarUrl } from "../lib/teacherProfiles";
 import { isTeacherFavorite, toggleTeacherFavorite } from "../lib/teacherFavorites";
 import { PublicTeacherAvailability } from "./PublicTeacherAvailability";
@@ -151,7 +152,7 @@ function DirectoryResults({ teachers, loading, error, filters, onStartChat, onOp
 
   return <section className="directoryResults" aria-live="polite">
     <div className="directoryResultsHead"><div><span>DATABASE RESULTS</span><h2>講師検索結果</h2></div><b>{loading ? "読み込み中" : `${results.length}人`}</b></div>
-    {error ? <p className="directoryState">{error}</p> : loading ? <p className="directoryState">公開中の講師データを読み込んでいます。</p> : results.length === 0 ? <p className="directoryState">条件に合う講師が見つかりませんでした。条件を少し広げてお試しください。</p> : <section className="section featuredTeacherSection"><p className="directoryVerifiedNote"><i className="ownerVerifiedCheck" aria-hidden="true">✓</i>は、その資格や学歴が運営によって認定された証明です。</p><div className="directoryTeacherGrid">{results.map(teacher => <DirectoryTeacherCard key={teacher.id} teacher={teacher} onOpen={() => setSelectedTeacher(teacher)} onOpenColumns={teacher.teacher_profile_id && columnTeacherIds.has(teacher.teacher_profile_id) ? () => onOpenTeacherColumns(teacher.teacher_profile_id!) : undefined} />)}</div></section>}
+    {error ? <p className="directoryState">{error}</p> : loading ? <p className="directoryState">公開中の講師データを読み込んでいます。</p> : results.length === 0 ? <p className="directoryState">条件に合う講師が見つかりませんでした。条件を少し広げてお試しください。</p> : <section className="section featuredTeacherSection"><p className="directoryVerifiedNote"><i className="ownerVerifiedCheck" aria-hidden="true">✓</i>は、その資格や学歴が運営によって認定された証明です。</p><div className="directoryTeacherGrid">{results.map(teacher => <DirectoryTeacherCard key={teacher.id} teacher={teacher} onOpen={() => { track("teacher_detail_opened"); setSelectedTeacher(teacher); }} onOpenColumns={teacher.teacher_profile_id && columnTeacherIds.has(teacher.teacher_profile_id) ? () => onOpenTeacherColumns(teacher.teacher_profile_id!) : undefined} />)}</div></section>}
     {selectedTeacher && <DirectoryTeacherDetail teacher={selectedTeacher} onClose={() => setSelectedTeacher(null)} onStartChat={onStartChat} onOpenTeacherColumns={onOpenTeacherColumns} onRequireLogin={onRequireLogin} />}
   </section>;
 }

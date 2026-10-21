@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabase";
 import { getCurrentAccount, resendConfirmation, sendPasswordResetCode, signInWithPasswordLocked, updateMyPassword, verifyPasswordResetCode, verifySignupEmailCode } from "../lib/account";
 import { Turnstile } from "./Turnstile";
 import { isTurnstileConfigured } from "../lib/turnstile";
+import { track } from "../lib/analytics";
 import "../auth.css";
 
 type Props = { teacher: boolean; onAuthenticated: (page: "student-dashboard" | "teacher-dashboard") => void };
@@ -138,6 +139,7 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
       setResendWait(cooldownSeconds);
       if (data.user?.identities?.length === 0) setMessage("このメールアドレスはすでに登録されています。ログインしてください。");
       else {
+        track("signup_started", { role });
         setScreen("verify-email");
         setResendWait(cooldownSeconds);
         setMessage("認証コードをメールで送信しました。6桁のコードを入力してください。");
@@ -163,6 +165,7 @@ export function AuthPage({ teacher, onAuthenticated }: Props) {
     setBusy(true); setMessage("");
     try {
       await verifySignupEmailCode(normalizeEmail(email), code);
+      track("signup_completed", { role });
     } catch (error) {
       setMessage(verificationErrorMessage(error));
       setBusy(false);

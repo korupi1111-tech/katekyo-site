@@ -1,5 +1,37 @@
 # progress.md — ハンドオフ記録（状態管理ファイル）
 
+## 2026-10-21 実行5：PostHog 解析の実装、ポリシー改定、運営者表示
+
+### 会社
+- 完了ノード：解析（B-12）、運営者表示（B-16）、ポリシーの記載漏れ（B-17）、監査2件（security / legal）
+- ブロック中：公開（B-11 ドメイン）、解析の開始（B-19 PostHogの設定）
+- 未着手：08 大学検索、02 SNS戦略の投稿案、段階2〜5
+
+### 出力（保存ファイル）
+- `/src/lib/analytics.ts` — PostHog（US）。Cookieなし、自動収集・録画・フラグ通信なし、URLのクエリ・ハッシュ除去、キー未設定なら何もしない
+- `/src/App.tsx`、`/src/components/AuthPage.tsx`、`/src/components/AdvancedSearchPage.tsx`、`/src/components/ContactPage.tsx` — イベント送信（landing / page_view / signup_started / signup_completed / teacher_detail_opened / chat_started / report_submitted）
+- `/src/components/LegalPage.tsx` — 運営者表示、§2・§5・§10 改定、Cloudflare・PostHog・米国移転の記載
+- `/docs/architecture/analytics.md` — 監査結果と専門家確認事項
+- `/docs/divisions/site-release/launch-runbook.md` — 設定項目 10・11 を追加
+- `/package.json` — 依存に posthog-js を追加
+
+### 意思決定
+- 監査で指摘されたポリシーの言い過ぎ（「個人を特定する情報を送信しない」）を、実際の送信項目（IP、端末情報、メモリ上のランダムID等）を列挙する文面に修正。理由：実態と表示を一致させるため。
+- PostHog の機能フラグ通信を停止。理由：使っておらず、その通信だけ URL のクエリが除去されずに送られていたため（検証で発見）。
+- 「分析を停止したい場合は…」の文言は入れていない。理由：停止手段が未実装のため（専門家確認の結果で判断）。
+- 委託先がデータを自らの目的で使わない旨の文言も入れていない。理由：PostHog の DPA を未確認のため。
+
+### 創業者からの承認・作業が必要
+1. B-19：PostHog（US）のアカウント作成、IP破棄 ON、キーの設定（ドメイン公開と同時）
+2. B-20：法務の専門家確認を行うか（費用が出る場合は予算判断）
+3. B-11：ドメイン購入
+4. main への反映（本番変更）：ブランチ `claude/executive-os-state` の内容を公開してよいか
+
+### 次のアクション
+1. 02 SNS戦略チーフ：公開告知の投稿案（承認待ちキュー。投稿はしない）
+2. B-09：テスト基盤（vitest）
+3. B-15：プロフィール・コラムからの通報導線
+
 ## 2026-10-21 実行4：アクセス解析の比較（B-12）と創業者回答の反映
 
 ### 会社

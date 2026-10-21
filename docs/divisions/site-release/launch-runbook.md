@@ -34,6 +34,8 @@
 | 7 | Supabase Edge Functions → Secrets | `INQUIRY_FROM_EMAIL` | `noreply@<DOMAIN>` 等、6で認証したドメインのアドレス |
 | 8 | Supabase → Authentication → SMTP | Sender email | 7と同じドメインのアドレス（OTPメールの到達率に直結） |
 | 9 | Vercel → Environment Variables | `VITE_TURNSTILE_SITE_KEY` | 変更不要（同じウィジェットを使う場合）。変更した場合は再デプロイ |
+| 10 | Vercel → Environment Variables | `VITE_POSTHOG_KEY` | PostHog（US）の Project API Key。**改定済みのプライバシーポリシーと同じデプロイで有効にする** |
+| 11 | PostHog → Project settings | Discard client IP data | ON |
 
 コード変更は不要（オリジンはすべて環境変数で管理されている）。
 

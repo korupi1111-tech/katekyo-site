@@ -14,6 +14,10 @@
 | 2026-10-21 | 通報ページ（src/App.tsx, ContactPage.tsx） | build / lint | PASS | 成功、警告なし（チャンクサイズ警告のみ既存） |
 | 2026-10-21 | 通報ページ | 375px幅で表示・横スクロールなし・お問い合わせへ切替時に状態リセット | PASS | Playwright で確認（scrollWidth 375） |
 | 2026-10-21 | 通報ページ | 件名に【通報】を付けても既存Functionの上限120字を超えない | PASS | 入力上限 120−4 字 |
+| 2026-10-21 | PostHog 解析（src/lib/analytics.ts ほか） | build / lint | PASS | 成功、警告なし。キー未設定時はPostHogのコード自体がバンドルに入らない |
+| 2026-10-21 | PostHog 解析 | 実ブラウザ相当で送信内容を確認 | PASS | landing → page_view(home) → page_view(report)、UTM付き。送信先は us.i.posthog.com/e/ のみ。URLのクエリ・ハッシュなし。Cookie 0、localStorage 0。氏名・メール等なし |
+| 2026-10-21 | PostHog 解析 | security-reviewer | PASS WITH CHANGES → 対応 | URLクエリ除去・flags通信停止を実装。IP破棄はPostHog設定（B-19） |
+| 2026-10-21 | プライバシーポリシー・通報文言 | legal-policy-reviewer | REVIEW REQUIRED → 文言修正済み | 残りは専門家確認（B-20） |
 | 2026-10-21 | チーフエージェント | 投稿・支出・本番変更を自分で行わない旨を明記 | PASS | chiefs/*.md「共通ルール」 |
 
 ## C-RELEASE：01 サイト公開の受け入れ条件（証拠ベース）
@@ -27,7 +31,7 @@
 | 決済 Webhook | N/A | 決済未実装 |
 | スマホで主要導線 | EVIDENCE | mobile CSS あり。確認記録なし |
 | 404・500・空状態 | EVIDENCE | URLルーティングがなく404は該当なし。空状態は未調査 |
-| 運営者情報の掲示（追加） | FIX | 規約ページに作業メモが公開表示されている（B-16） |
+| 運営者情報の掲示（追加） | PASS | 「korupiyo運営」／korupiyopiyo@gmail.com（専門家確認事項あり B-20） |
 | 問い合わせ・通報窓口 | PASS（段階A） | フッター「通報する」→ 通報ページ（既存の問い合わせ基盤を再利用）。本番での送信確認はドメイン公開後 |
 | 公開後の監視と復旧手順 | EVIDENCE | 手順書を作成（docs/divisions/site-release/monitoring-and-recovery.md）。死活監視の登録と初回バックアップの実施記録待ち |
 
