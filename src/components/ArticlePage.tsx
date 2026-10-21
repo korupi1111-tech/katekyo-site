@@ -140,7 +140,7 @@ function FourthArticle() {
 function ArticleOwnerProfile({ onOpenProfile }: { onOpenProfile: () => void }) {
   return <aside className="articleOwnerProfile">
     <img src="/owner.jpg" alt="こうたろう先生のプロフィール写真" />
-    <div><span>ABOUT THE SITE OWNER</span><h3>このサイト主について</h3><p>幼少期から英語に触れ、小学生3年生で英検2級、中学生で英検準1級を取得。現在は高校3年生で、TOEIC910点。自身の経験をもとに、一人ひとりに合ったサポートをできたらと考えています。</p><button type="button" onClick={onOpenProfile}>英語学習・英検対策の無料ご相談はこちら <ArrowRight size={17} /></button></div>
+    <div><span>ABOUT THE TEACHER</span><h3>この講師について</h3><p>幼少期から英語に触れ、小学生3年生で英検2級、中学生で英検準1級を取得。現在は高校3年生で、TOEIC910点。自身の経験をもとに、一人ひとりに合ったサポートをできたらと考えています。</p><button type="button" onClick={onOpenProfile}>英語学習・英検対策の無料ご相談はこちら <ArrowRight size={17} /></button></div>
   </aside>;
 }
 
@@ -157,7 +157,7 @@ function OwnerSeries({ initialId, onOpenProfile, onBack }: { initialId: 1 | 2 | 
       {articleList.map(item => <button type="button" className={selectedId === item.id ? "active" : ""} key={item.id} onClick={() => selectArticle(item.id)}><span>SERIES　|　第{item.id}回</span><strong>{item.title}</strong><small>{seriesName}</small></button>)}
     </aside>
     <article className="articleBody">
-      <header><div className="articleCategory"><BookOpen size={16} /> 講師紹介　|　英語</div><p className="articleSeriesName">SERIES　|　{seriesName}　／　第{selectedId}回</p><h2>{article.title}</h2><p className="articleLead">{article.lead}</p><div className="articleAuthor"><img src="/owner.jpg" alt="こうたろう先生のアイコン"/><p><b>こうたろう先生 <span className="articleOwnerRole">👑 SITE OWNER</span></b><small><Clock3 size={14} /> 読了目安 {article.minutes}分</small></p></div><img className="articleIllustration" src={article.image} alt={article.imageAlt} /></header>
+      <header><div className="articleCategory"><BookOpen size={16} /> 講師紹介　|　英語</div><p className="articleSeriesName">SERIES　|　{seriesName}　／　第{selectedId}回</p><h2>{article.title}</h2><p className="articleLead">{article.lead}</p><div className="articleAuthor"><img src="/owner.jpg" alt="こうたろう先生のアイコン"/><p><b>こうたろう先生 <span className="articleOwnerRole">講師</span></b><small><Clock3 size={14} /> 読了目安 {article.minutes}分</small></p></div><img className="articleIllustration" src={article.image} alt={article.imageAlt} /></header>
       {selectedId === 1 ? <FirstArticle onNext={() => selectArticle(2)} /> : selectedId === 2 ? <SecondArticle onNext={() => selectArticle(3)} /> : selectedId === 3 ? <ThirdArticle onNext={() => selectArticle(4)} /> : <FourthArticle />}
       <ArticleOwnerProfile onOpenProfile={onOpenProfile} />
     </article>
